@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.base.YdsScaffold
 import com.yourssu.soomsil.usaint.screen.login.navigation.Login
 import com.yourssu.soomsil.usaint.screen.navigation.USaintNavHost
@@ -31,15 +32,17 @@ class MainActivity : ComponentActivity() {
 
             }
             SoomsilUSaintTheme {
-                YdsScaffold(
-                    modifier = Modifier
-                        .systemBarsPadding()
-                        .statusBarsPadding()
-                ) {
-                    USaintNavHost(
-                        navController = navController,
-                        startDestination = Login
-                    )
+                YdsTheme {
+                    YdsScaffold(
+                        modifier = Modifier
+                            .systemBarsPadding()
+                            .statusBarsPadding()
+                    ) {
+                        USaintNavHost(
+                            navController = navController,
+                            startDestination = Login
+                        )
+                    }
                 }
             }
         }
