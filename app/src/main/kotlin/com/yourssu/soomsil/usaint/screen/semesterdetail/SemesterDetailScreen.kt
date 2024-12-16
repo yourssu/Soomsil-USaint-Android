@@ -48,7 +48,6 @@ import com.yourssu.design.R as YdsR
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SemesterDetailScreen(
-    initialPageName: String = "",
     initialPage: Int,
     semesters: List<Semester>,
     semesterCoursesMap: Map<String, List<Course>>,

@@ -11,10 +11,10 @@ import com.yourssu.soomsil.usaint.util.CaptureController
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SemesterDetail(val semesterName: String)
+data class SemesterDetail(val initialTabIndex: Int)
 
 fun NavHostController.navigateToSemesterDetail(navOptions: NavOptions? = null) =
-    navigate(SemesterDetail(semesterName = "123123"), navOptions) // TODO args default 값 수정
+    navigate(SemesterDetail(initialTabIndex = 0), navOptions)
 
 
 fun NavGraphBuilder.semesterDetailScreen(
@@ -24,9 +24,8 @@ fun NavGraphBuilder.semesterDetailScreen(
         val args = it.toRoute<SemesterDetail>()
         SemesterDetailScreen(
             onBackClick = navigateToBack,
-            initialPageName = args.semesterName,
+            initialPage = args.initialTabIndex,
             // TODO 아래는 삭제 or viewModel로 옮기기
-            initialPage = -1,
             semesters = listOf(),
             semesterCoursesMap = mapOf(),
             captureController = CaptureController(),
