@@ -14,6 +14,8 @@ import com.yourssu.soomsil.usaint.screen.semesterdetail.navigation.navigateToSem
 import com.yourssu.soomsil.usaint.screen.semesterdetail.navigation.semesterDetailScreen
 import com.yourssu.soomsil.usaint.screen.semesterlist.navigation.navigateToSemesterList
 import com.yourssu.soomsil.usaint.screen.semesterlist.navigation.semesterListScreen
+import com.yourssu.soomsil.usaint.screen.setting.navigation.navigateToSetting
+import com.yourssu.soomsil.usaint.screen.setting.navigation.settingScreen
 
 @Composable
 fun USaintNavHost(
@@ -45,8 +47,14 @@ fun USaintNavHost(
         )
 
         homeScreen(
-            navigateToSetting = {}, // TODO Setting 스크린 및 네비게이션 추가
+            navigateToSetting = { navController.navigateToSetting() },
             navigateToSemesterList = { navController.navigateToSemesterList() },
+        )
+
+        settingScreen(
+            navigateToBack = {
+                navController.popBackStack()
+            }
         )
 
         semesterListScreen(
@@ -57,10 +65,9 @@ fun USaintNavHost(
         )
 
         semesterDetailScreen(
-            onBackClick = {
+            navigateToBack = {
                 navController.popBackStack()
             }
         )
-
     }
 }
