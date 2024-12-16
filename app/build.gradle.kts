@@ -44,6 +44,7 @@ dependencies {
 
     implementation(libs.yds.android)
     implementation(libs.androidx.viewpager2)
+    implementation(libs.compose.navigation)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
