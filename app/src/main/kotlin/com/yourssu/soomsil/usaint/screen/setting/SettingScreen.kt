@@ -3,6 +3,9 @@ package com.yourssu.soomsil.usaint.screen.setting
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import com.yourssu.design.system.atom.Text
+import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.atom.ListItem
 import com.yourssu.design.system.compose.atom.TopBarButton
 import com.yourssu.design.system.compose.base.YdsScaffold
@@ -19,7 +22,6 @@ fun SettingScreen(
         modifier = modifier,
         topBar = {
             TopBar(
-                title = stringResource(id = R.string.setting),
                 navigationIcon = {
                     TopBarButton(
                         onClick = onBackClick,
@@ -43,4 +45,10 @@ fun SettingScreen(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewSettingScreen(){
+    SettingScreen(onBackClick = {})
 }
