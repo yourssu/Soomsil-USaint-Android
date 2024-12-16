@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.saint.screen.home
+package com.yourssu.soomsil.usaint.screen.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
