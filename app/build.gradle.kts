@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.ksp)
 }
 
 android {
@@ -40,7 +41,13 @@ android {
 }
 
 dependencies {
-    implementation("dev.eatsteak:rusaint:0.7.3")
+    implementation(libs.rusaint)
+
+    // room dependencies
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    //
 
     implementation(libs.yds.android)
     implementation(libs.androidx.viewpager2)
