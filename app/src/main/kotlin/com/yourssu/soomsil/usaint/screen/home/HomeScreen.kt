@@ -71,7 +71,7 @@ private val DisabledAlpha = 0.5f
 //}
 
 @Composable
-internal fun SaintHomeScreen(
+internal fun HomeScreen(
     isLoggedIn: Boolean,
     userName: String,
     userInfo: String,
@@ -443,9 +443,9 @@ private fun GradeInfo(
 
 @PreviewLightDark
 @Composable
-private fun SaintHomePreview() {
+private fun HomePreview() {
     YdsTheme {
-        SaintHomeScreen(
+        HomeScreen(
             isLoggedIn = true,
             userName = "테스트",
             userInfo = "컴퓨터학부 2학년",
@@ -455,9 +455,9 @@ private fun SaintHomePreview() {
 
 @PreviewLightDark
 @Composable
-private fun SaintHomePreviewLogout() {
+private fun HomePreviewLogout() {
     YdsTheme {
-        SaintHomeScreen(
+        HomeScreen(
             isLoggedIn = false,
             userName = "테스트",
             userInfo = "컴퓨터학부 2학년",
