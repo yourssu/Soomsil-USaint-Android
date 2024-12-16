@@ -35,6 +35,7 @@ import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.SingleTitleTopBar
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.design.R as YdsR
 
 
 private val DisabledAlpha = 0.5f
@@ -170,7 +171,7 @@ private fun ProfileItem(
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = onSettingClick,
             ),
-            id = R.drawable.ic_setting_line,
+            id = YdsR.drawable.ic_setting_line,
         )
     }
 }
@@ -209,7 +210,7 @@ private fun GradeCard(
                 onClick = onGradeCardClick,
                 enable = isLoggedIn,
             )
-//            GradeSummary(onGradeCardClick)
+////            GradeSummary(onGradeCardClick)
         }
     }
 }
@@ -250,7 +251,7 @@ private fun GradeSummary(onGradeCardClick: () -> Unit) {
                 ),
             onClick = onGradeCardClick,
             text = stringResource(id = R.string.saint_grade_see_all),
-            leftIcon = R.drawable.ic_board_line,
+            leftIcon = com.yourssu.design.R.drawable.ic_board_line,
             sizeType = BoxButtonSize.Medium,
             buttonType = BoxButtonType.Line,
         )
@@ -363,7 +364,7 @@ private fun ActionTitle(
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        ProfileImageView(painter = painterResource(id = R.drawable.ppussung))
+        ProfileImageView(painter = painterResource(id = R.drawable.default_profile_image))
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -385,7 +386,7 @@ private fun ActionTitle(
             )
         }
         Icon(
-            id = R.drawable.ic_arrow_right_line,
+            id = YdsR.drawable.ic_arrow_right_line,
             tint = YdsTheme.colors.textPrimary.copy(
                 alpha = if (enable) 1f else DisabledAlpha,
             ),
