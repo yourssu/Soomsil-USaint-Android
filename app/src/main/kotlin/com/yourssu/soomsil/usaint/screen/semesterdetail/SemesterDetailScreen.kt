@@ -1,6 +1,7 @@
 package com.yourssu.soomsil.usaint.screen.semesterdetail
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

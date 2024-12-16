@@ -72,7 +72,6 @@ private val DisabledAlpha = 0.5f
 
 @Composable
 internal fun HomeScreen(
-    isLoggedIn: Boolean,
     userName: String,
     userInfo: String,
     modifier: Modifier = Modifier,
@@ -99,36 +98,33 @@ internal fun HomeScreen(
                 ),
         ) {
             ProfileItem(
-                isLoggedIn = isLoggedIn,
                 userName = userName,
                 userInfo = userInfo,
                 onProfileClick = onProfileClick,
                 onSettingClick = {
-                    if (isLoggedIn) onSettingClick() else onProfileClick()
+                    onSettingClick()
                 },
             )
             Spacer(Modifier.height(12.dp))
             GradeCard(
-                isLoggedIn = isLoggedIn,
                 onGradeCardClick = onGradeCardClick,
             )
             Spacer(Modifier.height(12.dp))
-            ChapelCard(
-                isLoggedIn = isLoggedIn,
-                onChapelCardClick = onChapelCardClick,
-            )
-            Spacer(Modifier.height(12.dp))
-            GraduationCard(
-                isLoggedIn = isLoggedIn,
-                onGraduationCardClick = onGraduationCardClick,
-            )
+//            ChapelCard(
+//                isLoggedIn = isLoggedIn,
+//                onChapelCardClick = onChapelCardClick,
+//            )
+//            Spacer(Modifier.height(12.dp))
+//            GraduationCard(
+//                isLoggedIn = isLoggedIn,
+//                onGraduationCardClick = onGraduationCardClick,
+//            )
         }
     }
 }
 
 @Composable
 private fun ProfileItem(
-    isLoggedIn: Boolean,
     userName: String,
     userInfo: String,
     onProfileClick: () -> Unit = {},
@@ -140,7 +136,7 @@ private fun ProfileItem(
             .ydsClickable(
                 interactionSource = remember { MutableInteractionSource() },
             ) {
-                if (!isLoggedIn) onProfileClick()
+                onProfileClick()
             }
             .padding(
                 horizontal = 16.dp,
@@ -178,7 +174,6 @@ private fun ProfileItem(
 
 @Composable
 private fun GradeCard(
-    isLoggedIn: Boolean,
     onGradeCardClick: () -> Unit,
 ) {
     Surface(
@@ -201,16 +196,15 @@ private fun GradeCard(
                     ),
                 style = YdsTheme.typography.title3,
                 color = YdsTheme.colors.textPrimary.copy(
-                    alpha = if (isLoggedIn) 1f else DisabledAlpha,
+                    alpha = 1f,
                 ),
             )
             ActionTitle(
                 title = stringResource(id = R.string.saint_grade_title),
                 subTitle = stringResource(id = R.string.saint_grade_subtitle),
                 onClick = onGradeCardClick,
-                enable = isLoggedIn,
             )
-////            GradeSummary(onGradeCardClick)
+            GradeSummary(onGradeCardClick)
         }
     }
 }
@@ -258,90 +252,90 @@ private fun GradeSummary(onGradeCardClick: () -> Unit) {
     }
 }
 
-@Composable
-private fun ChapelCard(
-    isLoggedIn: Boolean,
-    onChapelCardClick: () -> Unit,
-) {
-    Surface(
-        rounding = 8.dp,
-        color = YdsTheme.colors.bgNormal,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp),
-        ) {
-            YdsText(
-                text = stringResource(id = R.string.saint_chapel),
-                modifier = Modifier
-                    .padding(
-                        top = 20.dp,
-                        bottom = 4.dp,
-                        start = 16.dp,
-                        end = 16.dp,
-                    ),
-                style = YdsTheme.typography.title3,
-                color = YdsTheme.colors.textPrimary.copy(
-                    alpha = if (isLoggedIn) 1f else DisabledAlpha,
-                ),
-            )
-            ActionTitle(
-                title = stringResource(id = R.string.saint_chapel_seat_title),
-                subTitle = stringResource(id = R.string.saint_chapel_seat_subtitle),
-                onClick = onChapelCardClick,
-                enable = false,
-//                enable = isLoggedIn,
-            )
-            ActionTitle(
-                title = stringResource(id = R.string.saint_chapel_attendance_title),
-                subTitle = stringResource(id = R.string.saint_chapel_attendance_subtitle),
-                onClick = onChapelCardClick,
-                enable = false,
-//                enable = isLoggedIn,
-            )
-        }
-    }
-}
+//@Composable
+//private fun ChapelCard(
+//    isLoggedIn: Boolean,
+//    onChapelCardClick: () -> Unit,
+//) {
+//    Surface(
+//        rounding = 8.dp,
+//        color = YdsTheme.colors.bgNormal,
+//    ) {
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(bottom = 10.dp),
+//        ) {
+//            YdsText(
+//                text = stringResource(id = R.string.saint_chapel),
+//                modifier = Modifier
+//                    .padding(
+//                        top = 20.dp,
+//                        bottom = 4.dp,
+//                        start = 16.dp,
+//                        end = 16.dp,
+//                    ),
+//                style = YdsTheme.typography.title3,
+//                color = YdsTheme.colors.textPrimary.copy(
+//                    alpha = if (isLoggedIn) 1f else DisabledAlpha,
+//                ),
+//            )
+//            ActionTitle(
+//                title = stringResource(id = R.string.saint_chapel_seat_title),
+//                subTitle = stringResource(id = R.string.saint_chapel_seat_subtitle),
+//                onClick = onChapelCardClick,
+//                enable = false,
+////                enable = isLoggedIn,
+//            )
+//            ActionTitle(
+//                title = stringResource(id = R.string.saint_chapel_attendance_title),
+//                subTitle = stringResource(id = R.string.saint_chapel_attendance_subtitle),
+//                onClick = onChapelCardClick,
+//                enable = false,
+////                enable = isLoggedIn,
+//            )
+//        }
+//    }
+//}
 
-@Composable
-private fun GraduationCard(
-    isLoggedIn: Boolean,
-    onGraduationCardClick: () -> Unit,
-) {
-    Surface(
-        rounding = 8.dp,
-        color = YdsTheme.colors.bgNormal,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp),
-        ) {
-            YdsText(
-                text = stringResource(id = R.string.saint_graduation),
-                modifier = Modifier
-                    .padding(
-                        top = 20.dp,
-                        bottom = 4.dp,
-                        start = 16.dp,
-                        end = 16.dp,
-                    ),
-                style = YdsTheme.typography.title3,
-                color = YdsTheme.colors.textPrimary.copy(
-                    alpha = if (isLoggedIn) 1f else DisabledAlpha,
-                ),
-            )
-            ActionTitle(
-                title = stringResource(id = R.string.saint_graduation_title),
-                subTitle = stringResource(id = R.string.saint_graduation_subtitle),
-                onClick = onGraduationCardClick,
-                enable = false,
-//                enable = isLoggedIn,
-            )
-        }
-    }
-}
+//@Composable
+//private fun GraduationCard(
+//    isLoggedIn: Boolean,
+//    onGraduationCardClick: () -> Unit,
+//) {
+//    Surface(
+//        rounding = 8.dp,
+//        color = YdsTheme.colors.bgNormal,
+//    ) {
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(bottom = 10.dp),
+//        ) {
+//            YdsText(
+//                text = stringResource(id = R.string.saint_graduation),
+//                modifier = Modifier
+//                    .padding(
+//                        top = 20.dp,
+//                        bottom = 4.dp,
+//                        start = 16.dp,
+//                        end = 16.dp,
+//                    ),
+//                style = YdsTheme.typography.title3,
+//                color = YdsTheme.colors.textPrimary.copy(
+//                    alpha = if (isLoggedIn) 1f else DisabledAlpha,
+//                ),
+//            )
+//            ActionTitle(
+//                title = stringResource(id = R.string.saint_graduation_title),
+//                subTitle = stringResource(id = R.string.saint_graduation_subtitle),
+//                onClick = onGraduationCardClick,
+//                enable = false,
+////                enable = isLoggedIn,
+//            )
+//        }
+//    }
+//}
 
 @Composable
 private fun ActionTitle(
@@ -446,19 +440,6 @@ private fun GradeInfo(
 private fun HomePreview() {
     YdsTheme {
         HomeScreen(
-            isLoggedIn = true,
-            userName = "테스트",
-            userInfo = "컴퓨터학부 2학년",
-        )
-    }
-}
-
-@PreviewLightDark
-@Composable
-private fun HomePreviewLogout() {
-    YdsTheme {
-        HomeScreen(
-            isLoggedIn = false,
             userName = "테스트",
             userInfo = "컴퓨터학부 2학년",
         )

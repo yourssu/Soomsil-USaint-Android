@@ -48,13 +48,6 @@ fun LoginScreen(
         topBar = {
             TopBar(
                 title = stringResource(R.string.login),
-                actions = {
-                    TopBarButton(
-                        icon = YdsR.drawable.ic_x_line,
-                        isDisabled = false,
-                        onClick = onBackClick,
-                    )
-                },
             )
         },
     ) {
