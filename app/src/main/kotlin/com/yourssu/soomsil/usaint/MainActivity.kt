@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LaunchedEffect(Unit) {
-                USaintSessionBuilder().withPassword("1234", "1234")
+                USaintSessionBuilder().withPassword("20211722", "kwakkun1208!")
             }
             SoomsilUSaintTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

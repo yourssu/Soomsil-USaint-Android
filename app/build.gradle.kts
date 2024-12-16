@@ -42,6 +42,8 @@ android {
 dependencies {
     implementation("dev.eatsteak:rusaint:0.7.3")
 
+    implementation(libs.yds.android)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
