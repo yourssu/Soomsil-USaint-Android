@@ -7,12 +7,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,10 +38,14 @@ import com.yourssu.soomsil.usaint.ui.component.entities.Grade
 import com.yourssu.soomsil.usaint.ui.component.entities.Semester
 import com.yourssu.soomsil.usaint.ui.component.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.component.entities.toGrade
+import com.yourssu.soomsil.usaint.util.PullToRefreshColumn
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import com.yourssu.design.R as YdsR
 
 @Composable
 fun SemesterListScreen(
+    isRefreshing: Boolean,
     onRefresh: () -> Unit,
     semesters: List<Semester>,
     includeSeasonalSemester: Boolean,
@@ -66,78 +71,77 @@ fun SemesterListScreen(
                     TopBarButton(
                         icon = YdsR.drawable.ic_arrow_left_line,
                         onClick = onBackClick,
-                        isDisabled = false,
-                    )
-                },
-                actions = {
-                    TopBarButton(
-                        icon = YdsR.drawable.ic_refresh_line,
-                        onClick = onRefresh,
-                        isDisabled = false,
                     )
                 },
                 title = stringResource(id = R.string.reportcard_title),
             )
         },
     ) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 24.dp,
-                        vertical = 20.dp,
-                    ),
+        PullToRefreshColumn(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+        ) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
             ) {
-                ScoreDetail(
-                    title = stringResource(id = R.string.reportcard_average_grade),
-                    actualValue = overallGpa.formatToString(),
-                    maxValue = Grade.MAX.formatToString(),
-                    modifier = Modifier.weight(1f),
-                )
-                ScoreDetail(
-                    title = stringResource(id = R.string.reportcard_credit),
-                    actualValue = earnedCredit.formatToString(),
-                    maxValue = "133", // TODO:
-                    modifier = Modifier.weight(1f),
-                )
-            }
-            if (appliedSemesters.isNotEmpty()) {
-                Chart(
-                    chartData = ChartData(
-                        semesters = appliedSemesters,
-                    ),
+                Row(
                     modifier = Modifier
-                        .height(170.dp)
-                        .padding(horizontal = 28.dp),
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = 18.dp,
-                        end = 34.dp,
-                        bottom = 15.dp,
-                    ),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                CheckBox(
-                    text = stringResource(id = R.string.reportcard_include_seasonal_semester),
-                    checked = includeSeasonalSemester,
-                    onCheckedChange = onSeasonalFlagChange,
-                )
-            }
-            Divider(thickness = Thickness.Thick)
-            LazyColumn(
-                modifier = Modifier.padding(vertical = 8.dp),
-            ) {
-                itemsIndexed(appliedSemesters) { _, semester ->
-                    SemesterReport(
-                        semester = semester,
-                        onClick = onGradeListClick,
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 24.dp,
+                            vertical = 20.dp,
+                        ),
+                ) {
+                    ScoreDetail(
+                        title = stringResource(id = R.string.reportcard_average_grade),
+                        actualValue = overallGpa.formatToString(),
+                        maxValue = Grade.MAX.formatToString(),
+                        modifier = Modifier.weight(1f),
                     )
+                    ScoreDetail(
+                        title = stringResource(id = R.string.reportcard_credit),
+                        actualValue = earnedCredit.formatToString(),
+                        maxValue = "133", // TODO:
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                if (appliedSemesters.isNotEmpty()) {
+                    Chart(
+                        chartData = ChartData(
+                            semesters = appliedSemesters,
+                        ),
+                        modifier = Modifier
+                            .height(170.dp)
+                            .padding(horizontal = 28.dp),
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = 18.dp,
+                            end = 34.dp,
+                            bottom = 15.dp,
+                        ),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    CheckBox(
+                        text = stringResource(id = R.string.reportcard_include_seasonal_semester),
+                        checked = includeSeasonalSemester,
+                        onCheckedChange = onSeasonalFlagChange,
+                    )
+                }
+                Divider(thickness = Thickness.Thick)
+                Column(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                ) {
+                    appliedSemesters.forEach { semester ->
+                        SemesterReport(
+                            semester = semester,
+                            onClick = onGradeListClick,
+                        )
+                    }
                 }
             }
         }
@@ -237,9 +241,19 @@ private fun SemesterReport(
 @Composable
 private fun SemesterListScreenPreview() {
     var include by remember { mutableStateOf(false) }
+    var isRefreshing by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
     YdsTheme {
         SemesterListScreen(
-            onRefresh = {},
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                coroutineScope.launch {
+                    isRefreshing = true
+                    delay(1000)
+                    isRefreshing = false
+                }
+            },
             semesters = listOf(
                 Semester(
                     axisName = "22-1",
