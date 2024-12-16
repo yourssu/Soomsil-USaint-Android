@@ -36,7 +36,7 @@ import com.yourssu.soomsil.usaint.ui.component.entities.toGrade
 import java.text.DecimalFormat
 
 @Composable
-internal fun GradeListDetailScreen(
+fun SemesterDetailItemScreen(
     semester: Semester,
     captureFlag: CaptureFlag,
     modifier: Modifier = Modifier,
@@ -252,7 +252,7 @@ private fun CourseGradeItem(
 
 @PreviewLightDark
 @Composable
-private fun GradeListDetailPreview() {
+private fun SemesterDetailPreview() {
     val tiers = listOf(
         "A+", "A0", "A-",
         "B+", "B0", "B-",
@@ -261,7 +261,7 @@ private fun GradeListDetailPreview() {
         "P", "F",
     )
     YdsTheme {
-        GradeListDetailScreen(
+        SemesterDetailItemScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
