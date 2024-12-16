@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.atom.BoxButton
 import com.yourssu.design.system.compose.atom.BoxButtonSize
@@ -38,39 +34,40 @@ import com.yourssu.design.system.compose.base.YdsScaffold
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.SingleTitleTopBar
-import com.yourssu.soomsil.saint.R
+import com.yourssu.soomsil.usaint.R
+
 
 private val DisabledAlpha = 0.5f
 
-@Composable
-internal fun SaintHomeScreen(
-    modifier: Modifier = Modifier,
-    onProfileClick: () -> Unit = {},
-    onSettingClick: () -> Unit = {},
-    onGradeCardClick: () -> Unit = {},
-    onChapelCardClick: () -> Unit = {},
-    onGraduationCardClick: () -> Unit = {},
-    viewModel: SaintHomeViewModel = hiltViewModel(),
-) {
-    val isLoggedIn by remember(viewModel.userName, viewModel.userInfo) {
-        mutableStateOf(viewModel.userName != null && viewModel.userInfo != null)
-    }
-    LaunchedEffect(Unit) {
-        viewModel.update()
-    }
-
-    SaintHomeScreen(
-        isLoggedIn = isLoggedIn,
-        userName = viewModel.userName ?: stringResource(id = R.string.user_name_placeholder),
-        userInfo = viewModel.userInfo ?: stringResource(id = R.string.user_info_placeholder),
-        modifier = modifier,
-        onProfileClick = onProfileClick,
-        onSettingClick = onSettingClick,
-        onGradeCardClick = onGradeCardClick,
-        onChapelCardClick = onChapelCardClick,
-        onGraduationCardClick = onGraduationCardClick,
-    )
-}
+//@Composable
+//internal fun SaintHomeScreen(
+//    modifier: Modifier = Modifier,
+//    onProfileClick: () -> Unit = {},
+//    onSettingClick: () -> Unit = {},
+//    onGradeCardClick: () -> Unit = {},
+//    onChapelCardClick: () -> Unit = {},
+//    onGraduationCardClick: () -> Unit = {},
+////    viewModel: SaintHomeViewModel = hiltViewModel(),
+//) {
+//    val isLoggedIn by remember(viewModel.userName, viewModel.userInfo) {
+//        mutableStateOf(viewModel.userName != null && viewModel.userInfo != null)
+//    }
+//    LaunchedEffect(Unit) {
+//        viewModel.update()
+//    }
+//
+//    SaintHomeScreen(
+//        isLoggedIn = isLoggedIn,
+//        userName = viewModel.userName ?: stringResource(id = R.string.user_name_placeholder),
+//        userInfo = viewModel.userInfo ?: stringResource(id = R.string.user_info_placeholder),
+//        modifier = modifier,
+//        onProfileClick = onProfileClick,
+//        onSettingClick = onSettingClick,
+//        onGradeCardClick = onGradeCardClick,
+//        onChapelCardClick = onChapelCardClick,
+//        onGraduationCardClick = onGraduationCardClick,
+//    )
+//}
 
 @Composable
 internal fun SaintHomeScreen(
