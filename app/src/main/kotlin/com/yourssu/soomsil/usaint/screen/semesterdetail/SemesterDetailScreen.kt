@@ -1,6 +1,7 @@
 package com.yourssu.soomsil.usaint.screen.semesterdetail
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,13 +41,17 @@ import com.yourssu.soomsil.usaint.ui.component.entities.Tier
 import com.yourssu.soomsil.usaint.ui.component.entities.toCredit
 import com.yourssu.soomsil.usaint.util.Capturable
 import com.yourssu.soomsil.usaint.util.CaptureController
+import com.yourssu.soomsil.usaint.util.PullToRefreshColumn
 import com.yourssu.soomsil.usaint.util.rememberCaptureController
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.yourssu.design.R as YdsR
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SemesterDetailScreen(
+    isRefreshing: Boolean,
+    onRefresh: (String) -> Unit,
     initialPage: Int,
     semesters: List<Semester>,
     semesterCoursesMap: Map<String, List<Course>>,
@@ -54,7 +59,6 @@ fun SemesterDetailScreen(
     captureFlag: CaptureFlag,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onRefresh: (String) -> Unit = {},
     onCaptureFlagChanged: (CaptureFlag) -> Unit = {},
     onCaptured: (semesterName: String, Bitmap) -> Unit = { _, _ -> },
 ) {
@@ -108,24 +112,31 @@ fun SemesterDetailScreen(
             }
         },
     ) {
-        HorizontalPager(state = pagerState) { pagerIdx ->
-            val semester = semesters[pagerIdx]
-            semesterCoursesMap[semester.fullName]?.let { courses ->
-                Capturable(
-                    controller = captureController,
-                    predicate = { pagerState.currentPage == pagerIdx },
-                    onCaptured = { bitmap -> onCaptured(semester.fullName, bitmap) },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .wrapContentHeight(unbounded = true), // 기기 밖의 화면도 캡처하기 위해 필요함
-                ) {
-                    GradeListDetailScreen(
-                        semester = semester,
-                        courses = courses,
-                        modifier = Modifier.fillMaxSize(),
-                        captureFlag = captureFlag,
-                    )
+        PullToRefreshColumn(
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                onRefresh(semesters[pagerState.currentPage].fullName)
+            }
+        ) {
+            HorizontalPager(state = pagerState) { pagerIdx ->
+                val semester = semesters[pagerIdx]
+                semesterCoursesMap[semester.fullName]?.let { courses ->
+                    Capturable(
+                        controller = captureController,
+                        predicate = { pagerState.currentPage == pagerIdx },
+                        onCaptured = { bitmap -> onCaptured(semester.fullName, bitmap) },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .wrapContentHeight(unbounded = true), // 기기 밖의 화면도 캡처하기 위해 필요함
+                    ) {
+                        SemesterDetailItemScreen(
+                            semester = semester,
+                            courses = courses,
+                            modifier = Modifier.fillMaxSize(),
+                            captureFlag = captureFlag,
+                        )
+                    }
                 }
             }
         }
@@ -177,8 +188,19 @@ fun SemesterDetailScreen(
 @PreviewLightDark
 @Composable
 private fun SemesterDetailScreenPreview() {
+    var isRefreshing by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
     YdsTheme {
         SemesterDetailScreen(
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                coroutineScope.launch {
+                    isRefreshing = true
+                    delay(1000)
+                    isRefreshing = false
+                }
+            },
             initialPage = 0,
             semesters = listOf(
                 Semester(fullName = "2022년 1학기"),

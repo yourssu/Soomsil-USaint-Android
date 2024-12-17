@@ -13,7 +13,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.yourssu.design.system.compose.YdsTheme
+import com.yourssu.design.system.compose.base.YdsScaffold
+import com.yourssu.soomsil.usaint.screen.login.navigation.Login
+import com.yourssu.soomsil.usaint.screen.navigation.USaintNavHost
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dev.eatsteak.rusaint.core.CourseType
@@ -31,7 +36,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+
         setContent {
+            val navController: NavHostController = rememberNavController()
+
             LaunchedEffect(Unit) {
 
 //                viewModel.testOperations()
@@ -52,29 +60,19 @@ class MainActivity : ComponentActivity() {
 //                Log.d("MainActivity", studentInformationApplication.work().toString())
             }
             SoomsilUSaintTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                YdsTheme {
+                    YdsScaffold(
+                        modifier = Modifier
+                            .systemBarsPadding()
+                            .statusBarsPadding()
+                    ) {
+                        USaintNavHost(
+                            navController = navController,
+                            startDestination = Login
+                        )
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SoomsilUSaintTheme {
-        Greeting("Android")
     }
 }
