@@ -13,7 +13,10 @@ interface TotalReportCardDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTotalReportCard(totalReportCard: TotalReportCard): Long
 
+    @Query("SELECT * FROM total_report_card LIMIT 1")
+    fun getTotalReportCard(): TotalReportCard?
+
     @Transaction
-    @Query("SELECT * FROM total_report_card WHERE id = :id")
-    fun getTotalReportCardWithSemesters(id: Int): TotalReportCardWithSemesters?
+    @Query("SELECT * FROM total_report_card LIMIT 1")
+    fun getTotalReportCardWithSemesters(): TotalReportCardWithSemesters?
 }
