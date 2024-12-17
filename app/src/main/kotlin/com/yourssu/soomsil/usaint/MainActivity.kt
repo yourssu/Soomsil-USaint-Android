@@ -18,6 +18,8 @@ import androidx.room.Room
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.source.local.AppDatabase
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
+import dev.eatsteak.rusaint.core.CourseType
+import dev.eatsteak.rusaint.core.SemesterType
 import dev.eatsteak.rusaint.ffi.CourseGradesApplicationBuilder
 import dev.eatsteak.rusaint.ffi.USaintSessionBuilder
 import kotlinx.coroutines.launch
@@ -55,12 +57,12 @@ class MainActivity : ComponentActivity() {
                 val session = USaintSessionBuilder().withPassword("20211722", "kwakkun1208!")
                 val application = CourseGradesApplicationBuilder().build(session)
 
-//                Log.d("MainActivity", application.semesters(CourseType.BACHELOR).toString())
-//                Log.d(
-//                    "MainActivity",
-//                    application.classes(CourseType.BACHELOR, "2021", SemesterType.ONE, false)
-//                        .toString()
-//                )
+                Log.d("MainActivity", application.semesters(CourseType.BACHELOR).toString())
+                Log.d(
+                    "MainActivity",
+                    application.classes(CourseType.BACHELOR, "2021", SemesterType.ONE, false)
+                        .toString()
+                )
             }
             SoomsilUSaintTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
