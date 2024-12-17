@@ -8,5 +8,5 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.Semester
 @Dao
 interface SemesterDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSemester(semester: Semester): List<Long>
+    fun insertSemesters(vararg semesters: Semester): List<Long>
 }

@@ -11,9 +11,9 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.TotalReportCardWithSe
 @Dao
 interface TotalReportCardDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTotalReportCard(totalReportCard: TotalReportCard): Long
+    fun insertTotalReportCard(totalReportCard: TotalReportCard): Long
 
     @Transaction
     @Query("SELECT * FROM total_report_card WHERE id = :id")
-    suspend fun getTotalReportCardById(id: Int): TotalReportCardWithSemesters?
+    fun getTotalReportCardWithSemesters(id: Int): TotalReportCardWithSemesters?
 }

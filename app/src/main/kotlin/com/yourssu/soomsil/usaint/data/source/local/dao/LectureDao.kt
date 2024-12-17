@@ -8,5 +8,5 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.Lecture
 @Dao
 interface LectureDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLecture(lecture: Lecture): List<Long>
+    fun insertLectures(vararg lectures: Lecture): List<Long>
 }
