@@ -107,7 +107,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 48.dp, start = 20.dp, end = 20.dp),
-                text = stringResource(R.string.save),
+                text = stringResource(R.string.login),
                 onClick = onLoginClick,
             )
 
