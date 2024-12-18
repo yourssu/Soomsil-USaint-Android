@@ -56,8 +56,8 @@ fun LoginScreen(
             viewModel.uiEvent.collect { uiEvent ->
                 when (uiEvent) {
                     is LoginUiEvent.Success -> {
-                        isLoading = false
                         navigateToHome()
+                        isLoading = false
                     }
 
                     is LoginUiEvent.Error -> {
@@ -129,6 +129,7 @@ fun LoginScreen(
                 ),
                 onValueChange = onStudentIdChange,
                 onErrorChange = {},
+                isEnabled = !isLoading,
             )
 
             YdsText(
@@ -142,6 +143,7 @@ fun LoginScreen(
                 modifier = Modifier.padding(top = 8.dp, start = 20.dp, end = 20.dp),
                 onValueChange = onPasswordChange,
                 onErrorChange = {},
+                isEnabled = !isLoading,
             )
 
             BoxButton(

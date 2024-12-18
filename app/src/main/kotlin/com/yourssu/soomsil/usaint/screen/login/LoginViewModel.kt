@@ -9,17 +9,19 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.PreferencesKeys
+import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
-import dev.eatsteak.rusaint.ffi.USaintSessionBuilder
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val uSaintSessionRepo: USaintSessionRepository,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<LoginUiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -30,22 +32,24 @@ class LoginViewModel @Inject constructor(
     fun login() {
         viewModelScope.launch {
             _uiEvent.emit(LoginUiEvent.Loading)
-            try {
-                // 로그인 시도
-                USaintSessionBuilder().withPassword(studentId, studentPw)
-                _uiEvent.emit(LoginUiEvent.Success)
-            } catch (e: RusaintException) {
-                _uiEvent.emit(LoginUiEvent.Error("로그인에 실패했습니다. 다시 시도해주세요."))
-                return@launch
-            } catch (e: Exception) {
-                _uiEvent.emit(LoginUiEvent.Error("알 수 없는 문제가 발생했습니다."))
+            // 로그인 시도
+            // 실패 시 Error 이벤트 발생 후 종료
+            uSaintSessionRepo.withPassword(studentId, studentPw).onFailure { e ->
+                Timber.e(e)
+                val errMsg = when (e) {
+                    is RusaintException -> "로그인에 실패했습니다. 다시 시도해주세요."
+                    else -> "알 수 없는 문제가 발생했습니다."
+                }
+                _uiEvent.emit(LoginUiEvent.Error(errMsg))
                 return@launch
             }
-            dataStore.edit { preferences ->
-                preferences[PreferencesKeys.STUDENT_ID] = studentId
-                preferences[PreferencesKeys.STUDENT_PW] = studentPw
-                // TODO: save student information
+            // 성공 시 id, pw 저장
+            dataStore.edit { pref ->
+                pref[PreferencesKeys.STUDENT_ID] = studentId
+                pref[PreferencesKeys.STUDENT_PW] = studentPw
             }
+            _uiEvent.emit(LoginUiEvent.Success)
+            // TODO: save student information
         }
     }
 }
