@@ -34,7 +34,7 @@ import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.ui.component.chart.Chart
 import com.yourssu.soomsil.usaint.ui.component.chart.ChartData
 import com.yourssu.soomsil.usaint.ui.entities.Credit
-import com.yourssu.soomsil.usaint.ui.entities.Score
+import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
@@ -50,7 +50,7 @@ fun SemesterListScreen(
     semesters: List<Semester>,
     includeSeasonalSemester: Boolean,
     onSeasonalFlagChange: (Boolean) -> Unit,
-    overallGpa: Score,
+    overallGpa: Grade,
     earnedCredit: Credit,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
@@ -95,7 +95,7 @@ fun SemesterListScreen(
                     ScoreDetail(
                         title = stringResource(id = R.string.reportcard_average_grade),
                         actualValue = overallGpa.formatToString(),
-                        maxValue = Score.Max.formatToString(),
+                        maxValue = Grade.Max.formatToString(),
                         modifier = Modifier.weight(1f),
                     )
                     ScoreDetail(

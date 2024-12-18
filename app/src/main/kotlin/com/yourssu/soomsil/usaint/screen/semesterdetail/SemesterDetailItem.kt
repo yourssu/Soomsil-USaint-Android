@@ -26,17 +26,17 @@ import com.yourssu.design.system.compose.atom.Divider
 import com.yourssu.design.system.compose.atom.Thickness
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
 import com.yourssu.soomsil.usaint.ui.entities.Credit
-import com.yourssu.soomsil.usaint.ui.entities.Score
-import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.Grade
+import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
+import com.yourssu.soomsil.usaint.ui.entities.Semester
+import com.yourssu.soomsil.usaint.ui.entities.Tier
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import java.text.DecimalFormat
 
 @Composable
-fun SemesterDetailItemScreen(
+fun SemesterDetailItem(
     semester: Semester,
     captureFlag: CaptureFlag,
     modifier: Modifier = Modifier,
@@ -66,7 +66,7 @@ fun SemesterDetailItemScreen(
         Column {
             lectureInfos.forEach { course ->
                 CourseGradeItem(
-                    grade = course.grade,
+                    tier = course.tier,
                     courseName = course.name,
                     professor = course.professorName,
                     courseCredit = course.credit,
@@ -80,7 +80,7 @@ fun SemesterDetailItemScreen(
 @Composable
 private fun GradeSummary(
     semesterName: String,
-    gpa: Score,
+    gpa: Grade,
     earnedCredit: Credit,   // 취득 학점
     semesterRank: Int,      // 학기별 석차
     semesterMaxRank: Int,
@@ -122,7 +122,7 @@ private fun GradeSummary(
                     modifier = Modifier.padding(horizontal = 4.dp),
                 )
                 YdsText(
-                    text = Score.Max.formatToString(),
+                    text = Grade.Max.formatToString(),
                     style = YdsTheme.typography.body1,
                     color = YdsTheme.colors.textTertiary,
                 )
@@ -196,7 +196,7 @@ private fun SummaryList(
 
 @Composable
 private fun CourseGradeItem(
-    grade: Grade,
+    tier: Tier,
     courseName: String,
     professor: String,
     courseCredit: Credit,
@@ -218,7 +218,7 @@ private fun CourseGradeItem(
         ) {
             Image(
                 modifier = Modifier.size(48.dp),
-                painter = painterResource(id = grade.id),
+                painter = painterResource(id = tier.id),
                 contentScale = ContentScale.Fit,
                 contentDescription = "tier",
             )
@@ -252,7 +252,7 @@ private fun CourseGradeItem(
 
 @PreviewLightDark
 @Composable
-private fun SemesterDetailPreview() {
+private fun SemesterDetailItemPreview() {
     val tiers = listOf(
         "A+", "A0", "A-",
         "B+", "B0", "B-",
@@ -261,7 +261,7 @@ private fun SemesterDetailPreview() {
         "P", "F",
     )
     YdsTheme {
-        SemesterDetailItemScreen(
+        SemesterDetailItem(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
@@ -277,7 +277,7 @@ private fun SemesterDetailPreview() {
             ),
             lectureInfos = tiers.map { tier ->
                 LectureInfo(
-                    grade = Grade(tier),
+                    tier = Tier(tier),
                     name = "가나다라",
                     credit = 3.toCredit(),
                     professorName = tier,
