@@ -53,9 +53,10 @@ dependencies {
 
     // hilt dependencies
     implementation(libs.hilt.android)
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     ksp(libs.hilt.android.compiler)
     //
-    
+
     implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.yds.android)

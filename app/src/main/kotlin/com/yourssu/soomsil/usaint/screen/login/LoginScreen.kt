@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.atom.BoxButton
 import com.yourssu.design.system.compose.atom.PasswordTextField
@@ -34,13 +35,32 @@ import com.yourssu.design.R as YdsR
 
 @Composable
 fun LoginScreen(
+    navigateToHome: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel(),
+) {
+    LoginScreen(
+        studentId = viewModel.studentId,
+        password = viewModel.studentPw,
+        onStudentIdChange = { viewModel.studentId = it },
+        onPasswordChange = { viewModel.studentPw = it },
+        onLoginClick = {
+            viewModel.setIdPw()
+            println("저장!")
+        },
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun LoginScreen(
     studentId: String,
     password: String,
     onStudentIdChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    navigateToHome: () -> Unit,
+    onLoginClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {},
+//    onBackClick: () -> Unit = {},
 ) {
     YdsScaffold(
         modifier = modifier,
@@ -88,9 +108,7 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .padding(top = 48.dp, start = 20.dp, end = 20.dp),
                 text = stringResource(R.string.save),
-                onClick = {
-
-                },
+                onClick = onLoginClick,
             )
 
             Row(
@@ -127,7 +145,7 @@ private fun LoginScreenPreview() {
             password = pw,
             onStudentIdChange = { id = it },
             onPasswordChange = { pw = it },
-            navigateToHome = { },
+            onLoginClick = { },
         )
     }
 }

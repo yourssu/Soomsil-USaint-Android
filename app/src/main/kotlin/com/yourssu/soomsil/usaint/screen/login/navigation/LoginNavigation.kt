@@ -17,15 +17,8 @@ fun NavGraphBuilder.loginScreen(
     navigateToBack: () -> Unit,
 ) {
     composable<Login> {
-        // TODO route로 수정 필요
         LoginScreen(
             navigateToHome = navigateToHome,
-            onBackClick = navigateToBack,
-            // TODO 아래는 viewModel로 옮기기
-            studentId = "",
-            password = "",
-            onStudentIdChange = {},
-            onPasswordChange = {},
         )
     }
 }
