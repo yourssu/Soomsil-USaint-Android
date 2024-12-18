@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.atom.BoxButton
@@ -19,9 +20,11 @@ import com.yourssu.design.system.compose.atom.Thickness
 import com.yourssu.design.system.compose.base.Surface
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.ui.entities.TotalReportCardInfo
 
 @Composable
 fun ReportCardItem(
+    totalReportCardInfo: TotalReportCardInfo,
     onReportCardClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -45,23 +48,28 @@ fun ReportCardItem(
                         end = 16.dp,
                     ),
                 style = YdsTheme.typography.title3,
-                color = YdsTheme.colors.textPrimary.copy(
-                    alpha = 1f,
-                ),
+                color = YdsTheme.colors.textPrimary,
             )
             ActionTitle(
                 title = stringResource(id = R.string.saint_grade_title),
                 subTitle = stringResource(id = R.string.saint_grade_subtitle),
                 onClick = onReportCardClick,
             )
-            ReportCardSummary(onReportCardClick)
+            ReportCardSummary(
+                totalReportCardInfo = totalReportCardInfo,
+                onReportCardClick = onReportCardClick
+            )
         }
     }
 }
 
 @Composable
-private fun ReportCardSummary(onGradeCardClick: () -> Unit) {
-    Column {
+private fun ReportCardSummary(
+    totalReportCardInfo: TotalReportCardInfo,
+    onReportCardClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
         GradeInfo(
             title = stringResource(id = R.string.saint_grade_detail_average_grade),
             actualValue = stringResource(id = R.string.average_grade_format, 4.06),
@@ -93,7 +101,7 @@ private fun ReportCardSummary(onGradeCardClick: () -> Unit) {
                     end = 16.dp,
                     top = 10.dp,
                 ),
-            onClick = onGradeCardClick,
+            onClick = onReportCardClick,
             text = stringResource(id = R.string.saint_grade_see_all),
             leftIcon = com.yourssu.design.R.drawable.ic_board_line,
             sizeType = BoxButtonSize.Medium,
@@ -148,3 +156,12 @@ private fun GradeInfo(
     }
 }
 
+@PreviewLightDark
+@Composable
+private fun ReportCardItemPreview() {
+    YdsTheme {
+        ReportCardItem(
+            onReportCardClick = {}
+        )
+    }
+}

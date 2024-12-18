@@ -45,7 +45,7 @@ import androidx.core.graphics.component1
 import androidx.core.graphics.component2
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.rule.YdsBorder
-import com.yourssu.soomsil.usaint.ui.entities.Score
+import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import kotlin.math.floor
@@ -79,12 +79,12 @@ fun Chart(
     val highlightTextColor = YdsTheme.colors.textPointed
     val highlightBoxColor = YdsTheme.colors.buttonDisabledBG
 
-    val scores: List<Score> = chartData.semesters.map { it.gpa }
-    val yAxis: List<Score> = ChartDefaults.generateYAxisLabel(scores)
+    val grades: List<Grade> = chartData.semesters.map { it.gpa }
+    val yAxis: List<Grade> = ChartDefaults.generateYAxisLabel(grades)
 
     val animationProgress = remember { Animatable(0f) }
 
-    var highlightedSemester by remember { mutableStateOf<Int?>((scores.size - 1) / 2) }
+    var highlightedSemester by remember { mutableStateOf<Int?>((grades.size - 1) / 2) }
     var graphOffsetX: Float? = null
 
     LaunchedEffect(chartData) {
@@ -181,8 +181,8 @@ fun Chart(
                 graphOffsetX = graphLeftTop.x
 
                 val points = generatePoints(
-                    scores = scores,
-                    lowerBoundScore = yAxis.last(),
+                    grades = grades,
+                    lowerBoundGrade = yAxis.last(),
                     size = graphSize,
                     graphLeftTop = graphLeftTop,
                 )
@@ -196,7 +196,7 @@ fun Chart(
 
                 onDrawBehind {
                     // draw Divider and yAxis mark(눈금)
-                    val maximum = scores.max().value
+                    val maximum = grades.max().value
                     val lowerGuideline = yAxis.last().value
                     val range = maximum - lowerGuideline
                     val horizontalInterval = graphSize.height / range // 1.0 사이의 간격
@@ -226,7 +226,7 @@ fun Chart(
                             color = lineColor,
                             style = Stroke(lineWidth.toPx()),
                         )
-                        if (scores.size >= 2) {
+                        if (grades.size >= 2) {
                             drawPath(
                                 path = filledPath,
                                 brush = fillBrush,
@@ -270,7 +270,7 @@ fun Chart(
                     highlightedSemester?.let { idx ->
                         this.drawHighlight(
                             index = idx,
-                            scores = scores,
+                            grades = grades,
                             points = points,
                             textMeasurer = textMeasurer,
                             textStyle = highlightTextStyle,
@@ -284,18 +284,18 @@ fun Chart(
 }
 
 private fun generatePoints(
-    scores: List<Score>,
-    lowerBoundScore: Score,
+    grades: List<Grade>,
+    lowerBoundGrade: Grade,
     size: Size,
     graphLeftTop: Offset,
 ): List<PointF> {
-    val maxGrade = scores.max().value
-    val minGrade = lowerBoundScore.value
+    val maxGrade = grades.max().value
+    val minGrade = lowerBoundGrade.value
     val range = maxGrade - minGrade
-    val semesterWidth = if (scores.size > 1) size.width / (scores.size - 1) else 0f
+    val semesterWidth = if (grades.size > 1) size.width / (grades.size - 1) else 0f
     val heightPxPerAmount = size.height / range
 
-    return scores.mapIndexed { i, grade ->
+    return grades.mapIndexed { i, grade ->
         val x = semesterWidth * i
         val y = size.height - (grade.value - minGrade) * heightPxPerAmount
         PointF(x + graphLeftTop.x, y + graphLeftTop.y)
@@ -332,7 +332,7 @@ private fun generatePath(points: List<PointF>): Path {
 
 fun DrawScope.drawHighlight(
     index: Int,
-    scores: List<Score>,
+    grades: List<Grade>,
     points: List<PointF>,
     textMeasurer: TextMeasurer,
     textStyle: TextStyle,
@@ -340,7 +340,7 @@ fun DrawScope.drawHighlight(
     containerColor: Color,
 ) {
     val (pointX, pointY) = points[index]
-    val gradeText = scores[index].formatToString(digit = 2)
+    val gradeText = grades[index].formatToString(digit = 2)
     val textLayoutResult = textMeasurer.measure(gradeText, style = textStyle)
     val containerSize = textLayoutResult.size.toSize().let { textSize ->
         textSize.copy(
@@ -382,12 +382,12 @@ object ChartDefaults {
         val ContainerRadius = 8.dp
     }
 
-    private val LowerBoundScore = Score(2.0f)
+    private val LowerBoundGrade = Grade(2.0f)
 
-    fun generateYAxisLabel(scores: List<Score>): List<Score> {
+    fun generateYAxisLabel(grades: List<Grade>): List<Grade> {
         // minimum이 하한(lower bound)보다 크면 하한으로 설정
-        val minGrade = scores.min().coerceAtMost(LowerBoundScore).value
-        val maxGrade = scores.max().value
+        val minGrade = grades.min().coerceAtMost(LowerBoundGrade).value
+        val maxGrade = grades.max().value
         val minLabel = floor(minGrade).roundToInt()
         val maxLabel = floor(maxGrade).roundToInt()
 

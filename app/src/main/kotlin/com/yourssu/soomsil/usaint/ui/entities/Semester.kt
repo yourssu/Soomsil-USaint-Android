@@ -6,7 +6,7 @@ import androidx.compose.runtime.Immutable
 data class Semester(
     val axisName: String = "",                  // ex: 1-2
     val fullName: String = "",                  // ex: 2020년 2학기
-    val gpa: Score = Score.Zero,                // 평균 학점
+    val gpa: Grade = Grade.Zero,                // 평균 학점
     val appliedCredit: Credit = Credit.Zero,    // 신청 학점
     val earnedCredit: Credit = Credit.Zero,     // 취득 학점
     val passFailCredit: Credit = Credit.Zero,   // P/F 학점

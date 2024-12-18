@@ -36,7 +36,7 @@ import com.yourssu.design.system.compose.component.Tab
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
 import com.yourssu.soomsil.usaint.ui.entities.Semester
-import com.yourssu.soomsil.usaint.ui.entities.Grade
+import com.yourssu.soomsil.usaint.ui.entities.Tier
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.util.Capturable
 import com.yourssu.soomsil.usaint.util.CaptureController
@@ -129,7 +129,7 @@ fun SemesterDetailScreen(
                             .verticalScroll(rememberScrollState())
                             .wrapContentHeight(unbounded = true), // 기기 밖의 화면도 캡처하기 위해 필요함
                     ) {
-                        SemesterDetailItemScreen(
+                        SemesterDetailItem(
                             semester = semester,
                             lectureInfos = courses,
                             modifier = Modifier.fillMaxSize(),
@@ -209,20 +209,20 @@ private fun SemesterDetailScreenPreview() {
             ),
             semesterCoursesMap = mapOf(
                 "2022년 1학기" to listOf(
-                    LectureInfo(grade = Grade("A+"), name = "가나다", credit = 3.toCredit(), "라마바"),
-                    LectureInfo(grade = Grade("P"), name = "섬리", credit = 1.toCredit(), "라마바"),
+                    LectureInfo(tier = Tier("A+"), name = "가나다", credit = 3.toCredit(), "라마바"),
+                    LectureInfo(tier = Tier("P"), name = "섬리", credit = 1.toCredit(), "라마바"),
                 ),
                 "2022년 2학기" to listOf(
-                    LectureInfo(grade = Grade("B+"), name = "가나다", credit = 3.toCredit(), "라마바"),
-                    LectureInfo(grade = Grade("F"), name = "섬리", credit = 1.toCredit(), "라마바"),
+                    LectureInfo(tier = Tier("B+"), name = "가나다", credit = 3.toCredit(), "라마바"),
+                    LectureInfo(tier = Tier("F"), name = "섬리", credit = 1.toCredit(), "라마바"),
                 ),
                 "2023년 1학기" to listOf(
-                    LectureInfo(grade = Grade("C+"), name = "가나다", credit = 3.toCredit(), "라마바"),
-                    LectureInfo(grade = Grade("P"), name = "섬리", credit = 1.toCredit(), "라마바"),
+                    LectureInfo(tier = Tier("C+"), name = "가나다", credit = 3.toCredit(), "라마바"),
+                    LectureInfo(tier = Tier("P"), name = "섬리", credit = 1.toCredit(), "라마바"),
                 ),
                 "2023년 2학기" to listOf(
-                    LectureInfo(grade = Grade("B-"), name = "가나다", credit = 3.toCredit(), "라마바"),
-                    LectureInfo(grade = Grade("?"), name = "섬리", credit = 1.toCredit(), "라마바"),
+                    LectureInfo(tier = Tier("B-"), name = "가나다", credit = 3.toCredit(), "라마바"),
+                    LectureInfo(tier = Tier("?"), name = "섬리", credit = 1.toCredit(), "라마바"),
                 ),
             ),
             captureController = rememberCaptureController(),
