@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.PreferencesKeys
+import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val uSaintSessionRepo: USaintSessionRepository,
+    private val studentInfoRepo: StudentInfoRepository,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<LoginUiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -34,7 +36,7 @@ class LoginViewModel @Inject constructor(
             _uiEvent.emit(LoginUiEvent.Loading)
             // 로그인 시도
             // 실패 시 Error 이벤트 발생 후 종료
-            uSaintSessionRepo.withPassword(studentId, studentPw).onFailure { e ->
+            val session = uSaintSessionRepo.withPassword(studentId, studentPw).getOrElse { e ->
                 Timber.e(e)
                 val errMsg = when (e) {
                     is RusaintException -> "로그인에 실패했습니다. 다시 시도해주세요."
@@ -43,13 +45,22 @@ class LoginViewModel @Inject constructor(
                 _uiEvent.emit(LoginUiEvent.Error(errMsg))
                 return@launch
             }
-            // 성공 시 id, pw 저장
+            val studentInfo = studentInfoRepo.getStudentInfo(session).getOrElse { e ->
+                Timber.e(e)
+                _uiEvent.emit(LoginUiEvent.Error("학생 정보를 불러오는 데 실패했습니다."))
+                return@launch
+            }
+            // 성공 시 id/pw, 학생 정보 저장
             dataStore.edit { pref ->
                 pref[PreferencesKeys.STUDENT_ID] = studentId
                 pref[PreferencesKeys.STUDENT_PW] = studentPw
+                pref[PreferencesKeys.STUDENT_NAME] = studentInfo.name
+                pref[PreferencesKeys.STUDENT_DEPARTMENT] = studentInfo.department
+                pref[PreferencesKeys.STUDENT_MAJOR] = studentInfo.major ?: ""
+                pref[PreferencesKeys.STUDENT_GRADE] = studentInfo.grade.toInt()
+                pref[PreferencesKeys.STUDENT_TERM] = studentInfo.term.toInt()
             }
             _uiEvent.emit(LoginUiEvent.Success)
-            // TODO: save student information
         }
     }
 }
