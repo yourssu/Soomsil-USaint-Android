@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.atom.ProfileImageView
 import com.yourssu.design.system.compose.base.Icon
@@ -27,6 +28,8 @@ import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.SingleTitleTopBar
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.ui.entities.Credit
+import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 import com.yourssu.soomsil.usaint.ui.entities.TotalReportCardInfo
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
@@ -35,7 +38,25 @@ import com.yourssu.design.R as YdsR
 
 @Composable
 fun HomeScreen(
-    studentInfo: StudentInfo,
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = hiltViewModel(),
+    onProfileClick: () -> Unit = {},
+    onSettingClick: () -> Unit = {},
+    onReportCardClick: () -> Unit = {},
+) {
+    HomeScreen(
+        studentInfo = viewModel.studentInfo,
+        totalReportCardInfo = TotalReportCardInfo(Grade.Zero, Credit.Zero, Credit.Zero), // TODO
+        onProfileClick = onProfileClick,
+        onSettingClick = onSettingClick,
+        onReportCardClick = onReportCardClick,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun HomeScreen(
+    studentInfo: StudentInfo?,
     totalReportCardInfo: TotalReportCardInfo,
     modifier: Modifier = Modifier,
     onProfileClick: () -> Unit = {},
