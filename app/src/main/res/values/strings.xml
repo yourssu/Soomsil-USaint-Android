@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Soomsil-USaint-Android</string>
 
-<!--    Home Screen -->
+    <!--    Home Screen -->
     <string name="saint_title">유세인트</string>
     <string name="saint_grade">내 성적</string>
     <string name="saint_grade_title">성적 확인하기</string>
@@ -53,4 +53,5 @@
     <string name="login">로그인</string>
     <string name="saint_parsing_error">최근학기 성적을 가져오는데 오류가 발생했습니다</string>
 
+    <string name="student_department_and_grade_format">%s %d학년</string>
 </resources>

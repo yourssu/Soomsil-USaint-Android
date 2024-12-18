@@ -47,12 +47,10 @@ class MainActivity : ComponentActivity() {
             YdsTheme(
                 isDarkMode = false
             ) {
-                YdsScaffold {
-                    USaintNavHost(
-                        navController = navController,
-                        startDestination = Login
-                    )
-                }
+                USaintNavHost(
+                    navController = navController,
+                    startDestination = Login
+                )
             }
         }
     }
