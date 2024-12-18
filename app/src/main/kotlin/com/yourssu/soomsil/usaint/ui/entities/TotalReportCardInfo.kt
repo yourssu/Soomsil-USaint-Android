@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class TotalReportCardInfo(
-    val gpa: Float,
-    
-    )
+    val gpa: Grade,
+    val earnedCredit: Credit,
+    val graduateCredit: Credit
+)

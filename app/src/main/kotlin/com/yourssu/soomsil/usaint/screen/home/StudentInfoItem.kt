@@ -26,11 +26,12 @@ import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 @Composable
 fun StudentInfoItem(
     studentInfo: StudentInfo,
+    modifier: Modifier = Modifier,
     onProfileClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .ydsClickable(onClick = onProfileClick)
             .padding(

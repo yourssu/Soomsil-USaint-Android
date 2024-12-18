@@ -5,7 +5,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.yourssu.soomsil.usaint.screen.home.HomeScreen
+import com.yourssu.soomsil.usaint.ui.entities.Credit
+import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
+import com.yourssu.soomsil.usaint.ui.entities.TotalReportCardInfo
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -24,7 +27,8 @@ fun NavGraphBuilder.homeScreen(
             onSettingClick = navigateToSetting,
             onReportCardClick = navigateToSemesterList,
             // TODO 아래는 viewModel로 옮기기
-            studentInfo = StudentInfo("", "", 0)
+            studentInfo = StudentInfo("", "", 0),
+            totalReportCardInfo = TotalReportCardInfo(Grade.Zero, Credit.Zero, Credit.Zero)
         )
     }
 }

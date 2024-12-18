@@ -28,11 +28,15 @@ import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.SingleTitleTopBar
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
+import com.yourssu.soomsil.usaint.ui.entities.TotalReportCardInfo
+import com.yourssu.soomsil.usaint.ui.entities.toCredit
+import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import com.yourssu.design.R as YdsR
 
 @Composable
 fun HomeScreen(
     studentInfo: StudentInfo,
+    totalReportCardInfo: TotalReportCardInfo,
     modifier: Modifier = Modifier,
     onProfileClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
@@ -63,6 +67,7 @@ fun HomeScreen(
             )
             Spacer(Modifier.height(12.dp))
             ReportCardItem(
+                totalReportCardInfo = totalReportCardInfo,
                 onReportCardClick = onReportCardClick,
             )
         }
@@ -123,6 +128,11 @@ private fun HomePreview() {
                 name = "홍길동",
                 department = "컴퓨터학부",
                 grade = 2,
+            ),
+            totalReportCardInfo = TotalReportCardInfo(
+                gpa = 4.22.toGrade(),
+                earnedCredit = 97.toCredit(),
+                graduateCredit = 133.toCredit(),
             ),
         )
     }

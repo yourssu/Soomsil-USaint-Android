@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.yourssu.design.system.compose.YdsTheme
@@ -20,13 +21,16 @@ import com.yourssu.design.system.compose.atom.Thickness
 import com.yourssu.design.system.compose.base.Surface
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.TotalReportCardInfo
+import com.yourssu.soomsil.usaint.ui.entities.toCredit
+import com.yourssu.soomsil.usaint.ui.entities.toGrade
 
 @Composable
 fun ReportCardItem(
     totalReportCardInfo: TotalReportCardInfo,
-    onReportCardClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onReportCardClick: () -> Unit = {},
 ) {
     Surface(
         rounding = 8.dp,
@@ -66,32 +70,23 @@ fun ReportCardItem(
 @Composable
 private fun ReportCardSummary(
     totalReportCardInfo: TotalReportCardInfo,
-    onReportCardClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onReportCardClick: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
-        GradeInfo(
-            title = stringResource(id = R.string.saint_grade_detail_average_grade),
-            actualValue = stringResource(id = R.string.average_grade_format, 4.06),
-            maxValue = stringResource(id = R.string.average_grade_format, 4.50),
+        ReportOutline(
+            title = stringResource(R.string.saint_grade_detail_average_grade),
+            actualValue = totalReportCardInfo.gpa.formatToString(),
+            maxValue = Grade.Max.formatToString(),
         )
         Divider(
             thickness = Thickness.Thin,
             modifier = Modifier.padding(horizontal = 14.dp),
         )
-        GradeInfo(
-            title = stringResource(id = R.string.saint_grade_detail_creadit),
-            actualValue = "76.5",
-            maxValue = "133",
-        )
-        Divider(
-            thickness = Thickness.Thin,
-            modifier = Modifier.padding(horizontal = 14.dp),
-        )
-        GradeInfo(
-            title = stringResource(id = R.string.saint_grade_detail_overall_rank),
-            actualValue = "25",
-            maxValue = "70",
+        ReportOutline(
+            title = stringResource(R.string.saint_grade_detail_creadit),
+            actualValue = totalReportCardInfo.earnedCredit.formatToString(),
+            maxValue = totalReportCardInfo.graduateCredit.formatToString(),
         )
         BoxButton(
             modifier = Modifier
@@ -102,7 +97,7 @@ private fun ReportCardSummary(
                     top = 10.dp,
                 ),
             onClick = onReportCardClick,
-            text = stringResource(id = R.string.saint_grade_see_all),
+            text = stringResource(R.string.saint_grade_see_all),
             leftIcon = com.yourssu.design.R.drawable.ic_board_line,
             sizeType = BoxButtonSize.Medium,
             buttonType = BoxButtonType.Line,
@@ -111,7 +106,7 @@ private fun ReportCardSummary(
 }
 
 @Composable
-private fun GradeInfo(
+private fun ReportOutline(
     title: String,
     actualValue: String,
     maxValue: String,
@@ -161,7 +156,41 @@ private fun GradeInfo(
 private fun ReportCardItemPreview() {
     YdsTheme {
         ReportCardItem(
-            onReportCardClick = {}
+            totalReportCardInfo = TotalReportCardInfo(
+                gpa = 4.22.toGrade(),
+                earnedCredit = 97.toCredit(),
+                graduateCredit = 133.toCredit(),
+            ),
         )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ReportCardSummaryPreview() {
+    YdsTheme {
+        Surface {
+            ReportCardSummary(
+                totalReportCardInfo = TotalReportCardInfo(
+                    gpa = 4.22.toGrade(),
+                    earnedCredit = 97.toCredit(),
+                    graduateCredit = 133.toCredit(),
+                )
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ReportOutlinePreview() {
+    YdsTheme {
+        Surface {
+            ReportOutline(
+                title = "평균학점",
+                actualValue = "12",
+                maxValue = "123",
+            )
+        }
     }
 }
