@@ -24,7 +24,6 @@ import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.atom.BoxButton
 import com.yourssu.design.system.compose.atom.PasswordTextField
 import com.yourssu.design.system.compose.atom.SimpleTextField
-import com.yourssu.design.system.compose.atom.TopBarButton
 import com.yourssu.design.system.compose.base.Icon
 import com.yourssu.design.system.compose.base.IconSize
 import com.yourssu.design.system.compose.base.YdsScaffold
@@ -39,7 +38,7 @@ fun LoginScreen(
     password: String,
     onStudentIdChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onLogin: () -> Unit,
+    navigateToHome: () -> Unit,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
 ) {
@@ -89,7 +88,9 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .padding(top = 48.dp, start = 20.dp, end = 20.dp),
                 text = stringResource(R.string.save),
-                onClick = onLogin,
+                onClick = {
+
+                },
             )
 
             Row(
@@ -126,7 +127,7 @@ private fun LoginScreenPreview() {
             password = pw,
             onStudentIdChange = { id = it },
             onPasswordChange = { pw = it },
-            onLogin = { },
+            navigateToHome = { },
         )
     }
 }
