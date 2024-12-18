@@ -3,9 +3,9 @@ package com.yourssu.soomsil.usaint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
-import com.yourssu.soomsil.usaint.data.source.local.entity.Lecture
-import com.yourssu.soomsil.usaint.data.source.local.entity.Semester
-import com.yourssu.soomsil.usaint.data.source.local.entity.TotalReportCard
+import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
+import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
+import com.yourssu.soomsil.usaint.data.source.local.entity.TotalReportCardVO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,7 +18,7 @@ class ReportCardViewModel @Inject constructor(
         viewModelScope.launch {
             // === 테스트 데이터 삽입 ===
             // TotalReportCard 삽입 (id=1 고정)
-            val totalReportCard = TotalReportCard(
+            val totalReportCard = TotalReportCardVO(
                 id = 1,
                 earnedCredit = 120f,
                 gpa = 3.8f
@@ -26,7 +26,7 @@ class ReportCardViewModel @Inject constructor(
             repository.upsertTotalReportCard(totalReportCard)
 
             // Semester 삽입
-            val semesterSpring = Semester(
+            val semesterSpring = SemesterVO(
                 id = 0,
                 year = 2024,
                 semester = "1학기",
@@ -40,7 +40,7 @@ class ReportCardViewModel @Inject constructor(
             )
             repository.upsertSemester(semesterSpring)
 
-            val semesterFall = Semester(
+            val semesterFall = SemesterVO(
                 id = 0,
                 year = 2024,
                 semester = "2학기",
@@ -55,7 +55,7 @@ class ReportCardViewModel @Inject constructor(
             repository.upsertSemester(semesterFall)
 
             // Lecture 삽입 (2024-1학기)
-            val lecture1 = Lecture(
+            val lecture1 = LectureVO(
                 id = 0,
                 title = "Data Structures",
                 code = "CS101",
@@ -67,7 +67,7 @@ class ReportCardViewModel @Inject constructor(
             )
             repository.upsertLecture(lecture1)
 
-            val lecture2 = Lecture(
+            val lecture2 = LectureVO(
                 id = 0,
                 title = "Algorithms",
                 code = "CS102",
@@ -118,7 +118,7 @@ class ReportCardViewModel @Inject constructor(
             println("=== 중복 데이터 처리 테스트 시작 ===")
 
             // 1. TotalReportCard 중복 삽입 테스트
-            val totalReportCard1 = TotalReportCard(
+            val totalReportCard1 = TotalReportCardVO(
                 id = 1, // 고정된 Primary Key
                 earnedCredit = 120f,
                 gpa = 3.8f
@@ -126,7 +126,7 @@ class ReportCardViewModel @Inject constructor(
             repository.upsertTotalReportCard(totalReportCard1)
             println("첫 번째 TotalReportCard 삽입 완료: $totalReportCard1")
 
-            val totalReportCard2 = TotalReportCard(
+            val totalReportCard2 = TotalReportCardVO(
                 id = 1,
                 earnedCredit = 130f, // 수정된 데이터
                 gpa = 3.9f
@@ -138,7 +138,7 @@ class ReportCardViewModel @Inject constructor(
             println("TotalReportCard 최종 결과: $resultTotal")
 
             // 2. Semester 중복 삽입 테스트
-            val semester1 = Semester(
+            val semester1 = SemesterVO(
                 id = 0,
                 year = 2024,
                 semester = "1학기",
@@ -153,7 +153,7 @@ class ReportCardViewModel @Inject constructor(
             repository.upsertSemester(semester1)
             println("첫 번째 Semester 삽입 완료: $semester1")
 
-            val semester2 = Semester(
+            val semester2 = SemesterVO(
                 id = 0, // id는 autoGenerate, 대신 year + semester로 unique
                 year = 2024,
                 semester = "1학기",
@@ -172,7 +172,7 @@ class ReportCardViewModel @Inject constructor(
             println("Semester 최종 결과: $semesterResults")
 
             // 3. Lecture 중복 삽입 테스트
-            val lecture1 = Lecture(
+            val lecture1 = LectureVO(
                 id = 0,
                 title = "Data Structures",
                 code = "CS101", // unique index
@@ -185,7 +185,7 @@ class ReportCardViewModel @Inject constructor(
             repository.upsertLecture(lecture1)
             println("첫 번째 Lecture 삽입 완료: $lecture1")
 
-            val lecture2 = Lecture(
+            val lecture2 = LectureVO(
                 id = 0,
                 title = "Advanced Data Structures", // 변경된 데이터
                 code = "CS101", // 동일한 code (unique constraint)
@@ -208,6 +208,7 @@ class ReportCardViewModel @Inject constructor(
     // Helper 함수: year와 semesterName으로 Semester를 조회한 뒤 semesterId 반환
     private suspend fun getSemesterId(year: Int, semesterName: String): Int {
         val semester = repository.getSemester(year, semesterName)
-        return semester?.id ?: throw IllegalStateException("Semester not found for $year-$semesterName")
+        return semester?.id
+            ?: throw IllegalStateException("Semester not found for $year-$semesterName")
     }
 }

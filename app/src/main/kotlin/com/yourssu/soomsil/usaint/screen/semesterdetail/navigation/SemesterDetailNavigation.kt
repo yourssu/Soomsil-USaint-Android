@@ -19,10 +19,12 @@ fun NavHostController.navigateToSemesterDetail(navOptions: NavOptions? = null) =
 
 fun NavGraphBuilder.semesterDetailScreen(
     navigateToBack: () -> Unit,
-){
+) {
     composable<SemesterDetail> {
         val args = it.toRoute<SemesterDetail>()
         SemesterDetailScreen(
+            isRefreshing = false,
+            onRefresh = {},
             onBackClick = navigateToBack,
             initialPage = args.initialTabIndex,
             // TODO 아래는 삭제 or viewModel로 옮기기

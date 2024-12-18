@@ -26,13 +26,13 @@ import com.yourssu.design.system.compose.atom.Divider
 import com.yourssu.design.system.compose.atom.Thickness
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.ui.component.entities.Course
-import com.yourssu.soomsil.usaint.ui.component.entities.Credit
-import com.yourssu.soomsil.usaint.ui.component.entities.Grade
-import com.yourssu.soomsil.usaint.ui.component.entities.Semester
-import com.yourssu.soomsil.usaint.ui.component.entities.Tier
-import com.yourssu.soomsil.usaint.ui.component.entities.toCredit
-import com.yourssu.soomsil.usaint.ui.component.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
+import com.yourssu.soomsil.usaint.ui.entities.Credit
+import com.yourssu.soomsil.usaint.ui.entities.Score
+import com.yourssu.soomsil.usaint.ui.entities.Semester
+import com.yourssu.soomsil.usaint.ui.entities.Grade
+import com.yourssu.soomsil.usaint.ui.entities.toCredit
+import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import java.text.DecimalFormat
 
 @Composable
@@ -40,7 +40,7 @@ fun SemesterDetailItemScreen(
     semester: Semester,
     captureFlag: CaptureFlag,
     modifier: Modifier = Modifier,
-    courses: List<Course> = emptyList(),
+    lectureInfos: List<LectureInfo> = emptyList(),
 ) {
     Column(
         modifier = modifier
@@ -64,9 +64,9 @@ fun SemesterDetailItemScreen(
         )
 
         Column {
-            courses.forEach { course ->
+            lectureInfos.forEach { course ->
                 CourseGradeItem(
-                    tier = course.tier,
+                    grade = course.grade,
                     courseName = course.name,
                     professor = course.professorName,
                     courseCredit = course.credit,
@@ -80,11 +80,11 @@ fun SemesterDetailItemScreen(
 @Composable
 private fun GradeSummary(
     semesterName: String,
-    gpa: Grade,
-    earnedCredit: Credit, // 취득 학점
-    semesterRank: Int, // 학기별 석차
+    gpa: Score,
+    earnedCredit: Credit,   // 취득 학점
+    semesterRank: Int,      // 학기별 석차
     semesterMaxRank: Int,
-    overallRank: Int, // 전체 석차
+    overallRank: Int,       // 전체 석차
     overallMaxRank: Int,
     captureFlag: CaptureFlag,
     modifier: Modifier = Modifier,
@@ -122,7 +122,7 @@ private fun GradeSummary(
                     modifier = Modifier.padding(horizontal = 4.dp),
                 )
                 YdsText(
-                    text = Grade.MAX.formatToString(),
+                    text = Score.Max.formatToString(),
                     style = YdsTheme.typography.body1,
                     color = YdsTheme.colors.textTertiary,
                 )
@@ -196,7 +196,7 @@ private fun SummaryList(
 
 @Composable
 private fun CourseGradeItem(
-    tier: Tier,
+    grade: Grade,
     courseName: String,
     professor: String,
     courseCredit: Credit,
@@ -218,7 +218,7 @@ private fun CourseGradeItem(
         ) {
             Image(
                 modifier = Modifier.size(48.dp),
-                painter = painterResource(id = tier.id),
+                painter = painterResource(id = grade.id),
                 contentScale = ContentScale.Fit,
                 contentDescription = "tier",
             )
@@ -275,9 +275,9 @@ private fun SemesterDetailPreview() {
                 overallRank = 12,
                 overallStudentCount = 100,
             ),
-            courses = tiers.map { tier ->
-                Course(
-                    tier = Tier(tier),
+            lectureInfos = tiers.map { tier ->
+                LectureInfo(
+                    grade = Grade(tier),
                     name = "가나다라",
                     credit = 3.toCredit(),
                     professorName = tier,

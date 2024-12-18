@@ -1,31 +1,17 @@
 package com.yourssu.soomsil.usaint
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.base.YdsScaffold
 import com.yourssu.soomsil.usaint.screen.login.navigation.Login
 import com.yourssu.soomsil.usaint.screen.navigation.USaintNavHost
-import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import dagger.hilt.android.AndroidEntryPoint
-import dev.eatsteak.rusaint.core.CourseType
-import dev.eatsteak.rusaint.core.SemesterType
-import dev.eatsteak.rusaint.ffi.CourseGradesApplicationBuilder
-import dev.eatsteak.rusaint.ffi.StudentInformationApplicationBuilder
-import dev.eatsteak.rusaint.ffi.USaintSessionBuilder
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -34,8 +20,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
 
         setContent {
             val navController: NavHostController = rememberNavController()
@@ -59,18 +44,14 @@ class MainActivity : ComponentActivity() {
 //                Log.d("MainActivity", studentInformationApplication.family().toString())
 //                Log.d("MainActivity", studentInformationApplication.work().toString())
             }
-            SoomsilUSaintTheme {
-                YdsTheme {
-                    YdsScaffold(
-                        modifier = Modifier
-                            .systemBarsPadding()
-                            .statusBarsPadding()
-                    ) {
-                        USaintNavHost(
-                            navController = navController,
-                            startDestination = Login
-                        )
-                    }
+            YdsTheme(
+                isDarkMode = false
+            ) {
+                YdsScaffold {
+                    USaintNavHost(
+                        navController = navController,
+                        startDestination = Login
+                    )
                 }
             }
         }

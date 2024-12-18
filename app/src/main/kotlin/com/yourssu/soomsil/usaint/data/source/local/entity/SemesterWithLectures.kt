@@ -4,10 +4,10 @@ import androidx.room.Embedded
 import androidx.room.Relation
 
 data class SemesterWithLectures(
-    @Embedded val semester: Semester,
+    @Embedded val semester: SemesterVO,
     @Relation(
         parentColumn = "id",
         entityColumn = "semesterId"
     )
-    val lectures: List<Lecture>
+    val lectures: List<LectureVO>
 )

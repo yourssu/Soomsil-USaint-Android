@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.ui.component.entities
+package com.yourssu.soomsil.usaint.ui.entities
 
 import androidx.compose.runtime.Immutable
 import java.text.DecimalFormat
@@ -15,7 +15,7 @@ value class Credit(val value: Float) {
     operator fun minus(other: Credit) = Credit(value - other.value)
 
     companion object {
-        val ZERO = Credit(0.0f)
+        val Zero = Credit(0.0f)
     }
 }
 

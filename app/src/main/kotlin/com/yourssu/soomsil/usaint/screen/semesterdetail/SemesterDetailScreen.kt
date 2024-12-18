@@ -1,7 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.semesterdetail
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,10 +34,10 @@ import com.yourssu.design.system.compose.base.YdsScaffold
 import com.yourssu.design.system.compose.component.ScrollableTabBar
 import com.yourssu.design.system.compose.component.Tab
 import com.yourssu.design.system.compose.component.topbar.TopBar
-import com.yourssu.soomsil.usaint.ui.component.entities.Course
-import com.yourssu.soomsil.usaint.ui.component.entities.Semester
-import com.yourssu.soomsil.usaint.ui.component.entities.Tier
-import com.yourssu.soomsil.usaint.ui.component.entities.toCredit
+import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
+import com.yourssu.soomsil.usaint.ui.entities.Semester
+import com.yourssu.soomsil.usaint.ui.entities.Grade
+import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.util.Capturable
 import com.yourssu.soomsil.usaint.util.CaptureController
 import com.yourssu.soomsil.usaint.util.PullToRefreshColumn
@@ -54,7 +53,7 @@ fun SemesterDetailScreen(
     onRefresh: (String) -> Unit,
     initialPage: Int,
     semesters: List<Semester>,
-    semesterCoursesMap: Map<String, List<Course>>,
+    semesterCoursesMap: Map<String, List<LectureInfo>>,
     captureController: CaptureController,
     captureFlag: CaptureFlag,
     modifier: Modifier = Modifier,
@@ -132,7 +131,7 @@ fun SemesterDetailScreen(
                     ) {
                         SemesterDetailItemScreen(
                             semester = semester,
-                            courses = courses,
+                            lectureInfos = courses,
                             modifier = Modifier.fillMaxSize(),
                             captureFlag = captureFlag,
                         )
@@ -210,20 +209,20 @@ private fun SemesterDetailScreenPreview() {
             ),
             semesterCoursesMap = mapOf(
                 "2022년 1학기" to listOf(
-                    Course(tier = Tier("A+"), name = "가나다", credit = 3.toCredit(), "라마바"),
-                    Course(tier = Tier("P"), name = "섬리", credit = 1.toCredit(), "라마바"),
+                    LectureInfo(grade = Grade("A+"), name = "가나다", credit = 3.toCredit(), "라마바"),
+                    LectureInfo(grade = Grade("P"), name = "섬리", credit = 1.toCredit(), "라마바"),
                 ),
                 "2022년 2학기" to listOf(
-                    Course(tier = Tier("B+"), name = "가나다", credit = 3.toCredit(), "라마바"),
-                    Course(tier = Tier("F"), name = "섬리", credit = 1.toCredit(), "라마바"),
+                    LectureInfo(grade = Grade("B+"), name = "가나다", credit = 3.toCredit(), "라마바"),
+                    LectureInfo(grade = Grade("F"), name = "섬리", credit = 1.toCredit(), "라마바"),
                 ),
                 "2023년 1학기" to listOf(
-                    Course(tier = Tier("C+"), name = "가나다", credit = 3.toCredit(), "라마바"),
-                    Course(tier = Tier("P"), name = "섬리", credit = 1.toCredit(), "라마바"),
+                    LectureInfo(grade = Grade("C+"), name = "가나다", credit = 3.toCredit(), "라마바"),
+                    LectureInfo(grade = Grade("P"), name = "섬리", credit = 1.toCredit(), "라마바"),
                 ),
                 "2023년 2학기" to listOf(
-                    Course(tier = Tier("B-"), name = "가나다", credit = 3.toCredit(), "라마바"),
-                    Course(tier = Tier("?"), name = "섬리", credit = 1.toCredit(), "라마바"),
+                    LectureInfo(grade = Grade("B-"), name = "가나다", credit = 3.toCredit(), "라마바"),
+                    LectureInfo(grade = Grade("?"), name = "섬리", credit = 1.toCredit(), "라마바"),
                 ),
             ),
             captureController = rememberCaptureController(),

@@ -1,10 +1,10 @@
-package com.yourssu.soomsil.usaint.ui.component.entities
+package com.yourssu.soomsil.usaint.ui.entities
 
 import androidx.compose.runtime.Immutable
 
 @Immutable
 @JvmInline
-value class Grade(val value: Float) : Comparable<Grade> {
+value class Score(val value: Float) : Comparable<Score> {
     init {
         require(value >= 0) {
             "학점은 음수가 될 수 없습니다. (value=$value)"
@@ -19,27 +19,27 @@ value class Grade(val value: Float) : Comparable<Grade> {
         }
     }
 
-    operator fun plus(other: Grade) = Grade(value + other.value)
+    operator fun plus(other: Score) = Score(value + other.value)
 
-    operator fun minus(other: Grade) = Grade(value - other.value)
+    operator fun minus(other: Score) = Score(value - other.value)
 
-    override fun compareTo(other: Grade): Int {
+    override fun compareTo(other: Score): Int {
         return value.compareTo(other.value)
     }
 
     companion object {
-        val MAX = Grade(4.5f)
-        val ZERO = Grade(0.0f)
+        val Max = Score(4.5f)
+        val Zero = Score(0.0f)
     }
 }
 
-fun Float.toGrade(): Grade = Grade(this)
+fun Float.toGrade(): Score = Score(this)
 
-fun Double.toGrade(): Grade = Grade(this.toFloat())
+fun Double.toGrade(): Score = Score(this.toFloat())
 
-fun Int.toGrade(): Grade = Grade(this.toFloat())
+fun Int.toGrade(): Score = Score(this.toFloat())
 
-fun String.toGrade(): Grade = when (this) {
+fun String.toGrade(): Score = when (this) {
     "A+" -> 4.5.toGrade()
     "A0", "A" -> 4.3.toGrade()
     "A-" -> 4.0.toGrade()
@@ -52,5 +52,5 @@ fun String.toGrade(): Grade = when (this) {
     "D+" -> 1.5.toGrade()
     "D0", "D" -> 1.3.toGrade()
     "D-" -> 1.0.toGrade()
-    else -> Grade.ZERO
+    else -> Score.Zero
 }

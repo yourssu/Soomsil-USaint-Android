@@ -1,11 +1,11 @@
-package com.yourssu.soomsil.usaint.ui.component.entities
+package com.yourssu.soomsil.usaint.ui.entities
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Immutable
 import com.yourssu.soomsil.usaint.R
 
 @Immutable
-class Tier(private val tier: String) {
+class Grade(private val tier: String) {
 
     @DrawableRes
     val id: Int = getTierResourceId(tier)
@@ -31,9 +31,9 @@ class Tier(private val tier: String) {
         }
     }
 
-    fun toGrade(): Grade = tier.toGrade()
+    fun toGrade(): Score = tier.toGrade()
 
     companion object {
-        val Unknown = Tier("?")
+        val Unknown = Grade("?")
     }
 }

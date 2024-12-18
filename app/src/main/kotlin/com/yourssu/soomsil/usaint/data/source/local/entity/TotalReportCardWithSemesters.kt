@@ -4,10 +4,10 @@ import androidx.room.Embedded
 import androidx.room.Relation
 
 data class TotalReportCardWithSemesters(
-    @Embedded val totalReportCard: TotalReportCard,
+    @Embedded val totalReportCard: TotalReportCardVO,
     @Relation(
         parentColumn = "id",
         entityColumn = "totalReportCardId"
     )
-    val semesters: List<Semester>
+    val semesters: List<SemesterVO>
 )
