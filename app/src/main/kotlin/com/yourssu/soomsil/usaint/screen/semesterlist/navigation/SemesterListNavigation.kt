@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.yourssu.soomsil.usaint.screen.semesterlist.SemesterListScreen
-import com.yourssu.soomsil.usaint.ui.entities.Grade
+import com.yourssu.soomsil.usaint.ui.entities.Score
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import kotlinx.serialization.Serializable
 
@@ -31,7 +31,7 @@ fun NavGraphBuilder.semesterListScreen(
             semesters = listOf(),
             includeSeasonalSemester = true,
             onSeasonalFlagChange = {},
-            overallGpa = Grade.ZERO,
+            overallGpa = Score.Zero,
             earnedCredit = 0.toCredit(),
         )
     }
