@@ -43,6 +43,7 @@ android {
 }
 
 dependencies {
+    // rusaint
     implementation(libs.rusaint)
 
     // room dependencies
@@ -53,11 +54,15 @@ dependencies {
 
     // hilt dependencies
     implementation(libs.hilt.android)
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)
     //
 
+    // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)
+
+    // util
+    implementation(libs.timber)
 
     implementation(libs.yds.android)
     implementation(libs.androidx.viewpager2)
