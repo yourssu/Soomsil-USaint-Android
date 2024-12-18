@@ -7,7 +7,8 @@ data class TotalReportCardWithSemesters(
     @Embedded val totalReportCard: TotalReportCardVO,
     @Relation(
         parentColumn = "id",
-        entityColumn = "totalReportCardId"
+        entityColumn = "totalReportCardId",
+        entity = SemesterVO::class
     )
-    val semesters: List<SemesterVO>
+    val semesters: List<SemesterWithLectures>
 )
