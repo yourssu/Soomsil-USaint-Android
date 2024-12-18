@@ -37,6 +37,9 @@ class LoginViewModel @Inject constructor(
             } catch (e: RusaintException) {
                 _uiEvent.emit(LoginUiEvent.Error("로그인에 실패했습니다. 다시 시도해주세요."))
                 return@launch
+            } catch (e: Exception) {
+                _uiEvent.emit(LoginUiEvent.Error("알 수 없는 문제가 발생했습니다."))
+                return@launch
             }
             dataStore.edit { preferences ->
                 preferences[PreferencesKeys.STUDENT_ID] = studentId
