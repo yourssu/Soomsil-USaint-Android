@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.ui.component.entities
+package com.yourssu.soomsil.usaint.ui.entities
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Immutable

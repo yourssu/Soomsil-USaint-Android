@@ -45,10 +45,10 @@ import androidx.core.graphics.component1
 import androidx.core.graphics.component2
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.rule.YdsBorder
-import com.yourssu.soomsil.usaint.ui.component.entities.ChartData
-import com.yourssu.soomsil.usaint.ui.component.entities.Grade
-import com.yourssu.soomsil.usaint.ui.component.entities.Semester
-import com.yourssu.soomsil.usaint.ui.component.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.entities.ChartData
+import com.yourssu.soomsil.usaint.ui.entities.Grade
+import com.yourssu.soomsil.usaint.ui.entities.Semester
+import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -119,7 +119,8 @@ fun Chart(
                                 .roundToInt()
                                 .coerceIn(0, chartData.semesters.size - 1)
                         }
-                        highlightedSemester = if (highlightedSemester == selected) null else selected
+                        highlightedSemester =
+                            if (highlightedSemester == selected) null else selected
                     },
                 )
             }
@@ -141,9 +142,9 @@ fun Chart(
                 // y축 텍스트를 그리기 위한 공간
                 val maxYAxisTextWidth = yAxisTextLayoutResults.maxBy { it.size.width }.size.width
                 val graphStartPaddingPx = maxYAxisTextWidth +
-                    ChartDefaults.VerticalGapBetweenTextAndAxis.toPx() +
-                    dotRadius.toPx() +
-                    xAxisTextLayoutResults.first().size.width / 2
+                        ChartDefaults.VerticalGapBetweenTextAndAxis.toPx() +
+                        dotRadius.toPx() +
+                        xAxisTextLayoutResults.first().size.width / 2
 
 
                 // x축 텍스트를 그리기 위한 공간
@@ -238,7 +239,8 @@ fun Chart(
                     // draw dots and xAxis mark(눈금)
                     points.forEachIndexed { i, point ->
                         val textLayout = xAxisTextLayoutResults[i]
-                        val textY = graphSize.height + graphLeftTop.y + ChartDefaults.VerticalGapBetweenTextAndAxis.toPx()
+                        val textY =
+                            graphSize.height + graphLeftTop.y + ChartDefaults.VerticalGapBetweenTextAndAxis.toPx()
                         rotate(
                             degrees = if (xAxisTextRotateFlag) -45f else 0f,
                             pivot = Offset(

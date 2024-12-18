@@ -5,22 +5,24 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.yourssu.soomsil.usaint.screen.semesterlist.SemesterListScreen
-import com.yourssu.soomsil.usaint.ui.component.entities.Grade
-import com.yourssu.soomsil.usaint.ui.component.entities.toCredit
+import com.yourssu.soomsil.usaint.ui.entities.Grade
+import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import kotlinx.serialization.Serializable
 
 @Serializable
 data object SemesterList
 
-fun NavHostController.navigateToSemesterList(navOptions: NavOptions? = null) = navigate(SemesterList, navOptions)
+fun NavHostController.navigateToSemesterList(navOptions: NavOptions? = null) =
+    navigate(SemesterList, navOptions)
 
 fun NavGraphBuilder.semesterListScreen(
     navigateToSemesterListDetail: (String) -> Unit,
     navigateToBack: () -> Unit,
-){
+) {
     composable<SemesterList> {
         // TODO route로 수정 필요
         SemesterListScreen(
+            isRefreshing = false,
             onGradeListClick = navigateToSemesterListDetail, // TODO args 넘기기
             onBackClick = navigateToBack,
 

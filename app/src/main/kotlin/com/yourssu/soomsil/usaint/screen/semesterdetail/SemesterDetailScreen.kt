@@ -1,7 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.semesterdetail
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,10 +34,10 @@ import com.yourssu.design.system.compose.base.YdsScaffold
 import com.yourssu.design.system.compose.component.ScrollableTabBar
 import com.yourssu.design.system.compose.component.Tab
 import com.yourssu.design.system.compose.component.topbar.TopBar
-import com.yourssu.soomsil.usaint.ui.component.entities.Course
-import com.yourssu.soomsil.usaint.ui.component.entities.Semester
-import com.yourssu.soomsil.usaint.ui.component.entities.Tier
-import com.yourssu.soomsil.usaint.ui.component.entities.toCredit
+import com.yourssu.soomsil.usaint.ui.entities.Course
+import com.yourssu.soomsil.usaint.ui.entities.Semester
+import com.yourssu.soomsil.usaint.ui.entities.Tier
+import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.util.Capturable
 import com.yourssu.soomsil.usaint.util.CaptureController
 import com.yourssu.soomsil.usaint.util.PullToRefreshColumn

@@ -26,13 +26,13 @@ import com.yourssu.design.system.compose.atom.Divider
 import com.yourssu.design.system.compose.atom.Thickness
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.ui.component.entities.Course
-import com.yourssu.soomsil.usaint.ui.component.entities.Credit
-import com.yourssu.soomsil.usaint.ui.component.entities.Grade
-import com.yourssu.soomsil.usaint.ui.component.entities.Semester
-import com.yourssu.soomsil.usaint.ui.component.entities.Tier
-import com.yourssu.soomsil.usaint.ui.component.entities.toCredit
-import com.yourssu.soomsil.usaint.ui.component.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.entities.Course
+import com.yourssu.soomsil.usaint.ui.entities.Credit
+import com.yourssu.soomsil.usaint.ui.entities.Grade
+import com.yourssu.soomsil.usaint.ui.entities.Semester
+import com.yourssu.soomsil.usaint.ui.entities.Tier
+import com.yourssu.soomsil.usaint.ui.entities.toCredit
+import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import java.text.DecimalFormat
 
 @Composable

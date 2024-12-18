@@ -1,6 +1,5 @@
 package com.yourssu.soomsil.usaint.screen.semesterlist
 
-import android.util.Log
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,12 +32,12 @@ import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.ui.component.chart.Chart
-import com.yourssu.soomsil.usaint.ui.component.entities.ChartData
-import com.yourssu.soomsil.usaint.ui.component.entities.Credit
-import com.yourssu.soomsil.usaint.ui.component.entities.Grade
-import com.yourssu.soomsil.usaint.ui.component.entities.Semester
-import com.yourssu.soomsil.usaint.ui.component.entities.toCredit
-import com.yourssu.soomsil.usaint.ui.component.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.entities.ChartData
+import com.yourssu.soomsil.usaint.ui.entities.Credit
+import com.yourssu.soomsil.usaint.ui.entities.Grade
+import com.yourssu.soomsil.usaint.ui.entities.Semester
+import com.yourssu.soomsil.usaint.ui.entities.toCredit
+import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import com.yourssu.soomsil.usaint.util.PullToRefreshColumn
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
