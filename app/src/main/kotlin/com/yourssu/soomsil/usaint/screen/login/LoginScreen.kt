@@ -150,6 +150,7 @@ fun LoginScreen(
                     .padding(top = 48.dp, start = 20.dp, end = 20.dp),
                 text = stringResource(R.string.login),
                 onClick = onLoginClick,
+                isDisabled = isLoading,
             )
 
             Row(
