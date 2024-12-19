@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.home
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -12,13 +13,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.atom.ProfileImageView
 import com.yourssu.design.system.compose.base.Icon
@@ -27,15 +34,58 @@ import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.SingleTitleTopBar
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.screen.UiEvent
+import com.yourssu.soomsil.usaint.ui.entities.Credit
+import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 import com.yourssu.soomsil.usaint.ui.entities.TotalReportCardInfo
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
+import com.yourssu.soomsil.usaint.util.PullToRefreshColumn
 import com.yourssu.design.R as YdsR
 
 @Composable
 fun HomeScreen(
-    studentInfo: StudentInfo,
+    modifier: Modifier = Modifier,
+    onProfileClick: () -> Unit = {},
+    onSettingClick: () -> Unit = {},
+    onReportCardClick: () -> Unit = {},
+    viewModel: HomeViewModel = hiltViewModel(),
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(lifecycleOwner.lifecycle) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.uiEvent.collect { uiEvent ->
+                when (uiEvent) {
+                    is UiEvent.Success -> {}
+
+                    is UiEvent.Failure -> {
+                        Toast.makeText(context, uiEvent.msg, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
+    HomeScreen(
+        isRefreshing = viewModel.isRefreshing,
+        onRefresh = viewModel::refresh,
+        studentInfo = viewModel.studentInfo,
+        totalReportCardInfo = TotalReportCardInfo(Grade.Zero, Credit.Zero, Credit.Zero), // TODO
+        onProfileClick = onProfileClick,
+        onSettingClick = onSettingClick,
+        onReportCardClick = onReportCardClick,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun HomeScreen(
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
+    studentInfo: StudentInfo?,
     totalReportCardInfo: TotalReportCardInfo,
     modifier: Modifier = Modifier,
     onProfileClick: () -> Unit = {},
@@ -48,28 +98,33 @@ fun HomeScreen(
             SingleTitleTopBar(title = stringResource(id = R.string.saint_title))
         },
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .background(YdsTheme.colors.bgSelected)
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 12.dp,
-                ),
+        PullToRefreshColumn(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
         ) {
-            StudentInfoItem(
-                studentInfo = studentInfo,
-                onProfileClick = onProfileClick,
-                onSettingClick = {
-                    onSettingClick()
-                },
-            )
-            Spacer(Modifier.height(12.dp))
-            ReportCardItem(
-                totalReportCardInfo = totalReportCardInfo,
-                onReportCardClick = onReportCardClick,
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .background(YdsTheme.colors.bgSelected)
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 12.dp,
+                    ),
+            ) {
+                StudentInfoItem(
+                    studentInfo = studentInfo,
+                    onProfileClick = onProfileClick,
+                    onSettingClick = {
+                        onSettingClick()
+                    },
+                )
+                Spacer(Modifier.height(12.dp))
+                ReportCardItem(
+                    totalReportCardInfo = totalReportCardInfo,
+                    onReportCardClick = onReportCardClick,
+                )
+            }
         }
     }
 }
@@ -124,6 +179,8 @@ fun ActionTitle(
 private fun HomePreview() {
     YdsTheme {
         HomeScreen(
+            isRefreshing = false,
+            onRefresh = {},
             studentInfo = StudentInfo(
                 name = "홍길동",
                 department = "컴퓨터학부",

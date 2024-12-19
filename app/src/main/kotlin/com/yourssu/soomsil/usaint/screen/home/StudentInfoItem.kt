@@ -25,7 +25,7 @@ import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 
 @Composable
 fun StudentInfoItem(
-    studentInfo: StudentInfo,
+    studentInfo: StudentInfo?,
     modifier: Modifier = Modifier,
     onProfileClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
@@ -46,7 +46,7 @@ fun StudentInfoItem(
             modifier = Modifier.weight(1f),
         ) {
             YdsText(
-                text = studentInfo.name,
+                text = studentInfo?.name ?: "-",
                 style = YdsTheme.typography.subTitle1.copy(
                     fontWeight = FontWeight(600),
                 ),
@@ -54,7 +54,8 @@ fun StudentInfoItem(
             YdsText(
                 text = stringResource(
                     R.string.student_department_and_grade_format,
-                    studentInfo.department, studentInfo.grade
+                    studentInfo?.department ?: "-",
+                    studentInfo?.grade ?: 0,
                 ),
                 style = YdsTheme.typography.body2,
                 color = YdsTheme.colors.textSecondary,

@@ -39,6 +39,7 @@ import com.yourssu.design.system.compose.base.YdsScaffold
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.design.R as YdsR
 
 @Composable
@@ -49,24 +50,18 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    var isLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(lifecycleOwner.lifecycle) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.uiEvent.collect { uiEvent ->
                 when (uiEvent) {
-                    is LoginUiEvent.Success -> {
-                        isLoading = false
+                    is UiEvent.Success -> {
+                        Toast.makeText(context, "로그인 되었습니다.", Toast.LENGTH_SHORT).show()
                         navigateToHome()
                     }
 
-                    is LoginUiEvent.Error -> {
-                        isLoading = false
+                    is UiEvent.Failure -> {
                         Toast.makeText(context, uiEvent.msg, Toast.LENGTH_SHORT).show()
-                    }
-
-                    is LoginUiEvent.Loading -> {
-                        isLoading = true
                     }
                 }
             }
@@ -74,7 +69,7 @@ fun LoginScreen(
     }
 
     LoginScreen(
-        isLoading = isLoading,
+        isLoading = viewModel.isLoading,
         studentId = viewModel.studentId,
         password = viewModel.studentPw,
         onStudentIdChange = { viewModel.studentId = it },
@@ -129,6 +124,7 @@ fun LoginScreen(
                 ),
                 onValueChange = onStudentIdChange,
                 onErrorChange = {},
+                isEnabled = !isLoading,
             )
 
             YdsText(
@@ -142,6 +138,7 @@ fun LoginScreen(
                 modifier = Modifier.padding(top = 8.dp, start = 20.dp, end = 20.dp),
                 onValueChange = onPasswordChange,
                 onErrorChange = {},
+                isEnabled = !isLoading,
             )
 
             BoxButton(

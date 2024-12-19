@@ -23,12 +23,10 @@ class MainActivity : ComponentActivity() {
             YdsTheme(
                 isDarkMode = false
             ) {
-                viewModel.studentCredential?.let {
-                    val startDestination: Any = if (it.id == null || it.pw == null) Login else Home
-
+                viewModel.isLoggedIn?.let { isLoggedIn ->
                     USaintNavHost(
                         navController = rememberNavController(),
-                        startDestination = startDestination
+                        startDestination = if (isLoggedIn) Home else Login
                     )
                 }
             }
