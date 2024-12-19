@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourssu.soomsil.usaint.data.repository.ReportCardSummaryRepository
+import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.screen.UiEvent
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
     private val studentInfoRepo: StudentInfoRepository,
-    private val reportCardSummaryRepo: ReportCardSummaryRepository,
+    private val reportCardRepo: ReportCardRepository,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -55,7 +55,7 @@ class LoginViewModel @Inject constructor(
                 isLoading = false
                 return@launch
             }
-            val reportCardVO = reportCardSummaryRepo.getRemoteReportCard(session).getOrElse { e ->
+            val reportCardVO = reportCardRepo.getRemoteReportCard(session).getOrElse { e ->
                 Timber.e(e)
                 _uiEvent.emit(UiEvent.Failure("증명 평점 정보를 가져오는 데 실패했습니다."))
                 isLoading = false
@@ -64,7 +64,7 @@ class LoginViewModel @Inject constructor(
             // 성공 시 id/pw, 학생 정보 저장
             studentInfoRepo.storePassword(id, pw).onFailure { e -> Timber.e(e) }
             studentInfoRepo.storeStudentInfo(studentInfoVO).onFailure { e -> Timber.e(e) }
-            reportCardSummaryRepo.storeReportCard(reportCardVO).onFailure { e -> Timber.e(e) }
+            reportCardRepo.storeReportCard(reportCardVO).onFailure { e -> Timber.e(e) }
             _uiEvent.emit(UiEvent.Success)
             isLoading = false
         }

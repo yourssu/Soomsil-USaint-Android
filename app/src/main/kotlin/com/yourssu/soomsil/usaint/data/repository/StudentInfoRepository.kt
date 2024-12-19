@@ -9,7 +9,6 @@ import javax.inject.Inject
 
 class StudentInfoRepository @Inject constructor(
     private val studentInfoDataStore: StudentInfoDataStore,
-    private val uSaintSessionRepo: USaintSessionRepository,
     private val rusaintApi: RusaintApi
 ) {
     suspend fun getLocalPassword(): Result<Pair<String, String>> {
@@ -42,12 +41,5 @@ class StudentInfoRepository @Inject constructor(
                 term = stuInfo.term,
             )
         )
-    }
-
-    suspend fun getRemoteStudentInfo(): Result<StudentInfoDto> {
-        val session = uSaintSessionRepo.getSession().getOrElse { e ->
-            return Result.failure(e)
-        }
-        return getRemoteStudentInfo(session)
     }
 }
