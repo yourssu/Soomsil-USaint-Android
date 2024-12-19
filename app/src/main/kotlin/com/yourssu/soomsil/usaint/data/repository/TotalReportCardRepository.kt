@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class ReportCardRepository @Inject constructor(
+class TotalReportCardRepository @Inject constructor(
     private val totalReportCardDao: TotalReportCardDao,
     private val rusaintApi: RusaintApi,
 ) {

@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
+import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
     private val studentInfoRepo: StudentInfoRepository,
-    private val reportCardRepo: ReportCardRepository,
+    private val totalReportCardRepo: TotalReportCardRepository,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -61,7 +61,7 @@ class HomeViewModel @Inject constructor(
                 isRefreshing = false
                 return@launch
             }
-            val totalReportCard = reportCardRepo.getRemoteReportCard(session).getOrElse { e ->
+            val totalReportCard = totalReportCardRepo.getRemoteReportCard(session).getOrElse { e ->
                 Timber.e(e)
                 val errMsg = when (e) {
                     is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
@@ -84,7 +84,7 @@ class HomeViewModel @Inject constructor(
             )
             // DB 갱신
             studentInfoRepo.storeStudentInfo(stuDto).onFailure { e -> Timber.e(e) }
-            reportCardRepo.storeReportCard(totalReportCard).onFailure { e -> Timber.e(e) }
+            totalReportCardRepo.storeReportCard(totalReportCard).onFailure { e -> Timber.e(e) }
             _uiEvent.emit(UiEvent.Success)
             isRefreshing = false
         }
@@ -104,7 +104,7 @@ class HomeViewModel @Inject constructor(
 
     private fun getTotalReportCardInfo() {
         viewModelScope.launch {
-            reportCardRepo.getLocalReportCard().onSuccess { totalReportCard ->
+            totalReportCardRepo.getLocalReportCard().onSuccess { totalReportCard ->
                 reportCardSummary = ReportCardSummary(
                     gpa = totalReportCard.gpa.toGrade(),
                     earnedCredit = totalReportCard.earnedCredit.toCredit(),
