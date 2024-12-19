@@ -43,21 +43,21 @@ class LoginViewModel @Inject constructor(
                     is RusaintException -> "로그인에 실패했습니다. 다시 시도해주세요."
                     else -> "알 수 없는 문제가 발생했습니다."
                 }
-                isLoading = false
                 _uiEvent.emit(UiEvent.Failure(errMsg))
+                isLoading = false
                 return@launch
             }
             val studentInfo = studentInfoRepo.getStudentInfo(session).getOrElse { e ->
                 Timber.e(e)
-                isLoading = false
                 _uiEvent.emit(UiEvent.Failure("학생 정보를 불러오는 데 실패했습니다."))
+                isLoading = false
                 return@launch
             }
             // 성공 시 id/pw, 학생 정보 저장
             studentInfoRepo.storePassword(id, pw).onFailure { e -> Timber.e(e) }
             studentInfoRepo.storeStudentInfo(studentInfo).onFailure { e -> Timber.e(e) }
-            isLoading = true
             _uiEvent.emit(UiEvent.Success)
+            isLoading = false
         }
     }
 }

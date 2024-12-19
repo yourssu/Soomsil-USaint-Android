@@ -60,11 +60,9 @@ fun LoginScreen(
                         navigateToHome()
                     }
 
-                    is UiEvent.Failure -> Toast.makeText(
-                        context,
-                        uiEvent.msg,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    is UiEvent.Failure -> {
+                        Toast.makeText(context, uiEvent.msg, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
