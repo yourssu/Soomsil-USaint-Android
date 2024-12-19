@@ -2,13 +2,15 @@ package com.yourssu.soomsil.usaint.data.repository
 
 import com.yourssu.soomsil.usaint.data.model.StudentInfoDto
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentInfoDataStore
-import dev.eatsteak.rusaint.ffi.StudentInformationApplicationBuilder
+import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
 import dev.eatsteak.rusaint.ffi.USaintSession
+import timber.log.Timber
 import javax.inject.Inject
 
 class StudentInfoRepository @Inject constructor(
     private val studentInfoDataStore: StudentInfoDataStore,
     private val uSaintSessionRepo: USaintSessionRepository,
+    private val rusaintApi: RusaintApi
 ) {
     suspend fun getPasswordFromDataStore(): Result<Pair<String, String>> {
         return studentInfoDataStore.getPassword()
@@ -27,16 +29,19 @@ class StudentInfoRepository @Inject constructor(
     }
 
     suspend fun getStudentInfo(session: USaintSession): Result<StudentInfoDto> {
-        return kotlin.runCatching {
-            val studentInfo = StudentInformationApplicationBuilder().build(session).general()
-            StudentInfoDto(
-                name = studentInfo.name,
-                department = studentInfo.department,
-                major = studentInfo.major,
-                grade = studentInfo.grade,
-                term = studentInfo.term,
-            )
+        val stuInfo = rusaintApi.getStudentInformation(session).getOrElse { e ->
+            Timber.e(e)
+            return Result.failure(e)
         }
+        return Result.success(
+            StudentInfoDto(
+                name = stuInfo.name,
+                department = stuInfo.department,
+                major = stuInfo.major,
+                grade = stuInfo.grade,
+                term = stuInfo.term,
+            )
+        )
     }
 
     suspend fun getStudentInfo(): Result<StudentInfoDto> {
