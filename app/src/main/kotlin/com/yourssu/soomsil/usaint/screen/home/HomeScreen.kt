@@ -37,8 +37,6 @@ import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.SingleTitleTopBar
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.screen.UiEvent
-import com.yourssu.soomsil.usaint.ui.entities.Credit
-import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 import com.yourssu.soomsil.usaint.ui.entities.TotalReportCardInfo
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
@@ -74,7 +72,7 @@ fun HomeScreen(
         isRefreshing = viewModel.isRefreshing,
         onRefresh = viewModel::refresh,
         studentInfo = viewModel.studentInfo,
-        totalReportCardInfo = TotalReportCardInfo(Grade.Zero, Credit.Zero, Credit.Zero), // TODO
+        totalReportCardInfo = viewModel.totalReportCardInfo,
         onProfileClick = onProfileClick,
         onSettingClick = onSettingClick,
         onReportCardClick = onReportCardClick,

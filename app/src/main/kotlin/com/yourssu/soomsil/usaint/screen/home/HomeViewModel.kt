@@ -5,9 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yourssu.soomsil.usaint.data.repository.ReportCardSummaryRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
+import com.yourssu.soomsil.usaint.ui.entities.TotalReportCardInfo
+import com.yourssu.soomsil.usaint.ui.entities.toCredit
+import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val studentInfoRepo: StudentInfoRepository,
+    private val reportCardSummaryRepo: ReportCardSummaryRepository,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -27,9 +32,12 @@ class HomeViewModel @Inject constructor(
         private set
     var studentInfo: StudentInfo? by mutableStateOf(null)
         private set
+    var totalReportCardInfo: TotalReportCardInfo by mutableStateOf(TotalReportCardInfo())
+        private set
 
     init {
         getStudentInfo()
+        getTotalReportCardInfo()
     }
 
     fun refresh() {
@@ -45,14 +53,30 @@ class HomeViewModel @Inject constructor(
                 isRefreshing = false
                 return@launch
             }
+            val totalReportCard = reportCardSummaryRepo.getRemoteReportCard().getOrElse { e ->
+                Timber.e(e)
+                val errMsg = when (e) {
+                    is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
+                    else -> "알 수 없는 문제가 발생했습니다."
+                }
+                _uiEvent.emit(UiEvent.Failure(errMsg))
+                isRefreshing = false
+                return@launch
+            }
             // ui state 변경
             studentInfo = StudentInfo(
                 name = stuDto.name,
                 department = stuDto.department,
                 grade = stuDto.grade.toInt(),
             )
-            // DataStore에 저장
+            totalReportCardInfo = TotalReportCardInfo(
+                gpa = totalReportCard.gpa.toGrade(),
+                earnedCredit = totalReportCard.earnedCredit.toCredit(),
+                graduateCredit = totalReportCard.graduateCredit.toCredit(),
+            )
+            // DB 갱신
             studentInfoRepo.storeStudentInfo(stuDto).onFailure { e -> Timber.e(e) }
+            reportCardSummaryRepo.storeReportCard(totalReportCard).onFailure { e -> Timber.e(e) }
             _uiEvent.emit(UiEvent.Success)
             isRefreshing = false
         }
@@ -65,6 +89,18 @@ class HomeViewModel @Inject constructor(
                     name = stu.name,
                     department = stu.department,
                     grade = stu.grade.toInt(),
+                )
+            }.onFailure { e -> Timber.e(e) }
+        }
+    }
+
+    private fun getTotalReportCardInfo() {
+        viewModelScope.launch {
+            reportCardSummaryRepo.getLocalReportCard().onSuccess { totalReportCard ->
+                totalReportCardInfo = TotalReportCardInfo(
+                    gpa = totalReportCard.gpa.toGrade(),
+                    earnedCredit = totalReportCard.earnedCredit.toCredit(),
+                    graduateCredit = totalReportCard.graduateCredit.toCredit(),
                 )
             }.onFailure { e -> Timber.e(e) }
         }
