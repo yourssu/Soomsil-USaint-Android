@@ -59,7 +59,7 @@ fun LoginScreen(
                         navigateToHome()
                     }
 
-                    is LoginUiEvent.Error -> Toast.makeText(
+                    is LoginUiEvent.Failure -> Toast.makeText(
                         context,
                         uiEvent.msg,
                         Toast.LENGTH_SHORT

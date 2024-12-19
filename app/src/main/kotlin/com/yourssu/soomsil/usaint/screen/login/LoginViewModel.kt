@@ -43,13 +43,13 @@ class LoginViewModel @Inject constructor(
                     else -> "알 수 없는 문제가 발생했습니다."
                 }
                 isLoading = false
-                _uiEvent.emit(LoginUiEvent.Error(errMsg))
+                _uiEvent.emit(LoginUiEvent.Failure(errMsg))
                 return@launch
             }
             val studentInfo = studentInfoRepo.getStudentInfo(session).getOrElse { e ->
                 Timber.e(e)
                 isLoading = false
-                _uiEvent.emit(LoginUiEvent.Error("학생 정보를 불러오는 데 실패했습니다."))
+                _uiEvent.emit(LoginUiEvent.Failure("학생 정보를 불러오는 데 실패했습니다."))
                 return@launch
             }
             // 성공 시 id/pw, 학생 정보 저장
