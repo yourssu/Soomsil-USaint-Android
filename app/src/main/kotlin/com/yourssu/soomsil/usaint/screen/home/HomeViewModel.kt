@@ -9,7 +9,7 @@ import com.yourssu.soomsil.usaint.data.repository.ReportCardSummaryRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
-import com.yourssu.soomsil.usaint.ui.entities.TotalReportCardInfo
+import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +32,7 @@ class HomeViewModel @Inject constructor(
         private set
     var studentInfo: StudentInfo? by mutableStateOf(null)
         private set
-    var totalReportCardInfo: TotalReportCardInfo by mutableStateOf(TotalReportCardInfo())
+    var reportCardSummary: ReportCardSummary by mutableStateOf(ReportCardSummary())
         private set
 
     init {
@@ -69,7 +69,7 @@ class HomeViewModel @Inject constructor(
                 department = stuDto.department,
                 grade = stuDto.grade.toInt(),
             )
-            totalReportCardInfo = TotalReportCardInfo(
+            reportCardSummary = ReportCardSummary(
                 gpa = totalReportCard.gpa.toGrade(),
                 earnedCredit = totalReportCard.earnedCredit.toCredit(),
                 graduateCredit = totalReportCard.graduateCredit.toCredit(),
@@ -97,7 +97,7 @@ class HomeViewModel @Inject constructor(
     private fun getTotalReportCardInfo() {
         viewModelScope.launch {
             reportCardSummaryRepo.getLocalReportCard().onSuccess { totalReportCard ->
-                totalReportCardInfo = TotalReportCardInfo(
+                reportCardSummary = ReportCardSummary(
                     gpa = totalReportCard.gpa.toGrade(),
                     earnedCredit = totalReportCard.earnedCredit.toCredit(),
                     graduateCredit = totalReportCard.graduateCredit.toCredit(),

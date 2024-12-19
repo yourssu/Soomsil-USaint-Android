@@ -38,7 +38,7 @@ import com.yourssu.design.system.compose.component.topbar.SingleTitleTopBar
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
-import com.yourssu.soomsil.usaint.ui.entities.TotalReportCardInfo
+import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import com.yourssu.design.R as YdsR
@@ -72,7 +72,7 @@ fun HomeScreen(
         isRefreshing = viewModel.isRefreshing,
         onRefresh = viewModel::refresh,
         studentInfo = viewModel.studentInfo,
-        totalReportCardInfo = viewModel.totalReportCardInfo,
+        reportCardSummary = viewModel.reportCardSummary,
         onProfileClick = onProfileClick,
         onSettingClick = onSettingClick,
         onReportCardClick = onReportCardClick,
@@ -86,7 +86,7 @@ fun HomeScreen(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     studentInfo: StudentInfo?,
-    totalReportCardInfo: TotalReportCardInfo,
+    reportCardSummary: ReportCardSummary,
     modifier: Modifier = Modifier,
     onProfileClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
@@ -121,7 +121,7 @@ fun HomeScreen(
                 )
                 Spacer(Modifier.height(12.dp))
                 ReportCardItem(
-                    totalReportCardInfo = totalReportCardInfo,
+                    reportCardSummary = reportCardSummary,
                     onReportCardClick = onReportCardClick,
                 )
             }
@@ -186,7 +186,7 @@ private fun HomePreview() {
                 department = "컴퓨터학부",
                 grade = 2,
             ),
-            totalReportCardInfo = TotalReportCardInfo(
+            reportCardSummary = ReportCardSummary(
                 gpa = 4.22.toGrade(),
                 earnedCredit = 97.toCredit(),
                 graduateCredit = 133.toCredit(),
