@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
+import com.yourssu.soomsil.usaint.screen.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,7 +21,7 @@ class LoginViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
     private val studentInfoRepo: StudentInfoRepository,
 ) : ViewModel() {
-    private val _uiEvent: MutableSharedFlow<LoginUiEvent> = MutableSharedFlow()
+    private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
 
     var isLoading: Boolean by mutableStateOf(false)
@@ -43,20 +44,20 @@ class LoginViewModel @Inject constructor(
                     else -> "알 수 없는 문제가 발생했습니다."
                 }
                 isLoading = false
-                _uiEvent.emit(LoginUiEvent.Failure(errMsg))
+                _uiEvent.emit(UiEvent.Failure(errMsg))
                 return@launch
             }
             val studentInfo = studentInfoRepo.getStudentInfo(session).getOrElse { e ->
                 Timber.e(e)
                 isLoading = false
-                _uiEvent.emit(LoginUiEvent.Failure("학생 정보를 불러오는 데 실패했습니다."))
+                _uiEvent.emit(UiEvent.Failure("학생 정보를 불러오는 데 실패했습니다."))
                 return@launch
             }
             // 성공 시 id/pw, 학생 정보 저장
             studentInfoRepo.storePassword(id, pw).onFailure { e -> Timber.e(e) }
             studentInfoRepo.storeStudentInfo(studentInfo).onFailure { e -> Timber.e(e) }
             isLoading = true
-            _uiEvent.emit(LoginUiEvent.Success)
+            _uiEvent.emit(UiEvent.Success)
         }
     }
 }

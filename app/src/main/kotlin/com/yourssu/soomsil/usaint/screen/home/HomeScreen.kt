@@ -39,10 +39,10 @@ import com.yourssu.design.R as YdsR
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel(),
     onProfileClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
     onReportCardClick: () -> Unit = {},
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     HomeScreen(
         studentInfo = viewModel.studentInfo,

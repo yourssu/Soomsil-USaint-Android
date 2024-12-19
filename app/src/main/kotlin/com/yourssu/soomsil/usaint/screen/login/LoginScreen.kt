@@ -39,6 +39,7 @@ import com.yourssu.design.system.compose.base.YdsScaffold
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.design.R as YdsR
 
 @Composable
@@ -54,12 +55,12 @@ fun LoginScreen(
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.uiEvent.collect { uiEvent ->
                 when (uiEvent) {
-                    is LoginUiEvent.Success -> {
+                    is UiEvent.Success -> {
                         Toast.makeText(context, "로그인 되었습니다.", Toast.LENGTH_SHORT).show()
                         navigateToHome()
                     }
 
-                    is LoginUiEvent.Failure -> Toast.makeText(
+                    is UiEvent.Failure -> Toast.makeText(
                         context,
                         uiEvent.msg,
                         Toast.LENGTH_SHORT
