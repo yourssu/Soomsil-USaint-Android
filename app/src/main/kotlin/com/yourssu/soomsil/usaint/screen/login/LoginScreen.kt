@@ -49,7 +49,6 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    var isLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(lifecycleOwner.lifecycle) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -60,21 +59,18 @@ fun LoginScreen(
                         navigateToHome()
                     }
 
-                    is LoginUiEvent.Error -> {
-                        isLoading = false
-                        Toast.makeText(context, uiEvent.msg, Toast.LENGTH_SHORT).show()
-                    }
-
-                    is LoginUiEvent.Loading -> {
-                        isLoading = true
-                    }
+                    is LoginUiEvent.Error -> Toast.makeText(
+                        context,
+                        uiEvent.msg,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
     }
 
     LoginScreen(
-        isLoading = isLoading,
+        isLoading = viewModel.isLoading,
         studentId = viewModel.studentId,
         password = viewModel.studentPw,
         onStudentIdChange = { viewModel.studentId = it },

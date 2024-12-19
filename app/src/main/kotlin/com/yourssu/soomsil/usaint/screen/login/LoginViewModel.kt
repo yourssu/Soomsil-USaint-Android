@@ -23,6 +23,8 @@ class LoginViewModel @Inject constructor(
     private val _uiEvent: MutableSharedFlow<LoginUiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
 
+    var isLoading: Boolean by mutableStateOf(false)
+        private set
     var studentId: String by mutableStateOf("")
     var studentPw: String by mutableStateOf("")
 
@@ -31,7 +33,7 @@ class LoginViewModel @Inject constructor(
         val pw = studentPw
 
         viewModelScope.launch {
-            _uiEvent.emit(LoginUiEvent.Loading)
+            isLoading = true
             // 로그인 시도
             // 실패 시 Error 이벤트 발생 후 종료
             val session = uSaintSessionRepo.withPassword(id, pw).getOrElse { e ->
@@ -40,17 +42,20 @@ class LoginViewModel @Inject constructor(
                     is RusaintException -> "로그인에 실패했습니다. 다시 시도해주세요."
                     else -> "알 수 없는 문제가 발생했습니다."
                 }
+                isLoading = false
                 _uiEvent.emit(LoginUiEvent.Error(errMsg))
                 return@launch
             }
             val studentInfo = studentInfoRepo.getStudentInfo(session).getOrElse { e ->
                 Timber.e(e)
+                isLoading = false
                 _uiEvent.emit(LoginUiEvent.Error("학생 정보를 불러오는 데 실패했습니다."))
                 return@launch
             }
             // 성공 시 id/pw, 학생 정보 저장
             studentInfoRepo.storePassword(id, pw).onFailure { e -> Timber.e(e) }
             studentInfoRepo.storeStudentInfo(studentInfo).onFailure { e -> Timber.e(e) }
+            isLoading = true
             _uiEvent.emit(LoginUiEvent.Success)
         }
     }
