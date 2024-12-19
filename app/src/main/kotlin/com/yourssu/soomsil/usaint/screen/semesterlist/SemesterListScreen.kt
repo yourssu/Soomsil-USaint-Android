@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.atom.CheckBox
 import com.yourssu.design.system.compose.atom.Divider
@@ -35,14 +36,34 @@ import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.ui.component.chart.Chart
 import com.yourssu.soomsil.usaint.ui.component.chart.ChartData
-import com.yourssu.soomsil.usaint.ui.entities.Credit
 import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.Semester
+import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.yourssu.design.R as YdsR
+
+@Composable
+fun SemesterListScreen(
+    onBackClick: () -> Unit,
+    onGradeListClick: (semesterName: String) -> Unit, // TODO: semester type
+    modifier: Modifier = Modifier,
+    viewModel: SemesterListViewModel = hiltViewModel(),
+) {
+    SemesterListScreen(
+        isRefreshing = viewModel.isRefreshing,
+        onRefresh = viewModel::refresh,
+        reportCardSummary = viewModel.reportCardSummary,
+        semesters = viewModel.semesters,
+        includeSeasonalSemester = viewModel.includeSeasonalSemester,
+        onSeasonalFlagChange = { viewModel.includeSeasonalSemester = it },
+        onBackClick = onBackClick,
+        onGradeListClick = onGradeListClick,
+        modifier = modifier,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,8 +73,7 @@ fun SemesterListScreen(
     semesters: List<Semester>,
     includeSeasonalSemester: Boolean,
     onSeasonalFlagChange: (Boolean) -> Unit,
-    overallGpa: Grade,
-    earnedCredit: Credit,
+    reportCardSummary: ReportCardSummary,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onGradeListClick: (semesterName: String) -> Unit = {},
@@ -67,7 +87,6 @@ fun SemesterListScreen(
     YdsScaffold(
         modifier = modifier,
         topBar = {
-            // TODO: SingleTitleTopBar로 바꾸기
             TopBar(
                 navigationIcon = {
                     TopBarButton(
@@ -96,14 +115,14 @@ fun SemesterListScreen(
                 ) {
                     ScoreDetail(
                         title = stringResource(id = R.string.reportcard_average_grade),
-                        actualValue = overallGpa.formatToString(),
+                        actualValue = reportCardSummary.gpa.formatToString(),
                         maxValue = Grade.Max.formatToString(),
                         modifier = Modifier.weight(1f),
                     )
                     ScoreDetail(
                         title = stringResource(id = R.string.reportcard_credit),
-                        actualValue = earnedCredit.formatToString(),
-                        maxValue = "133", // TODO:
+                        actualValue = reportCardSummary.earnedCredit.formatToString(),
+                        maxValue = reportCardSummary.graduateCredit.formatToString(),
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -284,8 +303,11 @@ private fun SemesterListScreenPreview() {
             ),
             includeSeasonalSemester = include,
             onSeasonalFlagChange = { include = it },
-            overallGpa = 3.9.toGrade(),
-            earnedCredit = 52.5.toCredit(),
+            reportCardSummary = ReportCardSummary(
+                gpa = 3.9.toGrade(),
+                earnedCredit = 52.5.toCredit(),
+                graduateCredit = 133.toCredit(),
+            ),
         )
     }
 }

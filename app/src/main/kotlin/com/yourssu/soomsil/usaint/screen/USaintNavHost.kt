@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.screen.navigation
+package com.yourssu.soomsil.usaint.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
