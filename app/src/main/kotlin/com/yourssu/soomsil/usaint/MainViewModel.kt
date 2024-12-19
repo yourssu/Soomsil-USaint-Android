@@ -13,23 +13,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class StudentCredential(
-    val id: String? = null,
-    val pw: String? = null,
-)
-
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) : ViewModel() {
-    var studentCredential: StudentCredential? by mutableStateOf(null)
+    var isLoggedIn: Boolean? by mutableStateOf(null)
+        private set
 
     init {
         viewModelScope.launch {
-            studentCredential = dataStore.data.map { pref ->
+            isLoggedIn = dataStore.data.map { pref ->
                 val id = pref[PreferencesKeys.STUDENT_ID]
                 val pw = pref[PreferencesKeys.STUDENT_PW]
-                StudentCredential(id, pw)
+                id != null && pw != null
             }.first()
         }
     }
