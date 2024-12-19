@@ -47,7 +47,7 @@ class LoginViewModel @Inject constructor(
                 isLoading = false
                 return@launch
             }
-            val studentInfo = studentInfoRepo.getStudentInfo(session).getOrElse { e ->
+            val studentInfo = studentInfoRepo.getRemoteStudentInfo(session).getOrElse { e ->
                 Timber.e(e)
                 _uiEvent.emit(UiEvent.Failure("학생 정보를 불러오는 데 실패했습니다."))
                 isLoading = false

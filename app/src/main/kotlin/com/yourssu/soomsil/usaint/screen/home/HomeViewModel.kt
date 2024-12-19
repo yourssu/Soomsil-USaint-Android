@@ -35,7 +35,7 @@ class HomeViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             isRefreshing = true
-            val stuDto = studentInfoRepo.getStudentInfo().getOrElse { e ->
+            val stuDto = studentInfoRepo.getRemoteStudentInfo().getOrElse { e ->
                 Timber.e(e)
                 val errMsg = when (e) {
                     is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
@@ -60,7 +60,7 @@ class HomeViewModel @Inject constructor(
 
     private fun getStudentInfo() {
         viewModelScope.launch {
-            studentInfoRepo.getStudentInfoFromDataStore().onSuccess { stu ->
+            studentInfoRepo.getLocalStudentInfo().onSuccess { stu ->
                 studentInfo = StudentInfo(
                     name = stu.name,
                     department = stu.department,
