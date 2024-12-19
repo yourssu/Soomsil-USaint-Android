@@ -56,8 +56,8 @@ fun LoginScreen(
             viewModel.uiEvent.collect { uiEvent ->
                 when (uiEvent) {
                     is LoginUiEvent.Success -> {
+                        Toast.makeText(context, "로그인 되었습니다.", Toast.LENGTH_SHORT).show()
                         navigateToHome()
-                        isLoading = false
                     }
 
                     is LoginUiEvent.Error -> {
