@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -41,7 +43,6 @@ import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 import com.yourssu.soomsil.usaint.ui.entities.TotalReportCardInfo
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
-import com.yourssu.soomsil.usaint.util.PullToRefreshColumn
 import com.yourssu.design.R as YdsR
 
 @Composable
@@ -81,6 +82,7 @@ fun HomeScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     isRefreshing: Boolean,
@@ -98,7 +100,7 @@ fun HomeScreen(
             SingleTitleTopBar(title = stringResource(id = R.string.saint_title))
         },
     ) {
-        PullToRefreshColumn(
+        PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = onRefresh,
         ) {

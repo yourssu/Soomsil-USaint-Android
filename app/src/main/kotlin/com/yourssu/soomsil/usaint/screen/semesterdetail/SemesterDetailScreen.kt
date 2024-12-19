@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,13 +41,12 @@ import com.yourssu.soomsil.usaint.ui.entities.Tier
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.util.Capturable
 import com.yourssu.soomsil.usaint.util.CaptureController
-import com.yourssu.soomsil.usaint.util.PullToRefreshColumn
 import com.yourssu.soomsil.usaint.util.rememberCaptureController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.yourssu.design.R as YdsR
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SemesterDetailScreen(
     isRefreshing: Boolean,
@@ -111,7 +111,7 @@ fun SemesterDetailScreen(
             }
         },
     ) {
-        PullToRefreshColumn(
+        PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = {
                 onRefresh(semesters[pagerState.currentPage].fullName)
