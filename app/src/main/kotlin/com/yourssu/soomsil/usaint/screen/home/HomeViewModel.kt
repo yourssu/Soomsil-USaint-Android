@@ -84,7 +84,6 @@ class HomeViewModel @Inject constructor(
             )
             // DB 갱신
             studentInfoRepo.storeStudentInfo(stuDto).onFailure { e -> Timber.e(e) }
-            totalReportCardRepo.storeReportCard(totalReportCard).onFailure { e -> Timber.e(e) }
             _uiEvent.emit(UiEvent.Success)
             isRefreshing = false
         }
@@ -104,13 +103,20 @@ class HomeViewModel @Inject constructor(
 
     private fun getTotalReportCardInfo() {
         viewModelScope.launch {
-            totalReportCardRepo.getLocalReportCard().onSuccess { totalReportCard ->
-                reportCardSummary = ReportCardSummary(
-                    gpa = totalReportCard.gpa.toGrade(),
-                    earnedCredit = totalReportCard.earnedCredit.toCredit(),
-                    graduateCredit = totalReportCard.graduateCredit.toCredit(),
-                )
-            }.onFailure { e -> Timber.e(e) }
+            val session = uSaintSessionRepo.getSession().getOrElse { e ->
+                Timber.e(e)
+                _uiEvent.emit(UiEvent.Failure("로그인 실패: 비밀번호를 확인해주세요."))
+                return@launch
+            }
+            totalReportCardRepo.getReportCard(session).collect { result ->
+                result.onSuccess { totalReportCard ->
+                    reportCardSummary = ReportCardSummary(
+                        gpa = totalReportCard.gpa.toGrade(),
+                        earnedCredit = totalReportCard.earnedCredit.toCredit(),
+                        graduateCredit = totalReportCard.graduateCredit.toCredit(),
+                    )
+                }.onFailure { e -> Timber.e(e)}
+            }
         }
     }
 }

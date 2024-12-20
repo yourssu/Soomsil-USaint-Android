@@ -94,13 +94,20 @@ class SemesterListViewModel @Inject constructor(
 
     private fun initReportCardSummary() {
         viewModelScope.launch {
-            totalReportCardRepo.getLocalReportCard().onSuccess { reportCard ->
-                reportCardSummary = ReportCardSummary(
-                    gpa = reportCard.gpa.toGrade(),
-                    earnedCredit = reportCard.earnedCredit.toCredit(),
-                    graduateCredit = reportCard.graduateCredit.toCredit(),
-                )
-            }.onFailure { e -> Timber.e(e) }
+            val session = uSaintSessionRepo.getSession().getOrElse { e ->
+                Timber.e(e)
+                _uiEvent.emit(UiEvent.Failure("로그인 실패: 비밀번호를 확인해주세요."))
+                return@launch
+            }
+            totalReportCardRepo.getReportCard(session).collect { result ->
+                result.onSuccess { reportCard ->
+                    reportCardSummary = ReportCardSummary(
+                        gpa = reportCard.gpa.toGrade(),
+                        earnedCredit = reportCard.earnedCredit.toCredit(),
+                        graduateCredit = reportCard.graduateCredit.toCredit(),
+                    )
+                }.onFailure { e -> Timber.e(e) }
+            }
         }
     }
 
