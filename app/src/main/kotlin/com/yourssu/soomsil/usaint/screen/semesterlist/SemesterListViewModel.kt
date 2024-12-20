@@ -78,15 +78,13 @@ class SemesterListViewModel @Inject constructor(
             )
             semesters = semesterVOList.map { vo ->
                 Semester(
-                    axisName = "1-1", // TODO
+                    axisName = "${vo.year % 100}-${vo.semester}",
                     fullName = String.format("%d년 %s학기", vo.year, vo.semester),
                     gpa = vo.gpa.toGrade(),
                     earnedCredit = vo.earnedCredit.toCredit(),
                     isSeasonal = !(vo.semester.contains("1") || vo.semester.contains("2"))
                 )
             }
-            // TODO DB 갱신. HomeViewModel이랑 비슷하게 하면 됨
-
             _uiEvent.emit(UiEvent.Success)
             isRefreshing = false
         }
@@ -112,7 +110,25 @@ class SemesterListViewModel @Inject constructor(
     }
 
     private fun initSemesters() {
-        // TODO: 로컬 DB에서 semester 정보 가져오기
-        // 비어있는 경우 refresh
+        viewModelScope.launch {
+            val session = uSaintSessionRepo.getSession().getOrElse { e ->
+                Timber.e(e)
+                _uiEvent.emit(UiEvent.Failure("로그인 실패: 비밀번호를 확인해주세요."))
+                return@launch
+            }
+            semesterRepo.getSemesters(session).collect { result ->
+                result.onSuccess { semesterList ->
+                    semesters = semesterList.map { vo ->
+                        Semester(
+                            axisName = "${vo.year % 100}-${vo.semester}",
+                            fullName = String.format("%d년 %s학기", vo.year, vo.semester),
+                            gpa = vo.gpa.toGrade(),
+                            earnedCredit = vo.earnedCredit.toCredit(),
+                            isSeasonal = !(vo.semester.contains("1") || vo.semester.contains("2"))
+                        )
+                    }
+                }.onFailure { e -> Timber.e(e) }
+            }
+        }
     }
 }
