@@ -22,7 +22,7 @@ import androidx.room.PrimaryKey
 data class SemesterVO(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val year: Int,                  // ex: 2024
-    val semester: String,           // ex: “1학기”, “겨울학기”
+    val semester: String,           // ex: “1”, “winter”
     val semesterRank: Int,          // 학기 석차
     val semesterStudentCount: Int,  // 학기 수강생 수
     val overallRank: Int,           // 전체 석차
