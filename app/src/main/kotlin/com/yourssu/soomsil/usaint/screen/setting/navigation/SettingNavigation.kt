@@ -14,10 +14,12 @@ fun NavHostController.navigateToSetting(navOptions: NavOptions? = null) = naviga
 
 fun NavGraphBuilder.settingScreen(
     navigateToBack: () -> Unit,
+    navigateToWebView: (url: String) -> Unit = {},
 ){
     composable<Setting>{
         SettingScreen(
             onBackClick = navigateToBack,
+            navigateToWebView = navigateToWebView
         )
     }
 }

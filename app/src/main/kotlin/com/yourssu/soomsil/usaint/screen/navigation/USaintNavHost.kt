@@ -1,7 +1,10 @@
 package com.yourssu.soomsil.usaint.screen.navigation
 
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -23,6 +26,8 @@ fun USaintNavHost(
     modifier: Modifier = Modifier,
     startDestination: Any = Login,
 ) {
+    val context = LocalContext.current
+
     NavHost(
         navController = navController,
         modifier = modifier,
@@ -54,6 +59,11 @@ fun USaintNavHost(
         settingScreen(
             navigateToBack = {
                 navController.popBackStack()
+            },
+            navigateToWebView = { url ->
+                CustomTabsIntent.Builder().build().also {
+                    it.launchUrl(context, Uri.parse(url))
+                }
             }
         )
 

@@ -50,7 +50,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
-    //
+
+    // webview
+    implementation(libs.androidx.browser)
 
     // hilt dependencies
     implementation(libs.hilt.android)

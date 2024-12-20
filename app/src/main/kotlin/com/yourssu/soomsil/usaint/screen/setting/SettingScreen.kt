@@ -3,11 +3,9 @@ package com.yourssu.soomsil.usaint.screen.setting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +32,10 @@ import com.yourssu.design.R as YdsR
 fun SettingScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-){
+    navigateToWebView: (url: String) -> Unit = {},
+) {
+    val context = LocalContext.current
+
     YdsScaffold(
         modifier = modifier,
         topBar = {
@@ -100,14 +102,14 @@ fun SettingScreen(
                     ListItem(
                         text = stringResource(R.string.terms_of_service),
                         onClick = {
-                            // TODO
+                            navigateToWebView(context.getString(R.string.terms_of_service_url))
                         },
                     )
 
                     ListItem(
                         text = stringResource(R.string.terms_of_privacy_info),
                         onClick = {
-                            // TODO
+                            navigateToWebView(context.getString(R.string.terms_of_privacy_info_url))
                         },
                     )
                 }
@@ -118,8 +120,8 @@ fun SettingScreen(
 
 @Preview
 @Composable
-fun PreviewSettingScreen(){
-    YdsTheme{
+fun PreviewSettingScreen() {
+    YdsTheme {
         SettingScreen(onBackClick = {})
     }
 }
