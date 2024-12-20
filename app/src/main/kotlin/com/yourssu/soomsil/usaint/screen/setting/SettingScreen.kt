@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.setting
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +19,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.atom.ListItem
 import com.yourssu.design.system.compose.atom.Toggle
@@ -26,6 +32,7 @@ import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.component.List
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.design.R as YdsR
 
 @Composable
@@ -33,9 +40,29 @@ fun SettingScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     navigateToWebView: (url: String) -> Unit = {},
+    viewModel: SettingViewModel = hiltViewModel(),
+    navigateToLogin: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(lifecycleOwner.lifecycle) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.uiEvent.collect { uiEvent ->
+                when (uiEvent) {
+                    is UiEvent.Success -> {
+                        Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                        navigateToLogin()
+                    }
+
+                    is UiEvent.Failure -> {
+                        Toast.makeText(context, uiEvent.msg, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
     YdsScaffold(
         modifier = modifier,
         topBar = {
@@ -64,8 +91,7 @@ fun SettingScreen(
                     ListItem(
                         text = stringResource(id = R.string.setting_logout),
                         onClick = {
-                            // TODO
-                            onBackClick()
+                            viewModel.logout()
                         },
                     )
                 }

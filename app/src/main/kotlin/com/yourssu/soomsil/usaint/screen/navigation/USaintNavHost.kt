@@ -13,6 +13,7 @@ import com.yourssu.soomsil.usaint.screen.home.navigation.homeScreen
 import com.yourssu.soomsil.usaint.screen.home.navigation.navigateToHome
 import com.yourssu.soomsil.usaint.screen.login.navigation.Login
 import com.yourssu.soomsil.usaint.screen.login.navigation.loginScreen
+import com.yourssu.soomsil.usaint.screen.login.navigation.navigateToLogin
 import com.yourssu.soomsil.usaint.screen.semesterdetail.navigation.navigateToSemesterDetail
 import com.yourssu.soomsil.usaint.screen.semesterdetail.navigation.semesterDetailScreen
 import com.yourssu.soomsil.usaint.screen.semesterlist.navigation.navigateToSemesterList
@@ -64,6 +65,18 @@ fun USaintNavHost(
                 CustomTabsIntent.Builder().build().also {
                     it.launchUrl(context, Uri.parse(url))
                 }
+            },
+            navigateToLogin = {
+                navController.navigateToLogin(
+                    navOptions = navOptions {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = false
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                        restoreState = false
+                    }
+                )
             }
         )
 

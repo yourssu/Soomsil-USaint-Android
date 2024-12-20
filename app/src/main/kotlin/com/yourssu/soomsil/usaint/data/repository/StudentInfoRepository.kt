@@ -50,4 +50,8 @@ class StudentInfoRepository @Inject constructor(
         }
         return getStudentInfo(session)
     }
+
+    suspend fun deleteStudentInfo(): Result<Unit> {
+        return studentInfoDataStore.deleteStudentInfo()
+    }
 }
