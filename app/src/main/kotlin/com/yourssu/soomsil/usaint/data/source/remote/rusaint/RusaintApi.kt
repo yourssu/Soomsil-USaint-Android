@@ -3,6 +3,7 @@ package com.yourssu.soomsil.usaint.data.source.remote.rusaint
 import dev.eatsteak.rusaint.core.CourseType
 import dev.eatsteak.rusaint.core.GradeSummary
 import dev.eatsteak.rusaint.core.GraduationStudent
+import dev.eatsteak.rusaint.core.SemesterGrade
 import dev.eatsteak.rusaint.core.StudentInformation
 import dev.eatsteak.rusaint.ffi.CourseGradesApplicationBuilder
 import dev.eatsteak.rusaint.ffi.GraduationRequirementsApplicationBuilder
@@ -42,6 +43,14 @@ class RusaintApi @Inject constructor() {
     suspend fun getGraduationStudentInfo(session: USaintSession): Result<GraduationStudent> {
         return kotlin.runCatching {
             GraduationRequirementsApplicationBuilder().build(session).studentInfo()
+        }
+    }
+
+    // 학기별 평점 정보
+    // https://docs.rs/rusaint/latest/rusaint/application/course_grades/struct.CourseGradesApplication.html#method.semesters
+    suspend fun getSemesterGradeList(session: USaintSession): Result<List<SemesterGrade>> {
+        return kotlin.runCatching {
+            CourseGradesApplicationBuilder().build(session).semesters(CourseType.BACHELOR)
         }
     }
 }

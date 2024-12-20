@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.semesterlist
 
+import android.widget.Toast
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,10 +21,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.atom.CheckBox
 import com.yourssu.design.system.compose.atom.Divider
@@ -34,11 +40,12 @@ import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.component.chart.Chart
 import com.yourssu.soomsil.usaint.ui.component.chart.ChartData
 import com.yourssu.soomsil.usaint.ui.entities.Grade
-import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
+import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import kotlinx.coroutines.delay
@@ -52,6 +59,23 @@ fun SemesterListScreen(
     modifier: Modifier = Modifier,
     viewModel: SemesterListViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(lifecycleOwner.lifecycle) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.uiEvent.collect { uiEvent ->
+                when (uiEvent) {
+                    is UiEvent.Success -> {}
+
+                    is UiEvent.Failure -> {
+                        Toast.makeText(context, uiEvent.msg, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
     SemesterListScreen(
         isRefreshing = viewModel.isRefreshing,
         onRefresh = viewModel::refresh,
@@ -280,25 +304,25 @@ private fun SemesterListScreenPreview() {
                     axisName = "22-1",
                     fullName = "2022년 1학기",
                     gpa = 2.9.toGrade(),
-                    appliedCredit = 19.toCredit(),
+//                    appliedCredit = 19.toCredit(),
                 ),
                 Semester(
                     axisName = "22-2",
                     fullName = "2022년 2학기",
                     gpa = 4.2.toGrade(),
-                    appliedCredit = 19.5.toCredit(),
+//                    appliedCredit = 19.5.toCredit(),
                 ),
                 Semester(
                     axisName = "23-1",
                     fullName = "2023년 1학기",
                     gpa = 3.5.toGrade(),
-                    appliedCredit = 19.toCredit(),
+//                    appliedCredit = 19.toCredit(),
                 ),
                 Semester(
                     axisName = "23-2",
                     fullName = "2023년 2학기",
                     gpa = 3.8.toGrade(),
-                    appliedCredit = 19.toCredit(),
+//                    appliedCredit = 19.toCredit(),
                 ),
             ),
             includeSeasonalSemester = include,
