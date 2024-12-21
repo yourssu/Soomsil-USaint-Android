@@ -141,7 +141,7 @@ fun SemesterDetailScreen(
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    LaunchedEffect(initialTabIndex) {
+    LaunchedEffect(initialTabIndex, semesters) {
         pagerState.scrollToPage(initialTabIndex)
     }
 
