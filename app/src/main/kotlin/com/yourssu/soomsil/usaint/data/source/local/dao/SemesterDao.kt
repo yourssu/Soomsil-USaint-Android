@@ -22,4 +22,7 @@ interface SemesterDao {
     @Transaction
     @Query("SELECT * FROM Semester WHERE year = :year AND semester = :semesterName LIMIT 1")
     fun getSemesterWithLectures(year: Int, semesterName: String): SemesterWithLectures?
+
+    @Query("DELETE FROM Semester")
+    suspend fun deleteAll()
 }

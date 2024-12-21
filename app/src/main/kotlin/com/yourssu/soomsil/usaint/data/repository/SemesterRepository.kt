@@ -41,6 +41,12 @@ class SemesterRepository @Inject constructor(
         }
     }
 
+    suspend fun deleteAllSemester(): Result<Unit> {
+        return kotlin.runCatching {
+            withContext(Dispatchers.IO) { semesterDao.deleteAll() }
+        }
+    }
+
     suspend fun getAllRemoteSemesters(session: USaintSession): Result<List<SemesterVO>> {
         val semesterGradeList = rusaintApi.getSemesterGradeList(session).getOrElse { e ->
             return Result.failure(e)

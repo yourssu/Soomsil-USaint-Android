@@ -19,4 +19,7 @@ interface TotalReportCardDao {
     @Transaction
     @Query("SELECT * FROM total_report_card LIMIT 1")
     fun getTotalReportCardWithSemesters(): TotalReportCardWithSemesters?
+
+    @Query("DELETE FROM total_report_card")
+    suspend fun deleteAll()
 }
