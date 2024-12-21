@@ -41,9 +41,7 @@ fun USaintNavHost(
                     }
                 )
             },
-            navigateToBack = {
-                navController.popBackStack()
-            },
+            navigateToBack = { navController.popBackStack() },
         )
 
         homeScreen(
@@ -52,22 +50,16 @@ fun USaintNavHost(
         )
 
         settingScreen(
-            navigateToBack = {
-                navController.popBackStack()
-            }
+            navigateToBack = { navController.popBackStack() },
         )
 
         semesterListScreen(
-            navigateToSemesterListDetail = { navController.navigateToSemesterDetail() },
-            navigateToBack = {
-                navController.popBackStack()
-            },
+            navigateToSemesterListDetail = { idx -> navController.navigateToSemesterDetail(idx) },
+            navigateToBack = { navController.popBackStack() },
         )
 
         semesterDetailScreen(
-            navigateToBack = {
-                navController.popBackStack()
-            }
+            navigateToBack = { navController.popBackStack() },
         )
     }
 }

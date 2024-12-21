@@ -2,11 +2,17 @@ package com.yourssu.soomsil.usaint.data.type
 
 typealias RusaintSemesterType = dev.eatsteak.rusaint.core.SemesterType
 
-sealed class SemesterType(val year: Int, val storeFormat: String) {
-    class One(year: Int) : SemesterType(year, "1")
-    class Summer(year: Int) : SemesterType(year, "여름")
-    class Two(year: Int) : SemesterType(year, "2")
-    class Winter(year: Int) : SemesterType(year, "겨울")
+sealed class SemesterType(val storeFormat: String, val isSeasonal: Boolean) {
+    abstract val year: Int
+    val fullName: String
+        get() = "${year}년 ${storeFormat}학기"
+    val shortHandedName: String
+        get() = "${year % 100}-${storeFormat}"
+
+    data class One(override val year: Int) : SemesterType("1", false)
+    data class Summer(override val year: Int) : SemesterType("여름", true)
+    data class Two(override val year: Int) : SemesterType("2", false)
+    data class Winter(override val year: Int) : SemesterType("겨울", true)
 }
 
 fun makeSemesterType(year: Int, semester: String): SemesterType {

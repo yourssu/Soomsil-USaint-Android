@@ -103,8 +103,9 @@ class SemesterListViewModel @Inject constructor(
             }
         semesterVOListDeferred.await()
             .onSuccess {
-                semesters = it.map { vo -> vo.toSemester() }
-                semesterRepo.storeSemesters(*it.toTypedArray())
+                val reversed = it.reversed()
+                semesters = reversed.map { vo -> vo.toSemester() }
+                semesterRepo.storeSemesters(*reversed.toTypedArray())
             }
             .onFailure { e ->
                 Timber.e(e)

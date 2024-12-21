@@ -13,8 +13,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SemesterDetail(val initialTabIndex: Int)
 
-fun NavHostController.navigateToSemesterDetail(navOptions: NavOptions? = null) =
-    navigate(SemesterDetail(initialTabIndex = 0), navOptions)
+fun NavHostController.navigateToSemesterDetail(initialTabIndex: Int, navOptions: NavOptions? = null) =
+    navigate(SemesterDetail(initialTabIndex), navOptions)
 
 
 fun NavGraphBuilder.semesterDetailScreen(

@@ -35,6 +35,7 @@ import com.yourssu.design.system.compose.base.YdsScaffold
 import com.yourssu.design.system.compose.component.ScrollableTabBar
 import com.yourssu.design.system.compose.component.Tab
 import com.yourssu.design.system.compose.component.topbar.TopBar
+import com.yourssu.soomsil.usaint.data.type.SemesterType
 import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
 import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.Tier
@@ -50,7 +51,7 @@ import com.yourssu.design.R as YdsR
 @Composable
 fun SemesterDetailScreen(
     isRefreshing: Boolean,
-    onRefresh: (String) -> Unit,
+    onRefresh: (SemesterType) -> Unit,
     initialPage: Int,
     semesters: List<Semester>,
     semesterCoursesMap: Map<String, List<LectureInfo>>,
@@ -90,7 +91,7 @@ fun SemesterDetailScreen(
                     )
                     TopBarButton(
                         onClick = {
-                            onRefresh(semesters[pagerState.currentPage].fullName)
+                            onRefresh(semesters[pagerState.currentPage].type)
                         },
                         icon = YdsR.drawable.ic_refresh_line,
                     )
@@ -103,7 +104,7 @@ fun SemesterDetailScreen(
                                 onClick = {
                                     coroutineScope.launch { pagerState.animateScrollToPage(i) }
                                 },
-                                text = semester.fullName.substring(2),
+                                text = semester.type.fullName.substring(2),
                             )
                         }
                     }
@@ -114,16 +115,16 @@ fun SemesterDetailScreen(
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = {
-                onRefresh(semesters[pagerState.currentPage].fullName)
+                onRefresh(semesters[pagerState.currentPage].type)
             }
         ) {
             HorizontalPager(state = pagerState) { pagerIdx ->
                 val semester = semesters[pagerIdx]
-                semesterCoursesMap[semester.fullName]?.let { courses ->
+                semesterCoursesMap[semester.type.fullName]?.let { courses ->
                     Capturable(
                         controller = captureController,
                         predicate = { pagerState.currentPage == pagerIdx },
-                        onCaptured = { bitmap -> onCaptured(semester.fullName, bitmap) },
+                        onCaptured = { bitmap -> onCaptured(semester.type.fullName, bitmap) },
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
@@ -202,10 +203,10 @@ private fun SemesterDetailScreenPreview() {
             },
             initialPage = 0,
             semesters = listOf(
-                Semester(fullName = "2022년 1학기"),
-                Semester(fullName = "2022년 2학기"),
-                Semester(fullName = "2023년 1학기"),
-                Semester(fullName = "2023년 2학기"),
+//                Semester(fullName = "2022년 1학기"),
+//                Semester(fullName = "2022년 2학기"),
+//                Semester(fullName = "2023년 1학기"),
+//                Semester(fullName = "2023년 2학기"),
             ),
             semesterCoursesMap = mapOf(
                 "2022년 1학기" to listOf(
