@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.setting
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -68,6 +69,31 @@ fun SettingScreen(
         }
     }
 
+    SettingScreen(
+        onBackClick = onBackClick,
+        navigateToWebView = navigateToWebView,
+        dialogState = state.showDialog,
+        clickAlarmState = state.checkAlarm,
+        context = context,
+        updateDialogState = viewModel::updateDialogState,
+        updateAlarmState = viewModel::updateAlarmState,
+        logout = viewModel::logout,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun SettingScreen(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {},
+    navigateToWebView: (String) -> Unit = {},
+    dialogState: Boolean = false,
+    clickAlarmState: Boolean = false,
+    context: Context = LocalContext.current,
+    updateDialogState: (Boolean) -> Unit = {},
+    updateAlarmState: (Boolean) -> Unit = {},
+    logout: () -> Unit = {},
+){
     YdsScaffold(
         modifier = modifier,
         topBar = {
@@ -96,23 +122,23 @@ fun SettingScreen(
                     ListItem(
                         text = stringResource(id = R.string.setting_logout),
                         onClick = {
-                            viewModel.updateDialogState(true)
+                            updateDialogState(true)
                         },
                     )
                 }
             }
 
-            if(state.showDialog){
+            if(dialogState){
                 TwoButtonDialog(
                     title = "로그아웃 하시겠습니까?",
                     positiveButtonText = "로그아웃",
                     negativeButtonText = "취소",
                     onPositiveButtonClicked = {
-                        viewModel.logout()
-                        viewModel.updateDialogState(false)
+                        logout()
+                        updateDialogState(false)
                     },
                     onNegativeButtonClicked = {
-                        viewModel.updateDialogState(false)
+                        updateDialogState(false)
                     },
                     negativeButtonTextColor = Color.Blue,
                     positiveButtonTextColor = Color.Red,
@@ -135,9 +161,9 @@ fun SettingScreen(
                         )
 
                         Toggle(
-                            checked = state.checkAlarm,
+                            checked = clickAlarmState,
                             onCheckedChange = {
-                                viewModel.updateAlarmState(it)
+                                updateAlarmState(it)
                             },
                         )
                     }
@@ -171,6 +197,6 @@ fun SettingScreen(
 @Composable
 fun PreviewSettingScreen() {
     YdsTheme {
-        SettingScreen(onBackClick = {})
+        SettingScreen()
     }
 }
