@@ -13,12 +13,16 @@ import com.yourssu.soomsil.usaint.data.type.SemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
 import com.yourssu.soomsil.usaint.ui.entities.Semester
+import com.yourssu.soomsil.usaint.ui.entities.sortByGrade
 import com.yourssu.soomsil.usaint.ui.entities.toLectureInfo
 import com.yourssu.soomsil.usaint.ui.entities.toSemester
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -50,6 +54,13 @@ class SemesterDetailViewModel @Inject constructor(
         }
     }
 
+    fun refreshWhenEmpty(semester: SemesterType) {
+        if (!semesterLecturesMap[semester].isNullOrEmpty()) return
+        viewModelScope.launch {
+            refreshLectureInfos(semester)
+        }
+    }
+
     private fun initialize() {
         viewModelScope.launch {
             semesterRepo.getAllLocalSemesters()
@@ -65,26 +76,42 @@ class SemesterDetailViewModel @Inject constructor(
             semesters.forEach { semester ->
                 lectureRepo.getLocalLectures(semester.type)
                     .onSuccess { lectureVOs ->
-                        semesterLecturesMap[semester.type] = lectureVOs.map { it.toLectureInfo() }
+                        semesterLecturesMap[semester.type] = lectureVOs
+                            .map { it.toLectureInfo() }
+                            .sortByGrade()
                     }
                     .onFailure { e -> Timber.e(e) }
             }
         }
     }
 
+    private var session: USaintSession? = null
+    private var mutex: Mutex = Mutex()
+
     private suspend fun refreshLectureInfos(semester: SemesterType) {
-        val session = uSaintSessionRepo.getSession().getOrElse { e ->
-            Timber.e(e)
-            _uiEvent.emit(UiEvent.SessionFailure)
-            return
+        // 동시에 로그인 여러 번 하지 않도록
+        mutex.withLock {
+            if (session == null) {
+                session = uSaintSessionRepo.getSession().getOrElse { e ->
+                    Timber.e(e)
+                    _uiEvent.emit(UiEvent.SessionFailure)
+                    return
+                }
+            }
         }
-        lectureRepo.getRemoteLectures(session, semester)
+        lectureRepo.getRemoteLectures(session!!, semester)
             .onSuccess { lectureVOs ->
                 // update ui state
-                semesterLecturesMap[semester] = lectureVOs.map { it.toLectureInfo() }
+                semesterLecturesMap[semester] = lectureVOs
+                    .map { it.toLectureInfo() }
+                    .sortByGrade()
                 // store
                 lectureRepo.storeLectures(*lectureVOs.toTypedArray())
             }
-            .onFailure { e -> Timber.e(e) }
+            .onFailure { e ->
+                Timber.e(e)
+                _uiEvent.emit(UiEvent.RefreshFailure)
+            }
+        session = null
     }
 }

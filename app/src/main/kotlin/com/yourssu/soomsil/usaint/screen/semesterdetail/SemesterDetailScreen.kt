@@ -24,7 +24,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -92,6 +91,7 @@ fun SemesterDetailScreen(
     SemesterDetailScreen(
         isRefreshing = viewModel.isRefreshing,
         onRefresh = viewModel::refresh,
+        onRefreshWhenEmpty = viewModel::refreshWhenEmpty,
         initialTabIndex = initialTabIndex,
         semesters = viewModel.semesters,
         semesterLecturesMap = viewModel.semesterLecturesMap,
@@ -103,10 +103,7 @@ fun SemesterDetailScreen(
             saveBitmapUtil(
                 bitmap = bitmap,
                 context = context,
-                filename = context.resources.getString(
-                    R.string.capture_file_name_format,
-                    System.currentTimeMillis()
-                ),
+                filename = "soomsil_report_${System.currentTimeMillis()}.png",
                 onSuccess = {
                     Toast.makeText(context, "$semesterName 이미지를 저장했습니다.", Toast.LENGTH_SHORT).show()
                     captureFlag = CaptureFlag.None
@@ -126,6 +123,7 @@ fun SemesterDetailScreen(
 fun SemesterDetailScreen(
     isRefreshing: Boolean,
     onRefresh: (SemesterType) -> Unit,
+    onRefreshWhenEmpty: (SemesterType) -> Unit,
     initialTabIndex: Int,
     semesters: List<Semester>,
     semesterLecturesMap: Map<SemesterType, List<LectureInfo>>,
@@ -143,6 +141,12 @@ fun SemesterDetailScreen(
 
     LaunchedEffect(initialTabIndex, semesters) {
         pagerState.scrollToPage(initialTabIndex)
+    }
+
+    LaunchedEffect(pagerState.currentPage, semesters) {
+        // 현재 페이지의 강의 정보가 비어있으면 자동 refresh
+        if (pagerState.currentPage in semesters.indices)
+            onRefreshWhenEmpty(semesters[pagerState.currentPage].type)
     }
 
     YdsScaffold(
@@ -275,6 +279,7 @@ private fun SemesterDetailScreenPreview() {
                     isRefreshing = false
                 }
             },
+            onRefreshWhenEmpty = {},
             initialTabIndex = 0,
             semesters = listOf(
                 Semester(type = SemesterType.One(2022)),

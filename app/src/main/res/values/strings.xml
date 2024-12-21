@@ -69,6 +69,4 @@
     <string name="error_refresh_failure">새로고침 실패: 다시 시도해주세요.</string>
     <string name="error_unknown">알 수 없는 문제가 발생했습니다.</string>
     <string name="error_capture_fail">캡처 도중 오류가 발생했습니다.</string>
-
-    <string name="capture_file_name_format">soomsil_report_%ld.png</string>
 </resources>
