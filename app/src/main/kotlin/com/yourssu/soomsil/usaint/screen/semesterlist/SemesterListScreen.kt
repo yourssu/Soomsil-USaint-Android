@@ -1,7 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.semesterlist
 
 import android.widget.Toast
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +39,8 @@ import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.data.type.SemesterType
+import com.yourssu.soomsil.usaint.data.type.makeSemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.component.chart.Chart
 import com.yourssu.soomsil.usaint.ui.component.chart.ChartData
@@ -55,7 +56,7 @@ import com.yourssu.design.R as YdsR
 @Composable
 fun SemesterListScreen(
     onBackClick: () -> Unit,
-    onGradeListClick: (semesterName: String) -> Unit, // TODO: semester type
+    onGradeListClick: (initialTabIndex: Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SemesterListViewModel = hiltViewModel(),
 ) {
@@ -120,12 +121,12 @@ fun SemesterListScreen(
     reportCardSummary: ReportCardSummary,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onGradeListClick: (semesterName: String) -> Unit = {},
+    onGradeListClick: (initialTabIndex: Int) -> Unit = {},
 ) {
     val appliedSemesters = if (includeSeasonalSemester) {
         semesters
     } else {
-        semesters.filter { !it.isSeasonal }
+        semesters.filter { !it.type.isSeasonal }
     }
 
     YdsScaffold(
@@ -201,10 +202,10 @@ fun SemesterListScreen(
                 Column(
                     modifier = Modifier.padding(vertical = 8.dp),
                 ) {
-                    appliedSemesters.forEach { semester ->
+                    appliedSemesters.forEachIndexed { index, semester ->
                         SemesterReport(
                             semester = semester,
-                            onClick = onGradeListClick,
+                            onClick = { onGradeListClick(index) },
                         )
                     }
                 }
@@ -257,16 +258,13 @@ private fun ScoreDetail(
 @Composable
 private fun SemesterReport(
     semester: Semester,
-    onClick: (semesterName: String) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .ydsClickable(
-                interactionSource = remember { MutableInteractionSource() },
-                onClick = { onClick(semester.fullName) },
-            )
+            .ydsClickable(onClick = onClick)
             .padding(
                 top = 16.dp,
                 bottom = 16.dp,
@@ -281,7 +279,7 @@ private fun SemesterReport(
                 .padding(top = 4.dp),
         ) {
             YdsText(
-                text = semester.fullName,
+                text = semester.type.fullName,
                 style = YdsTheme.typography.subTitle2,
             )
             YdsText(
@@ -321,28 +319,32 @@ private fun SemesterListScreenPreview() {
             },
             semesters = listOf(
                 Semester(
-                    axisName = "22-1",
-                    fullName = "2022년 1학기",
+//                    axisName = "22-1",
+//                    fullName = "2022년 1학기",
+                    type = makeSemesterType(2022, "1"),
                     gpa = 2.9.toGrade(),
-//                    appliedCredit = 19.toCredit(),
+                    earnedCredit = 19.5.toCredit(),
                 ),
                 Semester(
-                    axisName = "22-2",
-                    fullName = "2022년 2학기",
+//                    axisName = "22-2",
+//                    fullName = "2022년 2학기",
+                    type = makeSemesterType(2022, "2"),
                     gpa = 4.2.toGrade(),
-//                    appliedCredit = 19.5.toCredit(),
+                    earnedCredit = 19.5.toCredit(),
                 ),
                 Semester(
-                    axisName = "23-1",
-                    fullName = "2023년 1학기",
+//                    axisName = "23-1",
+//                    fullName = "2023년 1학기",
+                    type = makeSemesterType(2023, "1"),
                     gpa = 3.5.toGrade(),
-//                    appliedCredit = 19.toCredit(),
+                    earnedCredit = 19.5.toCredit(),
                 ),
                 Semester(
-                    axisName = "23-2",
-                    fullName = "2023년 2학기",
+//                    axisName = "23-2",
+//                    fullName = "2023년 2학기",
+                    type = makeSemesterType(2023, "여름"),
                     gpa = 3.8.toGrade(),
-//                    appliedCredit = 19.toCredit(),
+                    earnedCredit = 19.5.toCredit(),
                 ),
             ),
             includeSeasonalSemester = include,

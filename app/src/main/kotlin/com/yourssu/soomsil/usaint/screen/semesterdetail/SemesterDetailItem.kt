@@ -26,6 +26,7 @@ import com.yourssu.design.system.compose.atom.Divider
 import com.yourssu.design.system.compose.atom.Thickness
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.data.type.makeSemesterType
 import com.yourssu.soomsil.usaint.ui.entities.Credit
 import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
@@ -48,7 +49,7 @@ fun SemesterDetailItem(
 //            .verticalScroll(rememberScrollState()), // Capturable 내에서 scroll 사용 불가 (unbound = true)
     ) {
         GradeSummary(
-            semesterName = semester.fullName,
+            semesterName = semester.type.fullName,
             gpa = semester.gpa,
             earnedCredit = semester.earnedCredit,
             semesterRank = semester.semesterRank,
@@ -266,8 +267,7 @@ private fun SemesterDetailItemPreview() {
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
             semester = Semester(
-                axisName = "",
-                fullName = "2020년 1학기",
+                makeSemesterType(2020, "1"),
                 gpa = 4.06.toGrade(),
                 earnedCredit = 17.5.toCredit(),
                 semesterRank = 15,

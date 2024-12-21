@@ -45,6 +45,7 @@ import androidx.core.graphics.component1
 import androidx.core.graphics.component2
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.rule.YdsBorder
+import com.yourssu.soomsil.usaint.data.type.makeSemesterType
 import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
@@ -132,7 +133,7 @@ fun Chart(
                 }
                 val xAxisTextLayoutResults = chartData.semesters.map { semester ->
                     textMeasurer.measure(
-                        text = semester.axisName,
+                        text = semester.type.shortHandedName,
                         style = axisTextStyle,
                     )
                 }
@@ -409,12 +410,12 @@ private fun ChartPreview() {
             Chart(
                 chartData = ChartData(
                     listOf(
-                        Semester("1-1", "", 3.5.toGrade()),
-                        Semester("1-2", "", 3.7.toGrade()),
-                        Semester("2-1", "", 4.2.toGrade()),
-                        Semester("2-2", "", 3.0.toGrade()),
-                        Semester("3-1", "", 3.5.toGrade()),
-                        Semester("3-2", "", 1.5.toGrade()),
+                        Semester(makeSemesterType(2022, "1"), 3.5.toGrade()),
+                        Semester(makeSemesterType(2022, "2"), 3.7.toGrade()),
+                        Semester(makeSemesterType(2023, "1"), 4.2.toGrade()),
+                        Semester(makeSemesterType(2023, "여름"), 4.5.toGrade()),
+                        Semester(makeSemesterType(2024, "1"), 3.5.toGrade()),
+                        Semester(makeSemesterType(2024, "겨울"), 1.5.toGrade()),
                     ),
                 ),
             )
@@ -433,7 +434,7 @@ private fun ChartPreview_2() {
         ) {
             Chart(
                 chartData = ChartData(
-                    listOf(Semester("1-1", "", 3.5.toGrade())),
+                    listOf(Semester(makeSemesterType(2022, "1"), 3.5.toGrade())),
                 ),
             )
         }
@@ -452,14 +453,14 @@ private fun ChartPreview_3() {
             Chart(
                 chartData = ChartData(
                     listOf(
-                        Semester("1-1", "", 3.5.toGrade()),
-                        Semester("1-여름", "", 3.5.toGrade()),
-                        Semester("1-2", "", 3.7.toGrade()),
-                        Semester("2-1", "", 4.2.toGrade()),
-                        Semester("2-2", "", 3.0.toGrade()),
-                        Semester("2-겨울", "", 3.0.toGrade()),
-                        Semester("3-1", "", 3.5.toGrade()),
-                        Semester("3-2", "", 1.5.toGrade()),
+                        Semester(makeSemesterType(2022, "1"), 3.5.toGrade()),
+                        Semester(makeSemesterType(2022, "2"), 3.7.toGrade()),
+                        Semester(makeSemesterType(2023, "1"), 4.2.toGrade()),
+                        Semester(makeSemesterType(2023, "여름"), 4.5.toGrade()),
+                        Semester(makeSemesterType(2023, "2"), 4.5.toGrade()),
+                        Semester(makeSemesterType(2023, "겨울"), 4.5.toGrade()),
+                        Semester(makeSemesterType(2024, "1"), 3.5.toGrade()),
+                        Semester(makeSemesterType(2024, "겨울"), 1.5.toGrade()),
                     ),
                 ),
             )

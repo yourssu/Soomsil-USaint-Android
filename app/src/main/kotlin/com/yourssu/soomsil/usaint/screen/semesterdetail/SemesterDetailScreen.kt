@@ -90,7 +90,7 @@ fun SemesterDetailScreen(
                     )
                     TopBarButton(
                         onClick = {
-                            onRefresh(semesters[pagerState.currentPage].fullName)
+//                            onRefresh(semesters[pagerState.currentPage].fullName)
                         },
                         icon = YdsR.drawable.ic_refresh_line,
                     )
@@ -103,7 +103,7 @@ fun SemesterDetailScreen(
                                 onClick = {
                                     coroutineScope.launch { pagerState.animateScrollToPage(i) }
                                 },
-                                text = semester.fullName.substring(2),
+                                text = semester.type.fullName.substring(2),
                             )
                         }
                     }
@@ -114,16 +114,16 @@ fun SemesterDetailScreen(
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = {
-                onRefresh(semesters[pagerState.currentPage].fullName)
+//                onRefresh(semesters[pagerState.currentPage].fullName)
             }
         ) {
             HorizontalPager(state = pagerState) { pagerIdx ->
                 val semester = semesters[pagerIdx]
-                semesterCoursesMap[semester.fullName]?.let { courses ->
+                semesterCoursesMap[semester.type.fullName]?.let { courses ->
                     Capturable(
                         controller = captureController,
                         predicate = { pagerState.currentPage == pagerIdx },
-                        onCaptured = { bitmap -> onCaptured(semester.fullName, bitmap) },
+                        onCaptured = { bitmap -> onCaptured(semester.type.fullName, bitmap) },
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
@@ -202,10 +202,10 @@ private fun SemesterDetailScreenPreview() {
             },
             initialPage = 0,
             semesters = listOf(
-                Semester(fullName = "2022년 1학기"),
-                Semester(fullName = "2022년 2학기"),
-                Semester(fullName = "2023년 1학기"),
-                Semester(fullName = "2023년 2학기"),
+//                Semester(fullName = "2022년 1학기"),
+//                Semester(fullName = "2022년 2학기"),
+//                Semester(fullName = "2023년 1학기"),
+//                Semester(fullName = "2023년 2학기"),
             ),
             semesterCoursesMap = mapOf(
                 "2022년 1학기" to listOf(
