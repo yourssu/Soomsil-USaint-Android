@@ -8,12 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
+import com.yourssu.soomsil.usaint.data.type.toSemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.toReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.toSemester
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.eatsteak.rusaint.core.SemesterType
 import dev.eatsteak.rusaint.ffi.RusaintException
 import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.async
@@ -134,6 +136,14 @@ class SemesterListViewModel @Inject constructor(
                 Timber.d("current semester: ${semesterVO?.year} ${semesterVO?.semester}")
                 if (semesterVO != null) {
                     semesterRepo.storeSemesters(semesterVO)
+                    semesters = semesters + listOf(semesterVO).map { vo -> vo.toSemester() }
+                    Timber.d(semesters.toString())
+                }
+
+                semesterRepo.getLocalSemester(2024, SemesterType.TWO.toSemesterType(2024)).onSuccess {
+                    Timber.d(it.toString())
+                }.onFailure {
+                    Timber.e(it)
                 }
             }
             .onFailure { e -> Timber.e(e) }
