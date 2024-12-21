@@ -1,14 +1,20 @@
 package com.yourssu.soomsil.usaint.screen.setting
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.ComponentActivity
+import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.util.copy
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
-import com.yourssu.soomsil.usaint.screen.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,15 +23,22 @@ data class SettingState(
     val checkAlarm: Boolean = false,
 )
 
+sealed class SettingEvent {
+    data class SuccessLogout(val msg: String): SettingEvent()
+    object ShowPermissionRequest : SettingEvent()
+    object NavigateToSettings : SettingEvent()
+    data class ClickToggle(val msg: String) : SettingEvent()
+}
+
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val studentInfoRepository: StudentInfoRepository
-): ViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingState())
-    val state: MutableStateFlow<SettingState> = _state
+    val state = _state.asStateFlow()
 
-    private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
+    private val _uiEvent = MutableSharedFlow<SettingEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
     fun updateDialogState(showDialog: Boolean) {
@@ -33,13 +46,61 @@ class SettingViewModel @Inject constructor(
     }
 
     fun updateAlarmState(checkAlarm: Boolean) {
-        _state.value = _state.value.copy(checkAlarm = checkAlarm)
+        viewModelScope.launch {
+            _state.value = _state.value.copy(checkAlarm = checkAlarm)
+            if(checkAlarm){
+                _uiEvent.emit(SettingEvent.ClickToggle("알림이 켜졌습니다."))
+            } else {
+                _uiEvent.emit(SettingEvent.ClickToggle("알림이 꺼졌습니다."))
+            }
+        }
     }
 
     fun logout() {
         viewModelScope.launch {
             studentInfoRepository.deleteStudentInfo()
-            _uiEvent.emit(UiEvent.Success)
+            _uiEvent.emit(SettingEvent.SuccessLogout("로그아웃 되었습니다."))
+        }
+    }
+
+    fun checkNotificationPermission(context: Context, isChecked: Boolean) {
+        if (isChecked) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                when {
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED -> {
+                        updateAlarmState(true)
+                    }
+                    shouldShowRequestPermissionRationale(
+                        context as ComponentActivity,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) -> {
+                        viewModelScope.launch {
+                            _uiEvent.emit(SettingEvent.ShowPermissionRequest)
+                        }
+                    }
+                    else -> {
+                        viewModelScope.launch {
+                            _uiEvent.emit(SettingEvent.NavigateToSettings)
+                        }
+                    }
+                }
+            } else {
+                updateAlarmState(true) // Android 13 미만은 권한 요청이 불필요
+            }
+        } else {
+            updateAlarmState(false)
+        }
+    }
+
+    fun handlePermissionResult(isGranted: Boolean) {
+        if (isGranted) {
+            updateAlarmState(true)
+        } else {
+            updateAlarmState(false)
         }
     }
 }
+
