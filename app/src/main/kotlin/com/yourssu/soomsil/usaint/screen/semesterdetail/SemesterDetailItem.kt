@@ -2,6 +2,7 @@ package com.yourssu.soomsil.usaint.screen.semesterdetail
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,14 +41,15 @@ import java.text.DecimalFormat
 @Composable
 fun SemesterDetailItem(
     semester: Semester,
-    captureFlag: CaptureFlag,
     modifier: Modifier = Modifier,
+    captureFlag: CaptureFlag = CaptureFlag.None,
     lectureInfos: List<LectureInfo> = emptyList(),
 ) {
     Column(
         modifier = modifier
             .background(YdsTheme.colors.bgNormal),
 //            .verticalScroll(rememberScrollState()), // Capturable 내에서 scroll 사용 불가 (unbound = true)
+        verticalArrangement = Arrangement.Top,
     ) {
         GradeSummary(
             semesterName = semester.type.fullName,
@@ -64,15 +67,22 @@ fun SemesterDetailItem(
             modifier = Modifier.padding(horizontal = 16.dp),
         )
 
-        Column {
-            lectureInfos.forEach { course ->
-                CourseGradeItem(
-                    tier = course.tier,
-                    courseName = course.name,
-                    professor = course.professorName,
-                    courseCredit = course.credit,
-                    captureFlag = captureFlag,
-                )
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            if (lectureInfos.isEmpty()) {
+                CircularProgressIndicator(color = YdsTheme.colors.buttonPoint)
+            } else {
+                lectureInfos.forEach { course ->
+                    CourseGradeItem(
+                        tier = course.tier,
+                        courseName = course.name,
+                        professor = course.professorName,
+                        courseCredit = course.credit,
+                        captureFlag = captureFlag,
+                    )
+                }
             }
         }
     }
@@ -283,7 +293,24 @@ private fun SemesterDetailItemPreview() {
                     professorName = tier,
                 )
             },
-            captureFlag = CaptureFlag.HidingInfo,
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun SemesterDetailItemPreview_empty() {
+    YdsTheme {
+        SemesterDetailItem(
+            semester = Semester(
+                makeSemesterType(2020, "1"),
+                gpa = 4.06.toGrade(),
+                earnedCredit = 17.5.toCredit(),
+                semesterRank = 15,
+                semesterStudentCount = 55,
+                overallRank = 12,
+                overallStudentCount = 100,
+            ),
         )
     }
 }
