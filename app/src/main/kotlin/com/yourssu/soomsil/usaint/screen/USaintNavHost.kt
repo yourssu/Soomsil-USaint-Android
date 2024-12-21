@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.screen.navigation
+package com.yourssu.soomsil.usaint.screen
 
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
@@ -47,9 +47,7 @@ fun USaintNavHost(
                     }
                 )
             },
-            navigateToBack = {
-                navController.popBackStack()
-            },
+            navigateToBack = { navController.popBackStack() },
         )
 
         homeScreen(
@@ -81,16 +79,12 @@ fun USaintNavHost(
         )
 
         semesterListScreen(
-            navigateToSemesterListDetail = { navController.navigateToSemesterDetail() },
-            navigateToBack = {
-                navController.popBackStack()
-            },
+            navigateToSemesterListDetail = { idx -> navController.navigateToSemesterDetail(idx) },
+            navigateToBack = { navController.popBackStack() },
         )
 
         semesterDetailScreen(
-            navigateToBack = {
-                navController.popBackStack()
-            }
+            navigateToBack = { navController.popBackStack() },
         )
     }
 }

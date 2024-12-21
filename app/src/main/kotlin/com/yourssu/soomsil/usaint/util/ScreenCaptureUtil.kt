@@ -134,7 +134,10 @@ private fun saveBitmapToExternalStorage(
     onSuccess: () -> Unit,
     onError: () -> Unit,
 ) {
-    val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), filename)
+    val file = File(
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+        filename
+    )
 
     try {
         val outputStream = FileOutputStream(file)
@@ -154,6 +157,10 @@ private fun requestStoragePermission(context: Context): Boolean {
 
     if (permissionGranted) return true
 
-    ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 101)
+    ActivityCompat.requestPermissions(
+        context as Activity,
+        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+        101
+    )
     return false
 }

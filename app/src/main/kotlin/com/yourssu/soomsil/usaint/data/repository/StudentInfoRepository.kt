@@ -9,14 +9,13 @@ import javax.inject.Inject
 
 class StudentInfoRepository @Inject constructor(
     private val studentInfoDataStore: StudentInfoDataStore,
-    private val uSaintSessionRepo: USaintSessionRepository,
     private val rusaintApi: RusaintApi
 ) {
-    suspend fun getPasswordFromDataStore(): Result<Pair<String, String>> {
+    suspend fun getLocalPassword(): Result<Pair<String, String>> {
         return studentInfoDataStore.getPassword()
     }
 
-    suspend fun getStudentInfoFromDataStore(): Result<StudentInfoDto> {
+    suspend fun getLocalStudentInfo(): Result<StudentInfoDto> {
         return studentInfoDataStore.getStudentInfo()
     }
 
@@ -28,7 +27,7 @@ class StudentInfoRepository @Inject constructor(
         return studentInfoDataStore.setStudentInfo(studentInfo)
     }
 
-    suspend fun getStudentInfo(session: USaintSession): Result<StudentInfoDto> {
+    suspend fun getRemoteStudentInfo(session: USaintSession): Result<StudentInfoDto> {
         val stuInfo = rusaintApi.getStudentInformation(session).getOrElse { e ->
             Timber.e(e)
             return Result.failure(e)
@@ -42,13 +41,6 @@ class StudentInfoRepository @Inject constructor(
                 term = stuInfo.term,
             )
         )
-    }
-
-    suspend fun getStudentInfo(): Result<StudentInfoDto> {
-        val session = uSaintSessionRepo.getSession().getOrElse { e ->
-            return Result.failure(e)
-        }
-        return getStudentInfo(session)
     }
 
     suspend fun deleteStudentInfo(): Result<Unit> {
