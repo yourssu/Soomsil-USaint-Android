@@ -61,15 +61,17 @@ class SemesterListViewModel @Inject constructor(
                 .onFailure { e -> Timber.e(e) }
             semesterRepo.getAllLocalSemesters()
                 .onSuccess { semesterList ->
-                    semesters = semesterList.map { vo -> vo.toSemester() }
+                    Timber.d(semesterList.toString()) // fixme: 가끔씩 빈 리스트 들어오는 경우 있음
+                    if (semesterList.isEmpty()) {
+                        // 비어있는 경우 refresh
+                        isRefreshing = true
+                        refreshAll()
+                        isRefreshing = false
+                    } else {
+                        semesters = semesterList.map { vo -> vo.toSemester() }
+                    }
                 }
                 .onFailure { e -> Timber.e(e) }
-            if (semesters.isEmpty()) {
-                // 비어있는 경우 refresh
-                isRefreshing = true
-                refreshAll()
-                isRefreshing = false
-            }
         }
     }
 
