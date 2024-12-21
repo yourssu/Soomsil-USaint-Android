@@ -6,5 +6,7 @@ package com.yourssu.soomsil.usaint.screen
  */
 interface UiEvent {
     data object Success : UiEvent
-    data class Failure(val msg: String) : UiEvent
+    data class Failure(val msg: String? = null) : UiEvent
+    data object SessionFailure : UiEvent
+    data object RefreshFailure : UiEvent
 }

@@ -52,7 +52,8 @@ class DaoTest {
         val totalReportCard = TotalReportCardVO(
             id = 1,
             earnedCredit = 120f,
-            gpa = 3.8f
+            gpa = 3.8f,
+            graduateCredit = 130f
         )
         totalReportCardDao.insertTotalReportCard(totalReportCard)
 
@@ -69,7 +70,8 @@ class DaoTest {
         val totalReportCard = TotalReportCardVO(
             id = 1,
             earnedCredit = 120f,
-            gpa = 3.8f
+            gpa = 3.8f,
+            graduateCredit = 130f
         )
         totalReportCardDao.insertTotalReportCard(totalReportCard)
 
@@ -117,7 +119,8 @@ class DaoTest {
         val totalReportCard = TotalReportCardVO(
             id = 1,
             earnedCredit = 120f,
-            gpa = 3.8f
+            gpa = 3.8f,
+            graduateCredit = 130f
         )
         totalReportCardDao.insertTotalReportCard(totalReportCard)
 
@@ -174,7 +177,7 @@ class DaoTest {
     @Test
     fun totalReportCardWithSemestersTest(): Unit = runBlocking {
         // TotalReportCard 삽입
-        totalReportCardDao.insertTotalReportCard(TotalReportCardVO(id = 1, 100f, 3.5f))
+        totalReportCardDao.insertTotalReportCard(TotalReportCardVO(id = 1, 100f, 3.5f, 120f))
 
         // Semester 삽입
         val a = semesterDao.insertSemester(

@@ -11,7 +11,7 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.TotalReportCardWithSe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class ReportCardRepository(
+class ReportCardRepository1(
     private val totalReportCardDao: TotalReportCardDao,
     private val semesterDao: SemesterDao,
     private val lectureDao: LectureDao

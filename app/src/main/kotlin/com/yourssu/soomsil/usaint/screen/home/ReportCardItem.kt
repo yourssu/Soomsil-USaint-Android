@@ -1,34 +1,36 @@
 package com.yourssu.soomsil.usaint.screen.home
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.yourssu.design.system.compose.YdsTheme
-import com.yourssu.design.system.compose.atom.BoxButton
-import com.yourssu.design.system.compose.atom.BoxButtonSize
-import com.yourssu.design.system.compose.atom.BoxButtonType
 import com.yourssu.design.system.compose.atom.Divider
 import com.yourssu.design.system.compose.atom.Thickness
 import com.yourssu.design.system.compose.base.Surface
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.ui.entities.Grade
-import com.yourssu.soomsil.usaint.ui.entities.TotalReportCardInfo
+import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
 
 @Composable
 fun ReportCardItem(
-    totalReportCardInfo: TotalReportCardInfo,
+    reportCardSummary: ReportCardSummary,
     modifier: Modifier = Modifier,
     onReportCardClick: () -> Unit = {},
 ) {
@@ -60,7 +62,7 @@ fun ReportCardItem(
                 onClick = onReportCardClick,
             )
             ReportCardSummary(
-                totalReportCardInfo = totalReportCardInfo,
+                reportCardSummary = reportCardSummary,
                 onReportCardClick = onReportCardClick
             )
         }
@@ -69,14 +71,14 @@ fun ReportCardItem(
 
 @Composable
 private fun ReportCardSummary(
-    totalReportCardInfo: TotalReportCardInfo,
+    reportCardSummary: ReportCardSummary,
     modifier: Modifier = Modifier,
     onReportCardClick: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
         ReportOutline(
             title = stringResource(R.string.saint_grade_detail_average_grade),
-            actualValue = totalReportCardInfo.gpa.formatToString(),
+            actualValue = reportCardSummary.gpa.formatToString(),
             maxValue = Grade.Max.formatToString(),
         )
         Divider(
@@ -85,23 +87,43 @@ private fun ReportCardSummary(
         )
         ReportOutline(
             title = stringResource(R.string.saint_grade_detail_creadit),
-            actualValue = totalReportCardInfo.earnedCredit.formatToString(),
-            maxValue = totalReportCardInfo.graduateCredit.formatToString(),
+            actualValue = reportCardSummary.earnedCredit.formatToString(),
+            maxValue = reportCardSummary.graduateCredit.formatToString(),
         )
-        BoxButton(
+
+        // 전체성적 보기 버튼
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
                     start = 16.dp,
                     end = 16.dp,
                     top = 10.dp,
-                ),
-            onClick = onReportCardClick,
-            text = stringResource(R.string.saint_grade_see_all),
-            leftIcon = com.yourssu.design.R.drawable.ic_board_line,
-            sizeType = BoxButtonSize.Medium,
-            buttonType = BoxButtonType.Line,
-        )
+                )
+                .clip(RoundedCornerShape(8.dp))
+                .height(40.dp)
+                .background(color = YdsTheme.colors.bgSelected)
+                .clickable(onClick = onReportCardClick),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            YdsText(
+                text = stringResource(R.string.saint_grade_see_all)
+            )
+        }
+//        BoxButton(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(
+//                    start = 16.dp,
+//                    end = 16.dp,
+//                    top = 10.dp,
+//                ),
+//            onClick = onReportCardClick,
+//            text = stringResource(R.string.saint_grade_see_all),
+//            sizeType = BoxButtonSize.Medium,
+//            buttonType = BoxButtonType.Filled,
+//        )
     }
 }
 
@@ -156,7 +178,7 @@ private fun ReportOutline(
 private fun ReportCardItemPreview() {
     YdsTheme {
         ReportCardItem(
-            totalReportCardInfo = TotalReportCardInfo(
+            reportCardSummary = ReportCardSummary(
                 gpa = 4.22.toGrade(),
                 earnedCredit = 97.toCredit(),
                 graduateCredit = 133.toCredit(),
@@ -171,7 +193,7 @@ private fun ReportCardSummaryPreview() {
     YdsTheme {
         Surface {
             ReportCardSummary(
-                totalReportCardInfo = TotalReportCardInfo(
+                reportCardSummary = ReportCardSummary(
                     gpa = 4.22.toGrade(),
                     earnedCredit = 97.toCredit(),
                     graduateCredit = 133.toCredit(),
