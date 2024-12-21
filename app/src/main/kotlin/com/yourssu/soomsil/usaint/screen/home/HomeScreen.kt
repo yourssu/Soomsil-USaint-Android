@@ -37,8 +37,8 @@ import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.SingleTitleTopBar
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.screen.UiEvent
-import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
+import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import com.yourssu.design.R as YdsR
@@ -58,11 +58,31 @@ fun HomeScreen(
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.uiEvent.collect { uiEvent ->
                 when (uiEvent) {
-                    is UiEvent.Success -> {}
-
                     is UiEvent.Failure -> {
-                        Toast.makeText(context, uiEvent.msg, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            uiEvent.msg ?: context.resources.getString(R.string.error_unknown),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+
+                    is UiEvent.SessionFailure -> {
+                        Toast.makeText(
+                            context,
+                            context.resources.getString(R.string.error_session_failure),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    is UiEvent.RefreshFailure -> {
+                        Toast.makeText(
+                            context,
+                            context.resources.getString(R.string.error_refresh_failure),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    else -> {}
                 }
             }
         }

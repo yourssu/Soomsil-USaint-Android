@@ -41,11 +41,10 @@ class LoginViewModel @Inject constructor(
             // 실패 시 Error 이벤트 발생 후 종료
             val session = uSaintSessionRepo.withPassword(id, pw).getOrElse { e ->
                 Timber.e(e)
-                val errMsg = when (e) {
-                    is RusaintException -> "로그인에 실패했습니다. 다시 시도해주세요."
-                    else -> "알 수 없는 문제가 발생했습니다."
+                when (e) {
+                    is RusaintException -> _uiEvent.emit(UiEvent.SessionFailure)
+                    else -> _uiEvent.emit(UiEvent.Failure())
                 }
-                _uiEvent.emit(UiEvent.Failure(errMsg))
                 isLoading = false
                 return@launch
             }

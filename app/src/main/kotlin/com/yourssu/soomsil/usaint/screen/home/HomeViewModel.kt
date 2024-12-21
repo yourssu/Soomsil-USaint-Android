@@ -49,17 +49,16 @@ class HomeViewModel @Inject constructor(
             isRefreshing = true
             val session = uSaintSessionRepo.getSession().getOrElse { e ->
                 Timber.e(e)
-                _uiEvent.emit(UiEvent.Failure("로그인 실패: 비밀번호를 확인해주세요."))
+                _uiEvent.emit(UiEvent.SessionFailure)
                 isRefreshing = false
                 return@launch
             }
             val stuDto = studentInfoRepo.getRemoteStudentInfo(session).getOrElse { e ->
                 Timber.e(e)
-                val errMsg = when (e) {
-                    is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
-                    else -> "알 수 없는 문제가 발생했습니다."
+                when (e) {
+                    is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
+                    else -> _uiEvent.emit(UiEvent.Failure())
                 }
-                _uiEvent.emit(UiEvent.Failure(errMsg))
                 isRefreshing = false
                 return@launch
             }
@@ -105,7 +104,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val session = uSaintSessionRepo.getSession().getOrElse { e ->
                 Timber.e(e)
-                _uiEvent.emit(UiEvent.Failure("로그인 실패: 비밀번호를 확인해주세요."))
+                _uiEvent.emit(UiEvent.SessionFailure)
                 return@launch
             }
             totalReportCardRepo.getReportCard(session).collect { result ->

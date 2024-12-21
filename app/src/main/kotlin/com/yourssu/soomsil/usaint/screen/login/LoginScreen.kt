@@ -63,6 +63,8 @@ fun LoginScreen(
                     is UiEvent.Failure -> {
                         Toast.makeText(context, uiEvent.msg, Toast.LENGTH_SHORT).show()
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -88,7 +90,6 @@ fun LoginScreen(
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier,
-//    onBackClick: () -> Unit = {},
 ) {
     YdsScaffold(
         modifier = modifier,

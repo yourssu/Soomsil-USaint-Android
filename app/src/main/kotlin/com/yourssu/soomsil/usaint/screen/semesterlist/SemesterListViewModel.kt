@@ -76,39 +76,42 @@ class SemesterListViewModel @Inject constructor(
     private suspend fun refreshAll() {
         val session = uSaintSessionRepo.getSession().getOrElse { e ->
             Timber.e(e)
-            _uiEvent.emit(UiEvent.Failure("로그인 실패: 비밀번호 또는 네트워크를 확인해주세요."))
+            _uiEvent.emit(UiEvent.SessionFailure)
             return
         }
-        val totalReportCard = viewModelScope.async {
-            totalReportCardRepo.getRemoteReportCard(session).getOrElse { e ->
-                Timber.e(e)
-                val errMsg = when (e) {
-                    is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
-                    else -> "알 수 없는 문제가 발생했습니다."
-                }
-                _uiEvent.emit(UiEvent.Failure(errMsg))
-                null
-            }
+        val totalReportCardDeferred = viewModelScope.async {
+            totalReportCardRepo.getRemoteReportCard(session)
         }
-        val semesterVOList = viewModelScope.async {
-            semesterRepo.getAllRemoteSemesters(session).getOrElse { e ->
-                Timber.e(e)
-                val errMsg = when (e) {
-                    is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
-                    else -> "알 수 없는 문제가 발생했습니다."
-                }
-                _uiEvent.emit(UiEvent.Failure(errMsg))
-                null
-            }
+        val semesterVOListDeferred = viewModelScope.async {
+            semesterRepo.getAllRemoteSemesters(session)
         }
         // ui state 변경 및 DB 갱신
-        totalReportCard.await()?.let {
-            reportCardSummary = it.toReportCardSummary()
-            totalReportCardRepo.storeReportCard(it)
-        }
-        semesterVOList.await()?.let {
-            semesters = it.map { vo -> vo.toSemester() }
-            semesterRepo.storeSemesters(*it.toTypedArray())
-        }
+        totalReportCardDeferred.await()
+            .onSuccess {
+                reportCardSummary = it.toReportCardSummary()
+                totalReportCardRepo.storeReportCard(it)
+            }
+            .onFailure { e ->
+                Timber.e(e)
+                when (e) {
+                    is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
+                    else -> _uiEvent.emit(UiEvent.Failure())
+                }
+                return
+            }
+        semesterVOListDeferred.await()
+            .onSuccess {
+                semesters = it.map { vo -> vo.toSemester() }
+                semesterRepo.storeSemesters(*it.toTypedArray())
+            }
+            .onFailure { e ->
+                Timber.e(e)
+                when (e) {
+                    is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
+                    else -> _uiEvent.emit(UiEvent.Failure())
+                }
+                return
+            }
+        _uiEvent.emit(UiEvent.Success)
     }
 }
