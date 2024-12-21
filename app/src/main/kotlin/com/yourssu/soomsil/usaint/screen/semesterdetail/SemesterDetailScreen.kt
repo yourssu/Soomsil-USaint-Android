@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -189,7 +190,8 @@ fun SemesterDetailScreen(
             isRefreshing = isRefreshing,
             onRefresh = {
                 onRefresh(semesters[pagerState.currentPage].type)
-            }
+            },
+            modifier = Modifier.fillMaxSize(),
         ) {
             HorizontalPager(state = pagerState) { pagerIdx ->
                 val semester = semesters[pagerIdx]
@@ -199,7 +201,6 @@ fun SemesterDetailScreen(
                         predicate = { pagerState.currentPage == pagerIdx },
                         onCaptured = { bitmap -> onCaptured(semester.type.fullName, bitmap) },
                         modifier = Modifier
-                            .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                             .wrapContentHeight(unbounded = true), // 기기 밖의 화면도 캡처하기 위해 필요함
                     ) {
