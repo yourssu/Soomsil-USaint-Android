@@ -39,15 +39,6 @@ class TotalReportCardRepository @Inject constructor(
             return Result.failure(e)
         }
 
-        // Update local DB
-        storeReportCard(
-            TotalReportCardVO(
-                earnedCredit = gradeSummary.earnedCredits,
-                graduateCredit = graduationStudentInfo.graduationPoints,
-                gpa = gradeSummary.gradePointsAvarage,
-            )
-        )
-
         return Result.success(
             TotalReportCardVO(
                 earnedCredit = gradeSummary.earnedCredits,
@@ -73,6 +64,7 @@ class TotalReportCardRepository @Inject constructor(
             onSuccess = { remoteData ->
                 // Emit remote data
                 emit(Result.success(remoteData))
+                storeReportCard(remoteData)
             },
             onFailure = { e ->
                 // If no local data was previously emitted, emit the failure

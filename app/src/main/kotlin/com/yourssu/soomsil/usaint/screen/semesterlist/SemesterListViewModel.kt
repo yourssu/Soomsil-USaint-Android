@@ -101,13 +101,14 @@ class SemesterListViewModel @Inject constructor(
                 null
             }
         }
-        // ui state 변경
+        // ui state 변경 및 DB 갱신
         totalReportCard.await()?.let {
             reportCardSummary = it.toReportCardSummary()
+            totalReportCardRepo.storeReportCard(it)
         }
         semesterVOList.await()?.let {
             semesters = it.map { vo -> vo.toSemester() }
+            semesterRepo.storeSemesters(*it.toTypedArray())
         }
-        _uiEvent.emit(UiEvent.Success)
     }
 }

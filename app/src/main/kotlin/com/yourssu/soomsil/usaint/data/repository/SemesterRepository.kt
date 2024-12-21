@@ -33,35 +33,17 @@ class SemesterRepository @Inject constructor(
         }
     }
 
-    suspend fun storeSemester(semester: SemesterVO): Result<Unit> {
+    suspend fun storeSemesters(vararg semesters: SemesterVO): Result<Unit> {
         return kotlin.runCatching {
-            withContext(Dispatchers.IO) { semesterDao.insertSemester(semester) }
+            withContext(Dispatchers.IO) {
+                semesters.forEach { semesterDao.insertSemester(it) }
+            }
         }
     }
 
     suspend fun getAllRemoteSemesters(session: USaintSession): Result<List<SemesterVO>> {
         val semesterGradeList = rusaintApi.getSemesterGradeList(session).getOrElse { e ->
             return Result.failure(e)
-        }
-
-        // Update local cache
-        semesterGradeList.forEach { semesterGrade ->
-            storeSemester(
-                SemesterVO(
-                    year = semesterGrade.year.toInt(),
-                    semester = makeSemesterType(
-                        semesterGrade.year.toInt(),
-                        semesterGrade.semester
-                    ).storeFormat,
-                    semesterRank = semesterGrade.semesterRank.first.toInt(),
-                    semesterStudentCount = semesterGrade.semesterRank.second.toInt(),
-                    overallRank = semesterGrade.generalRank.first.toInt(),
-                    overallStudentCount = semesterGrade.generalRank.second.toInt(),
-                    earnedCredit = semesterGrade.earnedCredits,
-                    gpa = semesterGrade.gradePointsAvarage,
-                    totalReportCardId = 1, // 항상 1
-                )
-            )
         }
 
         return Result.success(semesterGradeList.map { semesterGrade ->
@@ -97,6 +79,7 @@ class SemesterRepository @Inject constructor(
             onSuccess = { remoteData ->
                 // Emit remote data
                 emit(Result.success(remoteData))
+                storeSemesters(*remoteData.toTypedArray())
             },
             onFailure = { e ->
                 emit(Result.failure(e))
