@@ -85,15 +85,17 @@ fun Chart(
 
     val animationProgress = remember { Animatable(0f) }
 
-    var highlightedSemester by remember { mutableStateOf<Int?>((grades.size - 1) / 2) }
+    var highlightedIndex by remember { mutableStateOf<Int?>(null) }
     var graphOffsetX: Float? = null
 
-    LaunchedEffect(chartData) {
+    LaunchedEffect(chartData, grades) {
+        // 최댓값의 인덱스로 초기화
+        highlightedIndex = grades.indices.maxBy { grades[it] }
         animationProgress.animateTo(
             targetValue = 1f,
             tween(
-                durationMillis = 3000,
-                delayMillis = 500,
+                durationMillis = 2000,
+                delayMillis = 300,
                 easing = ChartDefaults.Easing,
             ),
         )
@@ -119,8 +121,8 @@ fun Chart(
                                 .roundToInt()
                                 .coerceIn(0, chartData.semesters.size - 1)
                         }
-                        highlightedSemester =
-                            if (highlightedSemester == selected) null else selected
+                        highlightedIndex =
+                            if (highlightedIndex == selected) null else selected
                     },
                 )
             }
@@ -268,7 +270,7 @@ fun Chart(
                         )
                     }
 
-                    highlightedSemester?.let { idx ->
+                    highlightedIndex?.let { idx ->
                         this.drawHighlight(
                             index = idx,
                             grades = grades,
@@ -340,6 +342,7 @@ fun DrawScope.drawHighlight(
     textColor: Color,
     containerColor: Color,
 ) {
+    if (index !in points.indices) return
     val (pointX, pointY) = points[index]
     val gradeText = grades[index].formatToString(digit = 2)
     val textLayoutResult = textMeasurer.measure(gradeText, style = textStyle)
@@ -414,8 +417,6 @@ private fun ChartPreview() {
                         Semester(makeSemesterType(2022, "2"), 3.7.toGrade()),
                         Semester(makeSemesterType(2023, "1"), 4.2.toGrade()),
                         Semester(makeSemesterType(2023, "여름"), 4.5.toGrade()),
-                        Semester(makeSemesterType(2024, "1"), 3.5.toGrade()),
-                        Semester(makeSemesterType(2024, "겨울"), 1.5.toGrade()),
                     ),
                 ),
             )

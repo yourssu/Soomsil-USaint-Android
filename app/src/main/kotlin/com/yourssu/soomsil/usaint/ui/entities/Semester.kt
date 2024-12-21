@@ -7,8 +7,6 @@ import com.yourssu.soomsil.usaint.data.type.makeSemesterType
 
 @Immutable
 data class Semester(
-//    val axisName: String = "",                  // ex: 1-2
-//    val fullName: String = "",                  // ex: 2020년 2학기
     val type: SemesterType,                     // 학기의 종류
     val gpa: Grade = Grade.Zero,                // 평균 학점
     val earnedCredit: Credit = Credit.Zero,     // 취득 학점
@@ -21,8 +19,6 @@ data class Semester(
 )
 
 fun SemesterVO.toSemester() = Semester(
-//    axisName = "${year % 100}-$semester",
-//    fullName = "${year}년 ${semester}학기",
     type = makeSemesterType(year, semester),
     gpa = gpa.toGrade(),
     earnedCredit = earnedCredit.toCredit(),
@@ -30,5 +26,4 @@ fun SemesterVO.toSemester() = Semester(
     semesterStudentCount = semesterStudentCount,
     overallRank = overallRank,
     overallStudentCount = overallStudentCount,
-//    isSeasonal = !(semester.contains("1") || semester.contains("2")),
 )

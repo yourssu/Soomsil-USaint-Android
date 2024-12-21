@@ -39,7 +39,6 @@ import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.data.type.SemesterType
 import com.yourssu.soomsil.usaint.data.type.makeSemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.component.chart.Chart
@@ -319,31 +318,23 @@ private fun SemesterListScreenPreview() {
             },
             semesters = listOf(
                 Semester(
-//                    axisName = "22-1",
-//                    fullName = "2022년 1학기",
                     type = makeSemesterType(2022, "1"),
                     gpa = 2.9.toGrade(),
                     earnedCredit = 19.5.toCredit(),
                 ),
                 Semester(
-//                    axisName = "22-2",
-//                    fullName = "2022년 2학기",
                     type = makeSemesterType(2022, "2"),
                     gpa = 4.2.toGrade(),
                     earnedCredit = 19.5.toCredit(),
                 ),
                 Semester(
-//                    axisName = "23-1",
-//                    fullName = "2023년 1학기",
                     type = makeSemesterType(2023, "1"),
                     gpa = 3.5.toGrade(),
                     earnedCredit = 19.5.toCredit(),
                 ),
                 Semester(
-//                    axisName = "23-2",
-//                    fullName = "2023년 2학기",
                     type = makeSemesterType(2023, "여름"),
-                    gpa = 3.8.toGrade(),
+                    gpa = 4.5.toGrade(),
                     earnedCredit = 19.5.toCredit(),
                 ),
             ),
