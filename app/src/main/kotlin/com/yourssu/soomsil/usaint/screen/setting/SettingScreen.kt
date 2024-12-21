@@ -32,10 +32,10 @@ import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.util.TwoButtonDialog
 import com.yourssu.design.R as YdsR
-import com.yourssu.design.system.compose.component.toast.Toast
 
 @Composable
 fun SettingScreen(
+    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     navigateToWebView: (url: String) -> Unit = {},
     navigateToLogin: () -> Unit = {},
@@ -79,6 +79,7 @@ fun SettingScreen(
     }
 
     SettingScreen(
+        modifier = modifier,
         onBackClick = onBackClick,
         navigateToWebView = navigateToWebView,
         dialogState = state.showDialog,
@@ -94,6 +95,7 @@ fun SettingScreen(
 
 @Composable
 fun SettingScreen(
+    modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     navigateToWebView: (String) -> Unit = {},
     dialogState: Boolean = false,
@@ -117,7 +119,7 @@ fun SettingScreen(
         },
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = modifier.padding(horizontal = 16.dp)
         ) {
             YdsText(
                 text = stringResource(id = R.string.setting),
@@ -150,7 +152,7 @@ fun SettingScreen(
             List(subHeader = stringResource(R.string.alarm)) {
                 item {
                     Row(
-                        modifier = Modifier
+                        modifier = modifier
                             .fillMaxWidth()
                             .height(48.dp)
                             .padding(horizontal = 20.dp),
