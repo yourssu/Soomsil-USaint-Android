@@ -12,13 +12,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Blue
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,8 +29,8 @@ fun TwoButtonDialog(
     positiveButtonText: String,
     onNegativeButtonClicked: () -> Unit,
     onPositiveButtonClicked: () -> Unit,
-    negativeButtonTextColor: Color = Red,
-    positiveButtonTextColor: Color = Blue,
+    negativeButtonTextColor: Color = YdsTheme.colors.buttonWarned,
+    positiveButtonTextColor: Color = YdsTheme.colors.logoDarkBlue,
     modifier: Modifier = Modifier,
     title: String? = null,
     description: String? = null,
@@ -55,6 +52,8 @@ fun TwoButtonDialog(
                 if (title != null) {
                     YdsText(
                         text = title,
+                        style = YdsTheme.typography.subTitle2,
+                        color = YdsTheme.colors.textPrimary,
                         modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
                     )
                 }
@@ -62,6 +61,8 @@ fun TwoButtonDialog(
                 if (description != null) {
                     YdsText(
                         text = description,
+                        style = YdsTheme.typography.body1,
+                        color = YdsTheme.colors.textPrimary,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 10.dp)
@@ -75,9 +76,23 @@ fun TwoButtonDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(text = negativeButtonText, modifier = Modifier.padding(10.dp).clickable { onNegativeButtonClicked() }, color = negativeButtonTextColor)
+                    YdsText(
+                        text = negativeButtonText,
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .clickable { onNegativeButtonClicked() },
+                        color = negativeButtonTextColor,
+                        style = YdsTheme.typography.subTitle3
+                    )
                     Spacer(modifier = Modifier.width(24.dp))
-                    Text(text = positiveButtonText, modifier = Modifier.padding(10.dp).clickable { onPositiveButtonClicked() }, color = positiveButtonTextColor)
+                    YdsText(
+                        text = positiveButtonText,
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .clickable { onPositiveButtonClicked() },
+                        color = positiveButtonTextColor,
+                        style = YdsTheme.typography.subTitle3
+                    )
 
                 }
             }
@@ -94,10 +109,22 @@ fun TwoButtonDialogPreview() {
             positiveButtonText = "확인",
             onNegativeButtonClicked = {},
             onPositiveButtonClicked = {},
-            title = "타이틀",
+            title = "로그아웃 하시겠습니까?",
+        )
+    }
+}
+
+@Composable
+@Preview
+fun TwoButtonDialogWithDescriptionPreview() {
+    YdsTheme {
+        TwoButtonDialog(
+            negativeButtonText = "취소",
+            positiveButtonText = "확인",
+            onNegativeButtonClicked = {},
+            onPositiveButtonClicked = {},
+            title = "로그아웃 하시겠습니까?",
             description = "설명설명설명설명설명설명설명",
-            negativeButtonTextColor = Red,
-            positiveButtonTextColor = Blue
         )
     }
 }
