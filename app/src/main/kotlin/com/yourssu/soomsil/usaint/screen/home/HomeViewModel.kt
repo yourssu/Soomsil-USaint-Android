@@ -84,6 +84,7 @@ class HomeViewModel @Inject constructor(
                 graduateCredit = totalReportCard.graduateCredit.toCredit(),
             )
             // DB 갱신
+            totalReportCardRepo.storeReportCard(totalReportCard).onFailure { e -> Timber.e(e) }
             studentInfoRepo.storeStudentInfo(stuDto).onFailure { e -> Timber.e(e) }
             _uiEvent.emit(UiEvent.Success)
             isRefreshing = false
