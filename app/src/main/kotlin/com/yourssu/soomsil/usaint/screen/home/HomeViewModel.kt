@@ -13,6 +13,8 @@ import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.entities.toReportCardSummary
+import com.yourssu.soomsil.usaint.ui.entities.toStudentInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -91,13 +93,11 @@ class HomeViewModel @Inject constructor(
 
     private fun getStudentInfo() {
         viewModelScope.launch {
-            studentInfoRepo.getLocalStudentInfo().onSuccess { stu ->
-                studentInfo = StudentInfo(
-                    name = stu.name,
-                    department = stu.department,
-                    grade = stu.grade.toInt(),
-                )
-            }.onFailure { e -> Timber.e(e) }
+            studentInfoRepo.getLocalStudentInfo()
+                .onSuccess { stu ->
+                    studentInfo = stu.toStudentInfo()
+                }
+                .onFailure { e -> Timber.e(e) }
         }
     }
 
@@ -109,13 +109,11 @@ class HomeViewModel @Inject constructor(
                 return@launch
             }
             totalReportCardRepo.getReportCard(session).collect { result ->
-                result.onSuccess { totalReportCard ->
-                    reportCardSummary = ReportCardSummary(
-                        gpa = totalReportCard.gpa.toGrade(),
-                        earnedCredit = totalReportCard.earnedCredit.toCredit(),
-                        graduateCredit = totalReportCard.graduateCredit.toCredit(),
-                    )
-                }.onFailure { e -> Timber.e(e)}
+                result
+                    .onSuccess { totalReportCard ->
+                        reportCardSummary = totalReportCard.toReportCardSummary()
+                    }
+                    .onFailure { e -> Timber.e(e) }
             }
         }
     }

@@ -66,11 +66,11 @@ fun SemesterListScreen(
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.uiEvent.collect { uiEvent ->
                 when (uiEvent) {
-                    is UiEvent.Success -> {}
-
                     is UiEvent.Failure -> {
                         Toast.makeText(context, uiEvent.msg, Toast.LENGTH_SHORT).show()
                     }
+
+                    else -> {}
                 }
             }
         }
