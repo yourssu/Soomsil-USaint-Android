@@ -1,7 +1,10 @@
 package com.yourssu.soomsil.usaint.screen
 
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -10,6 +13,7 @@ import com.yourssu.soomsil.usaint.screen.home.navigation.homeScreen
 import com.yourssu.soomsil.usaint.screen.home.navigation.navigateToHome
 import com.yourssu.soomsil.usaint.screen.login.navigation.Login
 import com.yourssu.soomsil.usaint.screen.login.navigation.loginScreen
+import com.yourssu.soomsil.usaint.screen.login.navigation.navigateToLogin
 import com.yourssu.soomsil.usaint.screen.semesterdetail.navigation.navigateToSemesterDetail
 import com.yourssu.soomsil.usaint.screen.semesterdetail.navigation.semesterDetailScreen
 import com.yourssu.soomsil.usaint.screen.semesterlist.navigation.navigateToSemesterList
@@ -23,6 +27,8 @@ fun USaintNavHost(
     modifier: Modifier = Modifier,
     startDestination: Any = Login,
 ) {
+    val context = LocalContext.current
+
     NavHost(
         navController = navController,
         modifier = modifier,
@@ -50,7 +56,26 @@ fun USaintNavHost(
         )
 
         settingScreen(
-            navigateToBack = { navController.popBackStack() },
+            navigateToBack = {
+                navController.popBackStack()
+            },
+            navigateToWebView = { url ->
+                CustomTabsIntent.Builder().build().also {
+                    it.launchUrl(context, Uri.parse(url))
+                }
+            },
+            navigateToLogin = {
+                navController.navigateToLogin(
+                    navOptions = navOptions {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = false
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                        restoreState = false
+                    }
+                )
+            }
         )
 
         semesterListScreen(

@@ -61,4 +61,18 @@ class StudentInfoDataStore @Inject constructor(
             }
         }
     }
+
+    suspend fun deleteStudentInfo(): Result<Unit> {
+        return kotlin.runCatching {
+            dataStore.edit { pref ->
+                pref.remove(PreferencesKeys.STUDENT_ID)
+                pref.remove(PreferencesKeys.STUDENT_PW)
+                pref.remove(PreferencesKeys.STUDENT_NAME)
+                pref.remove(PreferencesKeys.STUDENT_DEPARTMENT)
+                pref.remove(PreferencesKeys.STUDENT_MAJOR)
+                pref.remove(PreferencesKeys.STUDENT_GRADE)
+                pref.remove(PreferencesKeys.STUDENT_TERM)
+            }
+        }
+    }
 }

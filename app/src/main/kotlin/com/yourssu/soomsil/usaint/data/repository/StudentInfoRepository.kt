@@ -42,4 +42,8 @@ class StudentInfoRepository @Inject constructor(
             )
         )
     }
+
+    suspend fun deleteStudentInfo(): Result<Unit> {
+        return studentInfoDataStore.deleteStudentInfo()
+    }
 }

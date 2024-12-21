@@ -42,10 +42,6 @@
     <string name="user_info_placeholder">더 많은 정보를 확인할 수 있어요.</string>
     <string name="saint_login_announce">유세인트 학번 및 비밀번호는 사용자 기기에만 저장되며, 유어슈는 이용자의 정보를 일체 수집ㆍ저장하지 않습니다.</string>
 
-    <!-- Setting Screen -->
-    <string name="setting">설정</string>
-    <string name="setting_logout">로그아웃</string>
-
     <!-- ?? -->
     <string name="report_card_semester_text">학기별 석차</string>
     <string name="report_card_rank_all_text">전체 석차</string>
@@ -56,17 +52,28 @@
     <string name="password">유세인트 비밀번호</string>
     <string name="login">로그인</string>
     <string name="saint_parsing_error">최근학기 성적을 가져오는데 오류가 발생했습니다</string>
-    <string name="alarm">알림</string>
-    <string name="get_alarm">알림 받기</string>
-    <string name="terms_title">약관</string>
-    <string name="terms_of_service">이용약관</string>
-    <string name="terms_of_privacy_info">개인정보 처리방침</string>
-    <string name="manage_account">계정관리</string>
-
     <string name="student_department_and_grade_format">%s %d학년</string>
 
     <string name="error_session_failure">로그인 실패: 비밀번호 또는 네트워크를 확인해주세요.</string>
     <string name="error_refresh_failure">새로고침 실패: 다시 시도해주세요.</string>
     <string name="error_unknown">알 수 없는 문제가 발생했습니다.</string>
     <string name="error_capture_fail">캡처 도중 오류가 발생했습니다.</string>
+
+    <!-- SettingScreen -->
+    <string name="alarm">알림</string>
+    <string name="get_alarm">알림 받기</string>
+    <string name="terms_title">약관</string>
+    <string name="terms_of_service">이용약관</string>
+    <string name="terms_of_privacy_info">개인정보 처리방침</string>
+    <string name="manage_account">계정관리</string>
+    <string name="terms_of_privacy_info_url">https://auth.yourssu.com/terms/information.html</string>
+    <string name="terms_of_service_url">https://auth.yourssu.com/terms/service.html</string>
+    <string name="logout_title">로그아웃 하시겠습니까?</string>
+    <string name="logout">로그아웃</string>
+    <string name="cancel">취소</string>
+    <string name="request_alarm_permission">알림 권한을 허용해주세요</string>
+    <string name="request_alarm_permission_in_setting">설정 화면에서 알림 권한을 허용해주세요</string>
+    <string name="setting">설정</string>
+    <string name="setting_logout">로그아웃</string>
+
 </resources>
