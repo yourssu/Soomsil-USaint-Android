@@ -13,7 +13,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class SettingState(
-    val showDialog: Boolean = false
+    val showDialog: Boolean = false,
+    val checkAlarm: Boolean = false,
 )
 
 @HiltViewModel
@@ -30,6 +31,11 @@ class SettingViewModel @Inject constructor(
     fun updateDialogState(showDialog: Boolean) {
         _state.value = _state.value.copy(showDialog = showDialog)
     }
+
+    fun updateAlarmState(checkAlarm: Boolean) {
+        _state.value = _state.value.copy(checkAlarm = checkAlarm)
+    }
+
     fun logout() {
         viewModelScope.launch {
             studentInfoRepository.deleteStudentInfo()

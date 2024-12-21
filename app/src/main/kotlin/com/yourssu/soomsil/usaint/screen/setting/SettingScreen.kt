@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -135,11 +134,10 @@ fun SettingScreen(
                             style = YdsTheme.typography.body1,
                         )
 
-                        var checked1 by remember { mutableStateOf(false) } // TODO
                         Toggle(
-                            checked = checked1, // TODO
+                            checked = state.checkAlarm,
                             onCheckedChange = {
-                                checked1 = it // TODO
+                                viewModel.updateAlarmState(it)
                             },
                         )
                     }
