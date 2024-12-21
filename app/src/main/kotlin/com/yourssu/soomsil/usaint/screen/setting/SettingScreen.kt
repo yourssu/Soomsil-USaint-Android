@@ -57,12 +57,17 @@ fun SettingScreen(
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
             when (event) {
+                // 최초 알림 권한 요청
                 is SettingEvent.ShowPermissionRequest -> {
-                    Toast.makeText(context, "알림 권한을 허용해주세요", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,
+                        context.getString(R.string.request_alarm_permission), Toast.LENGTH_SHORT).show()
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
+
+                // 알림 권한 요청을 거부한 경우 설정 앱에서 직접 알림 권한 허용
                 is SettingEvent.NavigateToSettings -> {
-                    Toast.makeText(context, "설정 화면에서 알림 권한을 허용해주세요", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,
+                        context.getString(R.string.request_alarm_permission_in_setting), Toast.LENGTH_SHORT).show()
                     val intent = android.content.Intent(
                         android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                     ).apply {
@@ -70,10 +75,14 @@ fun SettingScreen(
                     }
                     context.startActivity(intent)
                 }
+
+                // 로그아웃
                 is SettingEvent.SuccessLogout -> {
                     Toast.makeText(context, event.msg, Toast.LENGTH_SHORT).show()
                     navigateToLogin()
                 }
+
+                // 알림 토글 클릭
                 is SettingEvent.ClickToggle -> {
                     Toast.makeText(context, event.msg, Toast.LENGTH_SHORT).show()
                 }
@@ -141,9 +150,9 @@ fun SettingScreen(
 
             if (dialogState) {
                 TwoButtonDialog(
-                    title = "로그아웃 하시겠습니까?",
-                    positiveButtonText = "로그아웃",
-                    negativeButtonText = "취소",
+                    title = stringResource(R.string.logout_title),
+                    positiveButtonText = stringResource(R.string.logout),
+                    negativeButtonText = stringResource(R.string.cancel),
                     onPositiveButtonClicked = {
                         onLogout()
                         onDialogStateChange(false)
