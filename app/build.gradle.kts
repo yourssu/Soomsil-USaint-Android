@@ -54,6 +54,9 @@ dependencies {
     // webview
     implementation(libs.androidx.browser)
 
+    // alarm permission
+    implementation(libs.accompanist.permissions)
+
     // hilt dependencies
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
