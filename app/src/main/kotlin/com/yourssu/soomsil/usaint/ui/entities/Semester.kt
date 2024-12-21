@@ -1,6 +1,7 @@
 package com.yourssu.soomsil.usaint.ui.entities
 
 import androidx.compose.runtime.Immutable
+import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
 
 @Immutable
 data class Semester(
@@ -15,4 +16,12 @@ data class Semester(
     val overallRank: Int = 0,                   // 전체 석차
     val overallStudentCount: Int = 0,           // 전체 학생 수
     val isSeasonal: Boolean = false,            // 계절 학기 여부
+)
+
+fun SemesterVO.toSemester() = Semester(
+    axisName = "${year % 100}-$semester",
+    fullName = "${year}년 ${semester}학기",
+    gpa = gpa.toGrade(),
+    earnedCredit = earnedCredit.toCredit(),
+    isSeasonal = !(semester.contains("1") || semester.contains("2")),
 )

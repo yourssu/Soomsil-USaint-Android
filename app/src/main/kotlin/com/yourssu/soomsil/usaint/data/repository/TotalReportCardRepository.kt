@@ -39,7 +39,7 @@ class TotalReportCardRepository @Inject constructor(
             return Result.failure(e)
         }
 
-        // Update local cache
+        // Update local DB
         storeReportCard(
             TotalReportCardVO(
                 earnedCredit = gradeSummary.earnedCredits,
@@ -58,12 +58,14 @@ class TotalReportCardRepository @Inject constructor(
     }
 
     // Stale-While-Revalidate
-    fun getReportCard(session: USaintSession): Flow<Result<TotalReportCardVO>> = flow {
+    fun getReportCard(session: USaintSession?): Flow<Result<TotalReportCardVO>> = flow {
         // Try loading/emit local data first
         val localResult = getLocalReportCard()
         localResult.onSuccess { localData ->
             emit(Result.success(localData))
         }
+
+        if (session == null) return@flow
 
         // Attempt to get form remote data
         val remoteResult = getRemoteReportCard(session)

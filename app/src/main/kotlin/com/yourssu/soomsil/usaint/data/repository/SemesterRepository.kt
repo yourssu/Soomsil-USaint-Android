@@ -82,12 +82,14 @@ class SemesterRepository @Inject constructor(
     }
 
     // Stale-While-Revalidate
-    fun getSemesters(session: USaintSession): Flow<Result<List<SemesterVO>>> = flow {
+    fun getSemesters(session: USaintSession?): Flow<Result<List<SemesterVO>>> = flow {
         // Try loading/emit local data first
         val localResult = getAllLocalSemesters()
         localResult.onSuccess { localData ->
             emit(Result.success(localData))
         }
+
+        if (session == null) return@flow
 
         // Attempt to get form remote data
         val remoteResult = getAllRemoteSemesters(session)

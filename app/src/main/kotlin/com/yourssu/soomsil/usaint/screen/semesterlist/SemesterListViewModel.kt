@@ -11,10 +11,11 @@ import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.Semester
-import com.yourssu.soomsil.usaint.ui.entities.toCredit
-import com.yourssu.soomsil.usaint.ui.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.entities.toReportCardSummary
+import com.yourssu.soomsil.usaint.ui.entities.toSemester
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -40,95 +41,73 @@ class SemesterListViewModel @Inject constructor(
         private set
 
     init {
-        initReportCardSummary()
-        initSemesters()
+        initialize()
     }
 
     fun refresh() {
         viewModelScope.launch {
             isRefreshing = true
-            val session = uSaintSessionRepo.getSession().getOrElse { e ->
-                Timber.e(e)
-                _uiEvent.emit(UiEvent.Failure("로그인 실패: 비밀번호를 확인해주세요."))
+            refreshAll()
+            isRefreshing = false
+        }
+    }
+
+    private fun initialize() {
+        viewModelScope.launch {
+            totalReportCardRepo.getLocalReportCard()
+                .onSuccess { reportCard ->
+                    reportCardSummary = reportCard.toReportCardSummary()
+                }
+                .onFailure { e -> Timber.e(e) }
+            semesterRepo.getAllLocalSemesters()
+                .onSuccess { semesterList ->
+                    semesters = semesterList.map { vo -> vo.toSemester() }
+                }
+                .onFailure { e -> Timber.e(e) }
+            if (semesters.isEmpty()) {
+                // 비어있는 경우 refresh
+                isRefreshing = true
+                refreshAll()
                 isRefreshing = false
-                return@launch
             }
-            val totalReportCard = totalReportCardRepo.getRemoteReportCard(session).getOrElse { e ->
+        }
+    }
+
+    private suspend fun refreshAll() {
+        val session = uSaintSessionRepo.getSession().getOrElse { e ->
+            Timber.e(e)
+            _uiEvent.emit(UiEvent.Failure("로그인 실패: 비밀번호 또는 네트워크를 확인해주세요."))
+            return
+        }
+        val totalReportCard = viewModelScope.async {
+            totalReportCardRepo.getRemoteReportCard(session).getOrElse { e ->
                 Timber.e(e)
                 val errMsg = when (e) {
                     is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
                     else -> "알 수 없는 문제가 발생했습니다."
                 }
                 _uiEvent.emit(UiEvent.Failure(errMsg))
-                isRefreshing = false
-                return@launch
-            }
-            val semesterVOList = semesterRepo.getAllRemoteSemesters(session).getOrElse { e ->
-                Timber.e(e)
-                // TODO: 오류 문구 수정
-                _uiEvent.emit(UiEvent.Failure("실패!"))
-                isRefreshing = false
-                return@launch
-            }
-            // ui state 변경
-            reportCardSummary = ReportCardSummary(
-                gpa = totalReportCard.gpa.toGrade(),
-                earnedCredit = totalReportCard.earnedCredit.toCredit(),
-                graduateCredit = totalReportCard.graduateCredit.toCredit(),
-            )
-            semesters = semesterVOList.map { vo ->
-                Semester(
-                    axisName = "${vo.year % 100}-${vo.semester}",
-                    fullName = String.format("%d년 %s학기", vo.year, vo.semester),
-                    gpa = vo.gpa.toGrade(),
-                    earnedCredit = vo.earnedCredit.toCredit(),
-                    isSeasonal = !(vo.semester.contains("1") || vo.semester.contains("2"))
-                )
-            }
-            _uiEvent.emit(UiEvent.Success)
-            isRefreshing = false
-        }
-    }
-
-    private fun initReportCardSummary() {
-        viewModelScope.launch {
-            val session = uSaintSessionRepo.getSession().getOrElse { e ->
-                Timber.e(e)
-                _uiEvent.emit(UiEvent.Failure("로그인 실패: 비밀번호를 확인해주세요."))
-                return@launch
-            }
-            totalReportCardRepo.getReportCard(session).collect { result ->
-                result.onSuccess { reportCard ->
-                    reportCardSummary = ReportCardSummary(
-                        gpa = reportCard.gpa.toGrade(),
-                        earnedCredit = reportCard.earnedCredit.toCredit(),
-                        graduateCredit = reportCard.graduateCredit.toCredit(),
-                    )
-                }.onFailure { e -> Timber.e(e) }
+                null
             }
         }
-    }
-
-    private fun initSemesters() {
-        viewModelScope.launch {
-            val session = uSaintSessionRepo.getSession().getOrElse { e ->
+        val semesterVOList = viewModelScope.async {
+            semesterRepo.getAllRemoteSemesters(session).getOrElse { e ->
                 Timber.e(e)
-                _uiEvent.emit(UiEvent.Failure("로그인 실패: 비밀번호를 확인해주세요."))
-                return@launch
-            }
-            semesterRepo.getSemesters(session).collect { result ->
-                result.onSuccess { semesterList ->
-                    semesters = semesterList.map { vo ->
-                        Semester(
-                            axisName = "${vo.year % 100}-${vo.semester}",
-                            fullName = String.format("%d년 %s학기", vo.year, vo.semester),
-                            gpa = vo.gpa.toGrade(),
-                            earnedCredit = vo.earnedCredit.toCredit(),
-                            isSeasonal = !(vo.semester.contains("1") || vo.semester.contains("2"))
-                        )
-                    }
-                }.onFailure { e -> Timber.e(e) }
+                val errMsg = when (e) {
+                    is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
+                    else -> "알 수 없는 문제가 발생했습니다."
+                }
+                _uiEvent.emit(UiEvent.Failure(errMsg))
+                null
             }
         }
+        // ui state 변경
+        totalReportCard.await()?.let {
+            reportCardSummary = it.toReportCardSummary()
+        }
+        semesterVOList.await()?.let {
+            semesters = it.map { vo -> vo.toSemester() }
+        }
+        _uiEvent.emit(UiEvent.Success)
     }
 }
