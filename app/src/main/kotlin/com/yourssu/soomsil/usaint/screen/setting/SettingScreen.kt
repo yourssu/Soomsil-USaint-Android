@@ -82,6 +82,10 @@ fun SettingScreen(
                     navigateToLogin()
                 }
 
+                is SettingEvent.FailureLogout -> {
+                    Toast.makeText(context, event.msg, Toast.LENGTH_SHORT).show()
+                }
+
                 // 알림 토글 클릭
                 is SettingEvent.ClickToggle -> {
                     Toast.makeText(context, event.msg, Toast.LENGTH_SHORT).show()

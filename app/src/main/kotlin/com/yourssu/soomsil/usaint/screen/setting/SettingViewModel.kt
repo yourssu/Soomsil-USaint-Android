@@ -25,6 +25,7 @@ data class SettingState(
 
 sealed class SettingEvent {
     data class SuccessLogout(val msg: String): SettingEvent()
+    data class FailureLogout(val msg: String): SettingEvent()
     object ShowPermissionRequest : SettingEvent()
     object NavigateToSettings : SettingEvent()
     data class ClickToggle(val msg: String) : SettingEvent()
@@ -58,8 +59,11 @@ class SettingViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-            studentInfoRepository.deleteStudentInfo()
-            _uiEvent.emit(SettingEvent.SuccessLogout("로그아웃 되었습니다."))
+            studentInfoRepository.deleteStudentInfo().onSuccess {
+                _uiEvent.emit(SettingEvent.SuccessLogout("로그아웃 되었습니다."))
+            }.onFailure {
+                _uiEvent.emit(SettingEvent.FailureLogout("로그아웃을 다시 시도해주세요."))
+            }
         }
     }
 
