@@ -23,9 +23,9 @@ data class LectureVO(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,          // 과목 이름
     val code: String,           // 과목 코드 (고유)
-    val credit: Float,          // 신청 학점
+    val credit: Float,          // 과목 학점
     val grade: String,          // 등급 (ex: "A+", "P", "F")
-    val score: String,          // 성적 (ex: "90", "Pass", "Fail")
+    val score: String,          // 성적 (ex: "90", "Pass", "Failed")
     val professorName: String,  // 교수님 성함
     @ColumnInfo("semesterId")
     val semesterId: Int,        // foreign key

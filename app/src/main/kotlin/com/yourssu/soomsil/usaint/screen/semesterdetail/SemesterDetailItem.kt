@@ -283,7 +283,7 @@ private fun SemesterDetailItemPreview() {
                     professorName = tier,
                 )
             },
-            captureFlag = CaptureFlag.HidingInfo,
+            captureFlag = CaptureFlag.None,
         )
     }
 }
