@@ -61,7 +61,16 @@ fun LoginScreen(
                     }
 
                     is UiEvent.Failure -> {
-                        Toast.makeText(context, uiEvent.msg, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            uiEvent.msg ?: context.resources.getString(R.string.error_unknown),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    is UiEvent.SessionFailure -> {
+                        Toast.makeText(context, R.string.error_session_failure, Toast.LENGTH_SHORT)
+                            .show()
                     }
 
                     else -> {}
