@@ -2,9 +2,11 @@ package com.yourssu.soomsil.usaint.screen.setting
 
 import android.Manifest
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,6 +35,7 @@ import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.util.TwoButtonDialog
 import com.yourssu.design.R as YdsR
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU) // Android 13 버전부터 알림 권한 허용 받아야 함 (POST_NOTIFICATIONS)
 @Composable
 fun SettingScreen(
     modifier: Modifier = Modifier,
