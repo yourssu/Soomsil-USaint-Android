@@ -72,7 +72,10 @@ fun SemesterDetailItem(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (lectureInfos.isEmpty()) {
-                CircularProgressIndicator(color = YdsTheme.colors.buttonPoint)
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(20.dp),
+                    color = YdsTheme.colors.buttonPoint
+                )
             } else {
                 lectureInfos.forEach { course ->
                     CourseGradeItem(

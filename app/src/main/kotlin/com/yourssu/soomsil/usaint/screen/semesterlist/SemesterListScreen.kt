@@ -4,11 +4,13 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -77,7 +79,7 @@ fun SemesterListScreen(
                     is UiEvent.SessionFailure -> {
                         Toast.makeText(
                             context,
-                            context.resources.getString(R.string.error_session_failure),
+                            R.string.error_session_failure,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -85,7 +87,7 @@ fun SemesterListScreen(
                     is UiEvent.RefreshFailure -> {
                         Toast.makeText(
                             context,
-                            context.resources.getString(R.string.error_refresh_failure),
+                            R.string.error_refresh_failure,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -198,14 +200,26 @@ fun SemesterListScreen(
                     )
                 }
                 Divider(thickness = Thickness.Thick)
-                Column(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                ) {
-                    appliedSemesters.forEachIndexed { index, semester ->
-                        SemesterReport(
-                            semester = semester,
-                            onClick = { onGradeListClick(index) },
+                if (semesters.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(20.dp),
+                            color = YdsTheme.colors.buttonPoint
                         )
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                    ) {
+                        appliedSemesters.forEachIndexed { index, semester ->
+                            SemesterReport(
+                                semester = semester,
+                                onClick = { onGradeListClick(index) },
+                            )
+                        }
                     }
                 }
             }
@@ -340,6 +354,25 @@ private fun SemesterListScreenPreview() {
             ),
             includeSeasonalSemester = include,
             onSeasonalFlagChange = { include = it },
+            reportCardSummary = ReportCardSummary(
+                gpa = 3.9.toGrade(),
+                earnedCredit = 52.5.toCredit(),
+                graduateCredit = 133.toCredit(),
+            ),
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun SemesterListScreenPreview_empty() {
+    YdsTheme {
+        SemesterListScreen(
+            isRefreshing = false,
+            onRefresh = {},
+            semesters = emptyList(),
+            includeSeasonalSemester = false,
+            onSeasonalFlagChange = {},
             reportCardSummary = ReportCardSummary(
                 gpa = 3.9.toGrade(),
                 earnedCredit = 52.5.toCredit(),
