@@ -86,7 +86,7 @@ class SemesterDetailViewModel @Inject constructor(
     }
 
     private var session: USaintSession? = null
-    private var mutex: Mutex = Mutex()
+    private var mutex = Mutex()
 
     private suspend fun refreshLectureInfos(semester: SemesterType) {
         // 동시에 로그인 여러 번 하지 않도록

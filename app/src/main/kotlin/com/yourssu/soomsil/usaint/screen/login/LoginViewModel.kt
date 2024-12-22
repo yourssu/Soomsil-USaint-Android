@@ -54,7 +54,7 @@ class LoginViewModel @Inject constructor(
                 isLoading = false
                 return@launch
             }
-            totalReportCardRepo.getRemoteReportCard(session).getOrElse { e ->
+            val totalReportCard = totalReportCardRepo.getRemoteReportCard(session).getOrElse { e ->
                 Timber.e(e)
                 _uiEvent.emit(UiEvent.Failure("증명 평점 정보를 가져오는 데 실패했습니다."))
                 isLoading = false
@@ -63,6 +63,7 @@ class LoginViewModel @Inject constructor(
             // 성공 시 id/pw, 학생 정보 저장
             studentInfoRepo.storePassword(id, pw).onFailure { e -> Timber.e(e) }
             studentInfoRepo.storeStudentInfo(studentInfoVO).onFailure { e -> Timber.e(e) }
+            totalReportCardRepo.storeReportCard(totalReportCard).onFailure { e -> Timber.e(e) }
             _uiEvent.emit(UiEvent.Success)
             isLoading = false
         }

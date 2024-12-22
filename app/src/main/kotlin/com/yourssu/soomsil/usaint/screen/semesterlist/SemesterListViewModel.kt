@@ -15,10 +15,13 @@ import com.yourssu.soomsil.usaint.ui.entities.toReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.toSemester
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
+import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -47,7 +50,7 @@ class SemesterListViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             isRefreshing = true
-            refreshAll()
+            refreshSemesters()
             isRefreshing = false
         }
     }
@@ -64,9 +67,7 @@ class SemesterListViewModel @Inject constructor(
                     Timber.d(semesterList.toString()) // fixme: 가끔씩 빈 리스트 들어오는 경우 있음
                     if (semesterList.isEmpty()) {
                         // 비어있는 경우 refresh
-                        isRefreshing = true
-                        refreshAll()
-                        isRefreshing = false
+                        refreshSemesters()
                     } else {
                         semesters = semesterList.map { vo -> vo.toSemester() }
                     }
@@ -75,17 +76,25 @@ class SemesterListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun refreshAll() {
-        val session = uSaintSessionRepo.getSession().getOrElse { e ->
-            Timber.e(e)
-            _uiEvent.emit(UiEvent.SessionFailure)
-            return
+    private var session: USaintSession? = null
+    private var mutex = Mutex()
+
+    private suspend fun refreshSemesters() {
+        // 동시에 로그인 여러 번 하지 않도록
+        mutex.withLock {
+            if (session == null) {
+                session = uSaintSessionRepo.getSession().getOrElse { e ->
+                    Timber.e(e)
+                    _uiEvent.emit(UiEvent.SessionFailure)
+                    return
+                }
+            }
         }
         val totalReportCardDeferred = viewModelScope.async {
-            totalReportCardRepo.getRemoteReportCard(session)
+            totalReportCardRepo.getRemoteReportCard(session!!)
         }
-        val semesterVOListDeferred = viewModelScope.async {
-            semesterRepo.getAllRemoteSemesters(session)
+        val semesterDeferred = viewModelScope.async {
+            semesterRepo.getAllRemoteSemesters(session!!)
         }
         // ui state 변경 및 DB 갱신
         totalReportCardDeferred.await()
@@ -99,9 +108,10 @@ class SemesterListViewModel @Inject constructor(
                     is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
                     else -> _uiEvent.emit(UiEvent.Failure())
                 }
+                session = null
                 return
             }
-        semesterVOListDeferred.await()
+        semesterDeferred.await()
             .onSuccess {
                 val reversed = it.reversed()
                 semesters = reversed.map { vo -> vo.toSemester() }
@@ -113,8 +123,10 @@ class SemesterListViewModel @Inject constructor(
                     is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
                     else -> _uiEvent.emit(UiEvent.Failure())
                 }
+                session = null
                 return
             }
         _uiEvent.emit(UiEvent.Success)
+        session = null
     }
 }

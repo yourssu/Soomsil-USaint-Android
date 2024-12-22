@@ -69,7 +69,7 @@ fun HomeScreen(
                     is UiEvent.SessionFailure -> {
                         Toast.makeText(
                             context,
-                            context.resources.getString(R.string.error_session_failure),
+                            R.string.error_session_failure,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -77,7 +77,7 @@ fun HomeScreen(
                     is UiEvent.RefreshFailure -> {
                         Toast.makeText(
                             context,
-                            context.resources.getString(R.string.error_refresh_failure),
+                            R.string.error_refresh_failure,
                             Toast.LENGTH_SHORT
                         ).show()
                     }

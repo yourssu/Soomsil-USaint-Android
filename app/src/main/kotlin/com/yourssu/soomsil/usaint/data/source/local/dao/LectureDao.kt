@@ -16,4 +16,7 @@ interface LectureDao {
 
     @Query("SELECT * FROM Lecture WHERE semesterId = :semesterId")
     fun getLecturesBySemesterId(semesterId: Int): List<LectureVO>
+
+    @Query("DELETE FROM Lecture")
+    suspend fun deleteAll()
 }

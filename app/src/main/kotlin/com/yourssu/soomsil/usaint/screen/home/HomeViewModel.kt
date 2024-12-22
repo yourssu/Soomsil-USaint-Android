@@ -40,8 +40,7 @@ class HomeViewModel @Inject constructor(
         private set
 
     init {
-        getStudentInfo()
-        getTotalReportCardInfo()
+        initialize()
     }
 
     fun refresh() {
@@ -90,30 +89,18 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun getStudentInfo() {
+    private fun initialize() {
         viewModelScope.launch {
             studentInfoRepo.getLocalStudentInfo()
                 .onSuccess { stu ->
                     studentInfo = stu.toStudentInfo()
                 }
                 .onFailure { e -> Timber.e(e) }
-        }
-    }
-
-    private fun getTotalReportCardInfo() {
-        viewModelScope.launch {
-            val session = uSaintSessionRepo.getSession().getOrElse { e ->
-                Timber.e(e)
-                _uiEvent.emit(UiEvent.SessionFailure)
-                return@launch
-            }
-            totalReportCardRepo.getReportCard(session).collect { result ->
-                result
-                    .onSuccess { totalReportCard ->
-                        reportCardSummary = totalReportCard.toReportCardSummary()
-                    }
-                    .onFailure { e -> Timber.e(e) }
-            }
+            totalReportCardRepo.getLocalReportCard()
+                .onSuccess { totalReportCard ->
+                    reportCardSummary = totalReportCard.toReportCardSummary()
+                }
+                .onFailure { e -> Timber.e(e) }
         }
     }
 }

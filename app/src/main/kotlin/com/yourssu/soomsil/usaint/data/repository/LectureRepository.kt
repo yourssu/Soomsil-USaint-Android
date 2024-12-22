@@ -37,6 +37,12 @@ class LectureRepository @Inject constructor(
         }
     }
 
+    suspend fun deleteAllLectures(): Result<Unit> {
+        return kotlin.runCatching {
+            withContext(Dispatchers.IO) { lectureDao.deleteAll() }
+        }
+    }
+
     suspend fun getRemoteLectures(
         session: USaintSession,
         semester: SemesterType

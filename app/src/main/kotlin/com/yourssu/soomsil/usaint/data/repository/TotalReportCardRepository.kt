@@ -31,6 +31,12 @@ class TotalReportCardRepository @Inject constructor(
         }
     }
 
+    suspend fun deleteTotalReportCard(): Result<Unit> {
+        return kotlin.runCatching {
+            withContext(Dispatchers.IO) { totalReportCardDao.deleteAll() }
+        }
+    }
+
     suspend fun getRemoteReportCard(session: USaintSession): Result<TotalReportCardVO> {
         val gradeSummary = rusaintApi.getCertificatedGradeSummary(session).getOrElse { e ->
             return Result.failure(e)
