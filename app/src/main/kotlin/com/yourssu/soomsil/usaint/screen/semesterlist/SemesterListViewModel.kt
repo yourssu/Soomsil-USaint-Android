@@ -99,7 +99,7 @@ class SemesterListViewModel @Inject constructor(
             semesterRepo.getAllRemoteSemesters(session!!)
         }
         val getCurrentSemesterDeferred = viewModelScope.async {
-            semesterRepo.getCurrentSemester(session)
+            semesterRepo.getCurrentSemester(session!!)
         }
 
         // ui state 변경 및 DB 갱신
