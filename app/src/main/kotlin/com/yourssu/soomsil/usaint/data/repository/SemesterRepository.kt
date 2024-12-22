@@ -93,7 +93,7 @@ class SemesterRepository @Inject constructor(
             return Result.failure(e)
         }
         Timber.d("currentSemesterClassGradeList: $currentSemesterClassGradeList")
-
+        
         // 없다면 조기 반환
         if(currentSemesterClassGradeList.isEmpty()) {
             return Result.success(null) // 성적 조회 기간이 아닌 경우
