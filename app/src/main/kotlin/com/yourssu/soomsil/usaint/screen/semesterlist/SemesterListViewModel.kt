@@ -16,6 +16,7 @@ import com.yourssu.soomsil.usaint.ui.entities.toSemester
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
 import dev.eatsteak.rusaint.ffi.USaintSession
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -89,8 +90,14 @@ class SemesterListViewModel @Inject constructor(
                 }
             }
         }
+        val totalReportCardDeferred = viewModelScope.async {
+            totalReportCardRepo.getRemoteReportCard(session!!)
+        }
+        val semesterDeferred = viewModelScope.async {
+            semesterRepo.getAllRemoteSemesters(session!!)
+        }
         // ui state 변경 및 DB 갱신
-        totalReportCardRepo.getRemoteReportCard(session!!)
+        totalReportCardDeferred.await()
             .onSuccess {
                 reportCardSummary = it.toReportCardSummary()
                 totalReportCardRepo.storeReportCard(it)
@@ -104,7 +111,7 @@ class SemesterListViewModel @Inject constructor(
                 session = null
                 return
             }
-        semesterRepo.getAllRemoteSemesters(session!!)
+        semesterDeferred.await()
             .onSuccess {
                 val reversed = it.reversed()
                 semesters = reversed.map { vo -> vo.toSemester() }
