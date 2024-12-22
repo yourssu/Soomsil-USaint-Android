@@ -145,6 +145,7 @@ class SemesterListViewModel @Inject constructor(
             }
             .onFailure { e ->
                 Timber.e(e)
+                session = null
                 return
             }
 
