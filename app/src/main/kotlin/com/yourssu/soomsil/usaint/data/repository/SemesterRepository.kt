@@ -94,27 +94,28 @@ class SemesterRepository @Inject constructor(
         }
         Timber.d("currentSemesterClassGradeList: $currentSemesterClassGradeList")
 
-        // 있다면 그 학기를 반환
-        if (currentSemesterClassGradeList.isNotEmpty()) {
-            return Result.success(
-                SemesterVO(
-                    year = currentSemesterType.year,
-                    semester = currentSemesterType.storeFormat,
-                    semesterRank = 0,
-                    semesterStudentCount = 0,
-                    overallRank = 0,
-                    overallStudentCount = 0,
-                    earnedCredit = currentSemesterClassGradeList.sumOf { it.gradePoints.toDouble() }
-                        .toFloat(),
-                    gpa = currentSemesterClassGradeList.sumOf { it.rank.toGrade().value.toDouble() }
-                        .div(currentSemesterClassGradeList.filter { it.rank.toGrade() != Grade.Zero }.size)
-                        .toFloat(),
-                    totalReportCardId = 1
-                )
-            )
+        // 없다면 조기 반환
+        if(currentSemesterClassGradeList.isEmpty()) {
+            return Result.success(null) // 성적 조회 기간이 아닌 경우
         }
 
-        return Result.success(null) // 성적 조회 기간이 아닌 경우
+        // 있다면 그 학기를 반환
+        return Result.success(
+            SemesterVO(
+                year = currentSemesterType.year,
+                semester = currentSemesterType.storeFormat,
+                semesterRank = 0,
+                semesterStudentCount = 0,
+                overallRank = 0,
+                overallStudentCount = 0,
+                earnedCredit = currentSemesterClassGradeList.sumOf { it.gradePoints.toDouble() }
+                    .toFloat(),
+                gpa = currentSemesterClassGradeList.sumOf { it.rank.toGrade().value.toDouble() }
+                    .div(currentSemesterClassGradeList.filter { it.rank.toGrade() != Grade.Zero }.size)
+                    .toFloat(),
+                totalReportCardId = 1
+            )
+        )
     }
 
     // Stale-While-Revalidate
