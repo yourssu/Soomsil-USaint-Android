@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
             .build()
 
         // 3시간에 한번씩 Worker 실행
-        val periodicRequest = PeriodicWorkRequestBuilder<UpdateWorker>(3, TimeUnit.HOURS)
+        val periodicRequest = PeriodicWorkRequestBuilder<UpdateWorker>(15, TimeUnit.MINUTES)
             .setConstraints(constraints)
             .build()
 
