@@ -12,7 +12,6 @@ import androidx.room.PrimaryKey
         entity = TotalReportCardVO::class,
         parentColumns = ["id"],
         childColumns = ["totalReportCardId"],
-        onDelete = ForeignKey.CASCADE
     )],
     indices = [
         Index(value = ["totalReportCardId"]),
