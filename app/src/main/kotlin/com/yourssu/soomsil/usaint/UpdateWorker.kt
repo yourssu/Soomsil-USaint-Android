@@ -7,20 +7,21 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class UpdateWorker(
     appContext: Context,
     workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
-
-//    // 원하는 작업을 수행하는 Repository를 생성
-//    private val testRepository = TestRepository()
-
     override suspend fun doWork(): Result {
         // 작업 수행
 
         // 알림 띄우기
         showNotification("새 성적!", "컴퓨터 구조 과목 성적이 나왔습니다!") // 알림 발행
+        Timber.d("WorkManager: show notification time : ${getCurrentTimeInHoursAndMinutes()}")
 
         return Result.success()
     }
@@ -54,4 +55,11 @@ class UpdateWorker(
             notificationBuilder.build()
         )
     }
+}
+
+fun getCurrentTimeInHoursAndMinutes(): String {
+    val currentTimeMillis = System.currentTimeMillis()
+    val date = Date(currentTimeMillis)
+    val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return formatter.format(date)
 }
