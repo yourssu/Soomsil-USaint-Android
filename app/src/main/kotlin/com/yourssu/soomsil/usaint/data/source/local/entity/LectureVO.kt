@@ -5,6 +5,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import dev.eatsteak.rusaint.core.ClassGrade
+import dev.eatsteak.rusaint.core.ClassScore
 
 @Entity(
     tableName = "Lecture",
@@ -30,3 +32,21 @@ data class LectureVO(
     @ColumnInfo("semesterId")
     val semesterId: Int,        // foreign key
 )
+
+fun ClassGrade.toLectureVO(semesterId: Int): LectureVO {
+    val scoreString = when (score) {
+        is ClassScore.Score -> (score as ClassScore.Score).v1.toString()
+        is ClassScore.Pass -> "Pass"
+        is ClassScore.Failed -> "Failed"
+        is ClassScore.Empty -> "Empty"
+    }
+    return LectureVO(
+        title = className,
+        code = code,
+        credit = gradePoints,
+        grade = rank,
+        score = scoreString,
+        professorName = professor,
+        semesterId = semesterId,
+    )
+}

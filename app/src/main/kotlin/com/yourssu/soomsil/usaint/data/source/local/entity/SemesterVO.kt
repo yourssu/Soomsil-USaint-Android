@@ -29,5 +29,5 @@ data class SemesterVO(
     val earnedCredit: Float,        // 학기 취득 학점
     val gpa: Float,                 // 학기 평균 학점
     @ColumnInfo("totalReportCardId")
-    val totalReportCardId: Int,     // foreign key
+    val totalReportCardId: Int = 1, // foreign key
 )

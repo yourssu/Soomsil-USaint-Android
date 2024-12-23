@@ -5,17 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yourssu.soomsil.usaint.data.repository.CurrentSemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
-import com.yourssu.soomsil.usaint.data.type.toSemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.toReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.toSemester
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.eatsteak.rusaint.core.SemesterType
 import dev.eatsteak.rusaint.ffi.RusaintException
 import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.async
@@ -32,6 +31,7 @@ class SemesterListViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
     private val totalReportCardRepo: TotalReportCardRepository,
     private val semesterRepo: SemesterRepository,
+    private val currentSemesterRepo: CurrentSemesterRepository,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -98,8 +98,8 @@ class SemesterListViewModel @Inject constructor(
         val semesterDeferred = viewModelScope.async {
             semesterRepo.getAllRemoteSemesters(session!!)
         }
-        val getCurrentSemesterDeferred = viewModelScope.async {
-            semesterRepo.getCurrentSemester(session!!)
+        val currentSemesterDeferred = viewModelScope.async {
+            currentSemesterRepo.getRemoteCurrentSemester(session!!)
         }
 
         // ui state 변경 및 DB 갱신
@@ -132,19 +132,20 @@ class SemesterListViewModel @Inject constructor(
                 session = null
                 return
             }
-
         Timber.d("getCurrentSemester")
-        getCurrentSemesterDeferred.await()
-            .onSuccess { semesterVO ->
-                Timber.d("current semester: ${semesterVO?.year} ${semesterVO?.semester}")
-                if (semesterVO != null) {
-                    semesterRepo.storeSemesters(semesterVO)
-                    semesters = semesters + listOf(semesterVO).map { vo -> vo.toSemester() }
-                    Timber.d(semesters.toString())
-                }
+        currentSemesterDeferred.await()
+            .onSuccess { currentSemesterVO ->
+                if (currentSemesterVO == null) return@onSuccess
+                Timber.d("current semester: ${currentSemesterVO.year} ${currentSemesterVO.semester}")
+                semesters = semesters + listOf(currentSemesterVO.toSemester())
+                semesterRepo.storeSemesters(currentSemesterVO)
             }
             .onFailure { e ->
                 Timber.e(e)
+                when (e) {
+                    is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
+                    else -> _uiEvent.emit(UiEvent.Failure())
+                }
                 session = null
                 return
             }

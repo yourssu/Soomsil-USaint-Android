@@ -1,7 +1,5 @@
 package com.yourssu.soomsil.usaint.data.repository
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
 import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
 import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
@@ -18,7 +16,6 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 class SemesterRepository @Inject constructor(
     private val semesterDao: SemesterDao,
@@ -93,9 +90,9 @@ class SemesterRepository @Inject constructor(
             return Result.failure(e)
         }
         Timber.d("currentSemesterClassGradeList: $currentSemesterClassGradeList")
-        
+
         // 없다면 조기 반환
-        if(currentSemesterClassGradeList.isEmpty()) {
+        if (currentSemesterClassGradeList.isEmpty()) {
             return Result.success(null) // 성적 조회 기간이 아닌 경우
         }
 
@@ -113,7 +110,6 @@ class SemesterRepository @Inject constructor(
                 gpa = currentSemesterClassGradeList.sumOf { it.rank.toGrade().value.toDouble() }
                     .div(currentSemesterClassGradeList.filter { it.rank.toGrade() != Grade.Zero }.size)
                     .toFloat(),
-                totalReportCardId = 1
             )
         )
     }
