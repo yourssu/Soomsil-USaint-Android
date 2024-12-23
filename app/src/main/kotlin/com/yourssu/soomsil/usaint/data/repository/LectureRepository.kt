@@ -64,6 +64,7 @@ class LectureRepository @Inject constructor(
                 is ClassScore.Score -> (classGrade.score as ClassScore.Score).v1.toString()
                 is ClassScore.Pass -> "Pass"
                 is ClassScore.Failed -> "Failed"
+                else -> return Result.failure(Exception("this code cannot be called"))
             }
             LectureVO(
                 title = classGrade.className,
