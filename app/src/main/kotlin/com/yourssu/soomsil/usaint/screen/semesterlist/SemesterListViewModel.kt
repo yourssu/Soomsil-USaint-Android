@@ -98,9 +98,6 @@ class SemesterListViewModel @Inject constructor(
         val semesterDeferred = viewModelScope.async {
             semesterRepo.getAllRemoteSemesters(session!!)
         }
-        val currentSemesterDeferred = viewModelScope.async {
-            currentSemesterRepo.getRemoteCurrentSemester(session!!)
-        }
 
         // ui state 변경 및 DB 갱신
         totalReportCardDeferred.await()
@@ -133,7 +130,8 @@ class SemesterListViewModel @Inject constructor(
                 return
             }
         Timber.d("getCurrentSemester")
-        currentSemesterDeferred.await()
+        // semesterDeferred와 겹치면 오류나기 때문에 따로 실행
+        currentSemesterRepo.getRemoteCurrentSemester(session!!)
             .onSuccess { currentSemesterVO ->
                 if (currentSemesterVO == null) return@onSuccess
                 Timber.d("current semester: ${currentSemesterVO.year} ${currentSemesterVO.semester}")

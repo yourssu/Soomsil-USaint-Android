@@ -17,7 +17,6 @@ import javax.inject.Inject
 class CurrentSemesterRepository @Inject constructor(
     private val semesterDao: SemesterDao,
     private val rusaintApi: RusaintApi,
-    private val lectureRepo: LectureRepository
 ) {
     suspend fun getLocalCurrentSemester(): Result<SemesterVO> {
         return kotlin.runCatching {
