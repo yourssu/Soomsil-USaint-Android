@@ -20,7 +20,7 @@ class UpdateWorker(
         // 작업 수행
 
         // 알림 띄우기
-        showNotification("새 성적!", "컴퓨터 구조 과목 성적이 나왔습니다!") // 알림 발행
+        showNotification("새 성적!", "컴퓨터 구조 과목 성적이 나왔습니다! 시간:${getCurrentTimeInHoursAndMinutes()}") // 알림 발행
         Timber.d("WorkManager: show notification time : ${getCurrentTimeInHoursAndMinutes()}")
 
         return Result.success()
