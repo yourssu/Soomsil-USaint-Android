@@ -41,7 +41,7 @@ import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.data.type.makeSemesterType
+import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.component.chart.Chart
 import com.yourssu.soomsil.usaint.ui.component.chart.ChartData

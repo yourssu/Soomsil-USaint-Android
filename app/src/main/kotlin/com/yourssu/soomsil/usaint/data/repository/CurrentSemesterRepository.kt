@@ -5,11 +5,12 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
 import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
 import com.yourssu.soomsil.usaint.data.source.local.entity.toLectureVO
 import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
-import com.yourssu.soomsil.usaint.data.type.SemesterType
-import com.yourssu.soomsil.usaint.data.type.toRsaintSemesterType
-import com.yourssu.soomsil.usaint.ui.entities.Grade
-import com.yourssu.soomsil.usaint.ui.entities.toGrade
+import com.yourssu.soomsil.usaint.domain.type.SemesterType
+import com.yourssu.soomsil.usaint.domain.type.toRsaintSemesterType
+import com.yourssu.soomsil.usaint.domain.usecase.CalculateGPAUseCase
 import dev.eatsteak.rusaint.ffi.USaintSession
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.time.DateTimeException
 import java.time.LocalDate
 import javax.inject.Inject
@@ -17,12 +18,29 @@ import javax.inject.Inject
 class CurrentSemesterRepository @Inject constructor(
     private val semesterDao: SemesterDao,
     private val rusaintApi: RusaintApi,
+    private val gpaUseCase: CalculateGPAUseCase,
 ) {
     suspend fun getLocalCurrentSemester(): Result<SemesterVO> {
         return kotlin.runCatching {
             val semester = getCurrentSemesterType()
-            semesterDao.getSemesterByYearAndSemester(semester.year, semester.storeFormat)
-                ?: throw Exception("current semester not found: $semester")
+            withContext(Dispatchers.IO) {
+                semesterDao.getSemesterByYearAndSemester(semester.year, semester.storeFormat)
+                    ?: throw Exception("current semester not found: $semester")
+            }
+        }
+    }
+
+    // lecture 리스트로 학기 정보 업데이트
+    suspend fun updateLocalCurrentSemester(lectures: List<LectureVO>): Result<SemesterVO> {
+        val currentSemester = getLocalCurrentSemester().getOrElse { e ->
+            return Result.failure(e)
+        }
+        val newSemester = currentSemester.copy(gpa = gpaUseCase(lectures))
+        return kotlin.runCatching {
+            withContext(Dispatchers.IO) {
+                semesterDao.insertSemester(newSemester)
+                newSemester
+            }
         }
     }
 
@@ -49,10 +67,6 @@ class CurrentSemesterRepository @Inject constructor(
         if (currentLectures.isEmpty())
             return Result.success(null)
 
-        val validClassGradeList = currentLectures.filter { it.grade.toGrade() != Grade.Zero }
-        val gpa = validClassGradeList.sumOf { it.grade.toGrade().value.toDouble() * it.credit }
-            .div(validClassGradeList.sumOf { it.credit.toDouble() }).toFloat()
-
         return Result.success(
             SemesterVO(
                 year = currentSemester.year,
@@ -62,7 +76,7 @@ class CurrentSemesterRepository @Inject constructor(
                 overallRank = -1,
                 overallStudentCount = -1,
                 earnedCredit = currentLectures.sumOf { it.credit.toDouble() }.toFloat(),
-                gpa = gpa,
+                gpa = gpaUseCase(lectures = currentLectures),
             )
         )
     }

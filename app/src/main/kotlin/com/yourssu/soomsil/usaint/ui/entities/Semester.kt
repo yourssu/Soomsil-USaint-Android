@@ -2,8 +2,8 @@ package com.yourssu.soomsil.usaint.ui.entities
 
 import androidx.compose.runtime.Immutable
 import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
-import com.yourssu.soomsil.usaint.data.type.SemesterType
-import com.yourssu.soomsil.usaint.data.type.makeSemesterType
+import com.yourssu.soomsil.usaint.domain.type.SemesterType
+import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 
 @Immutable
 data class Semester(

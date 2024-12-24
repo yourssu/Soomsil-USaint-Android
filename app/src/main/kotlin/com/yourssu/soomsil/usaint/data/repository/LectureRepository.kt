@@ -5,8 +5,8 @@ import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
 import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
 import com.yourssu.soomsil.usaint.data.source.local.entity.toLectureVO
 import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
-import com.yourssu.soomsil.usaint.data.type.SemesterType
-import com.yourssu.soomsil.usaint.data.type.toRsaintSemesterType
+import com.yourssu.soomsil.usaint.domain.type.SemesterType
+import com.yourssu.soomsil.usaint.domain.type.toRsaintSemesterType
 import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

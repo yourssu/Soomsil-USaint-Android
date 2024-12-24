@@ -3,9 +3,9 @@ package com.yourssu.soomsil.usaint.data.repository
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
 import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
 import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
-import com.yourssu.soomsil.usaint.data.type.SemesterType
-import com.yourssu.soomsil.usaint.data.type.makeSemesterType
-import com.yourssu.soomsil.usaint.data.type.toRsaintSemesterType
+import com.yourssu.soomsil.usaint.domain.type.SemesterType
+import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
+import com.yourssu.soomsil.usaint.domain.type.toRsaintSemesterType
 import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import dev.eatsteak.rusaint.ffi.USaintSession

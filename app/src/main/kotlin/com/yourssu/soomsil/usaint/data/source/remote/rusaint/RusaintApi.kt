@@ -1,6 +1,6 @@
 package com.yourssu.soomsil.usaint.data.source.remote.rusaint
 
-import com.yourssu.soomsil.usaint.data.type.RusaintSemesterType
+import com.yourssu.soomsil.usaint.domain.type.RusaintSemesterType
 import dev.eatsteak.rusaint.core.ClassGrade
 import dev.eatsteak.rusaint.core.CourseType
 import dev.eatsteak.rusaint.core.GradeSummary

@@ -28,7 +28,7 @@ import com.yourssu.design.system.compose.atom.Divider
 import com.yourssu.design.system.compose.atom.Thickness
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.data.type.makeSemesterType
+import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 import com.yourssu.soomsil.usaint.ui.entities.Credit
 import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
