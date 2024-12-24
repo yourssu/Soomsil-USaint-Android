@@ -11,14 +11,14 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.TotalReportCardWithSe
 @Dao
 interface TotalReportCardDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertTotalReportCard(totalReportCard: TotalReportCardVO): Long
+    suspend fun insertTotalReportCard(totalReportCard: TotalReportCardVO): Long
 
     @Query("SELECT * FROM total_report_card LIMIT 1")
-    fun getTotalReportCard(): TotalReportCardVO?
+    suspend fun getTotalReportCard(): TotalReportCardVO?
 
     @Transaction
     @Query("SELECT * FROM total_report_card LIMIT 1")
-    fun getTotalReportCardWithSemesters(): TotalReportCardWithSemesters?
+    suspend fun getTotalReportCardWithSemesters(): TotalReportCardWithSemesters?
 
     @Query("DELETE FROM total_report_card")
     suspend fun deleteAll()

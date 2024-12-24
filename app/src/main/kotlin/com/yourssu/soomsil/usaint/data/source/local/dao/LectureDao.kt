@@ -9,13 +9,13 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
 @Dao
 interface LectureDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertLecture(lecture: LectureVO): Long
+    suspend fun insertLecture(lecture: LectureVO): Long
 
     @Query("SELECT * FROM Lecture WHERE code = :code LIMIT 1")
-    fun getLectureByCode(code: String): LectureVO?
+    suspend fun getLectureByCode(code: String): LectureVO?
 
     @Query("SELECT * FROM Lecture WHERE semesterId = :semesterId")
-    fun getLecturesBySemesterId(semesterId: Int): List<LectureVO>
+    suspend fun getLecturesBySemesterId(semesterId: Int): List<LectureVO>
 
     @Query("DELETE FROM Lecture")
     suspend fun deleteAll()
