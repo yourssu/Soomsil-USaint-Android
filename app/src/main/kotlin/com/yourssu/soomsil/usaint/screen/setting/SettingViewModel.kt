@@ -66,12 +66,8 @@ class SettingViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-            studentInfoRepository.deleteStudentInfo().onFailure { e ->
-                Timber.e(e)
-                _uiEvent.emit(SettingEvent.FailureLogout("로그아웃을 다시 시도해주세요."))
-                return@launch
-            }
-            totalReportCardRepository.deleteTotalReportCard().onFailure { e ->
+            // 하위의 데이터부터 차례로 지우는 것이 좋음
+            lectureRepository.deleteAllLectures().onFailure { e ->
                 Timber.e(e)
                 _uiEvent.emit(SettingEvent.FailureLogout("로그아웃을 다시 시도해주세요."))
                 return@launch
@@ -81,7 +77,12 @@ class SettingViewModel @Inject constructor(
                 _uiEvent.emit(SettingEvent.FailureLogout("로그아웃을 다시 시도해주세요."))
                 return@launch
             }
-            lectureRepository.deleteAllLectures().onFailure { e ->
+            totalReportCardRepository.deleteTotalReportCard().onFailure { e ->
+                Timber.e(e)
+                _uiEvent.emit(SettingEvent.FailureLogout("로그아웃을 다시 시도해주세요."))
+                return@launch
+            }
+            studentInfoRepository.deleteStudentInfo().onFailure { e ->
                 Timber.e(e)
                 _uiEvent.emit(SettingEvent.FailureLogout("로그아웃을 다시 시도해주세요."))
                 return@launch

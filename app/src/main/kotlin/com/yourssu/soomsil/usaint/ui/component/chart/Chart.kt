@@ -45,7 +45,7 @@ import androidx.core.graphics.component1
 import androidx.core.graphics.component2
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.rule.YdsBorder
-import com.yourssu.soomsil.usaint.data.type.makeSemesterType
+import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.toGrade

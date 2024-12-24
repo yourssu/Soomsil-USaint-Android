@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.data.type
+package com.yourssu.soomsil.usaint.domain.type
 
 typealias RusaintSemesterType = dev.eatsteak.rusaint.core.SemesterType
 

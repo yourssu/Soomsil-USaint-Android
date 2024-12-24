@@ -11,17 +11,17 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterWithLectures
 @Dao
 interface SemesterDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertSemester(semester: SemesterVO): Long
+    suspend fun insertSemester(semester: SemesterVO): Long
 
     @Query("SELECT * FROM Semester WHERE year = :year AND semester = :semesterName LIMIT 1")
-    fun getSemesterByYearAndSemester(year: Int, semesterName: String): SemesterVO?
+    suspend fun getSemesterByYearAndSemester(year: Int, semesterName: String): SemesterVO?
 
     @Query("SELECT * FROM Semester WHERE totalReportCardId = :totalReportCardId")
-    fun getSemestersByTotalReportCardId(totalReportCardId: Int): List<SemesterVO>
+    suspend fun getSemestersByTotalReportCardId(totalReportCardId: Int): List<SemesterVO>
 
     @Transaction
     @Query("SELECT * FROM Semester WHERE year = :year AND semester = :semesterName LIMIT 1")
-    fun getSemesterWithLectures(year: Int, semesterName: String): SemesterWithLectures?
+    suspend fun getSemesterWithLectures(year: Int, semesterName: String): SemesterWithLectures?
 
     @Query("DELETE FROM Semester")
     suspend fun deleteAll()

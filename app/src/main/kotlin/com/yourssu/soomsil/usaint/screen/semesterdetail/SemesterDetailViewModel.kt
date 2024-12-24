@@ -6,10 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yourssu.soomsil.usaint.data.repository.CurrentSemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
-import com.yourssu.soomsil.usaint.data.type.SemesterType
+import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
 import com.yourssu.soomsil.usaint.ui.entities.Semester
@@ -31,6 +32,7 @@ class SemesterDetailViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
     private val semesterRepo: SemesterRepository,
     private val lectureRepo: LectureRepository,
+    private val currentSemesterRepo: CurrentSemesterRepository
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -41,6 +43,8 @@ class SemesterDetailViewModel @Inject constructor(
     var semesters: List<Semester> by mutableStateOf(emptyList())
         private set
     val semesterLecturesMap: MutableMap<SemesterType, List<LectureInfo>> = mutableStateMapOf()
+
+    private var currentSemester: SemesterType = currentSemesterRepo.getCurrentSemesterType()
 
     init {
         initialize()
@@ -54,10 +58,12 @@ class SemesterDetailViewModel @Inject constructor(
         }
     }
 
-    fun refreshWhenEmpty(semester: SemesterType) {
-        if (!semesterLecturesMap[semester].isNullOrEmpty()) return
-        viewModelScope.launch {
-            refreshLectureInfos(semester)
+    fun initialRefresh(semester: SemesterType) {
+        // 현재 학기인 경우 항상 갱신
+        if (semester == currentSemester || semesterLecturesMap[semester].isNullOrEmpty()) {
+            viewModelScope.launch {
+                refreshLectureInfos(semester)
+            }
         }
     }
 
@@ -107,6 +113,18 @@ class SemesterDetailViewModel @Inject constructor(
                     .sortByGrade()
                 // store
                 lectureRepo.storeLectures(*lectureVOs.toTypedArray())
+
+                // 현재 학기는 학기 정보도 갱신시켜줘야 함
+                if (semester == currentSemester) {
+                    Timber.d("update semester")
+                    val newSemesterVO =
+                        currentSemesterRepo.updateLocalCurrentSemester(lectureVOs).getOrElse { e ->
+                            Timber.e(e)
+                            _uiEvent.emit(UiEvent.Failure("학기 정보를 갱신하는 도중 문제가 발생했습니다."))
+                            return@onSuccess
+                        }
+                    semesters = semesters.dropLast(1) + listOf(newSemesterVO.toSemester())
+                }
             }
             .onFailure { e ->
                 Timber.e(e)

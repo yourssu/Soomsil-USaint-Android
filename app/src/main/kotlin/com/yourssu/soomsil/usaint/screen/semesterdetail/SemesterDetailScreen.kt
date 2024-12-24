@@ -41,7 +41,7 @@ import com.yourssu.design.system.compose.component.ScrollableTabBar
 import com.yourssu.design.system.compose.component.Tab
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.data.type.SemesterType
+import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
 import com.yourssu.soomsil.usaint.ui.entities.Semester
@@ -91,7 +91,7 @@ fun SemesterDetailScreen(
     SemesterDetailScreen(
         isRefreshing = viewModel.isRefreshing,
         onRefresh = viewModel::refresh,
-        onRefreshWhenEmpty = viewModel::refreshWhenEmpty,
+        onInitialRefresh = viewModel::initialRefresh,
         initialTabIndex = initialTabIndex,
         semesters = viewModel.semesters,
         semesterLecturesMap = viewModel.semesterLecturesMap,
@@ -123,7 +123,7 @@ fun SemesterDetailScreen(
 fun SemesterDetailScreen(
     isRefreshing: Boolean,
     onRefresh: (SemesterType) -> Unit,
-    onRefreshWhenEmpty: (SemesterType) -> Unit,
+    onInitialRefresh: (SemesterType) -> Unit,
     initialTabIndex: Int,
     semesters: List<Semester>,
     semesterLecturesMap: Map<SemesterType, List<LectureInfo>>,
@@ -146,7 +146,7 @@ fun SemesterDetailScreen(
     LaunchedEffect(pagerState.currentPage, semesters) {
         // 현재 페이지의 강의 정보가 비어있으면 자동 refresh
         if (pagerState.currentPage in semesters.indices)
-            onRefreshWhenEmpty(semesters[pagerState.currentPage].type)
+            onInitialRefresh(semesters[pagerState.currentPage].type)
     }
 
     YdsScaffold(
@@ -279,7 +279,7 @@ private fun SemesterDetailScreenPreview() {
                     isRefreshing = false
                 }
             },
-            onRefreshWhenEmpty = {},
+            onInitialRefresh = {},
             initialTabIndex = 0,
             semesters = listOf(
                 Semester(type = SemesterType.One(2022)),

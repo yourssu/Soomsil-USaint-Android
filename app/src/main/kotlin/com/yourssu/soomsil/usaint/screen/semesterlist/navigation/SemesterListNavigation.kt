@@ -4,7 +4,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.yourssu.soomsil.usaint.data.type.SemesterType
 import com.yourssu.soomsil.usaint.screen.semesterlist.SemesterListScreen
 import kotlinx.serialization.Serializable
 
