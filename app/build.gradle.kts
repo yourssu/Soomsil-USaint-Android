@@ -70,6 +70,9 @@ dependencies {
     // util
     implementation(libs.timber)
 
+    // worker (Kotlin + coroutines)
+    implementation(libs.androidx.work.runtime.ktx)
+
     implementation(libs.yds.android)
     implementation(libs.androidx.viewpager2)
     implementation(libs.compose.navigation)
