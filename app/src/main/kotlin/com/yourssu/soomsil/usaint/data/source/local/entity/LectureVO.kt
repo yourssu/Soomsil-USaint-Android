@@ -14,7 +14,6 @@ import dev.eatsteak.rusaint.core.ClassScore
         entity = SemesterVO::class,
         parentColumns = ["id"],
         childColumns = ["semesterId"],
-        onDelete = ForeignKey.CASCADE
     )],
     indices = [
         Index(value = ["semesterId"]),
