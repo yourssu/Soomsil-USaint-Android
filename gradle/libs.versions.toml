@@ -30,6 +30,7 @@ browser = "1.8.0"
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltNavigationCompose" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
