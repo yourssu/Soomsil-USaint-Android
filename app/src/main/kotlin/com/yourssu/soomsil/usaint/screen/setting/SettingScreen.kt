@@ -1,7 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.setting
 
 import android.Manifest
-import android.content.Context
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -59,15 +58,20 @@ fun SettingScreen(
             when (event) {
                 // 최초 알림 권한 요청
                 is SettingEvent.ShowPermissionRequest -> {
-                    Toast.makeText(context,
-                        context.getString(R.string.request_alarm_permission), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.request_alarm_permission), Toast.LENGTH_SHORT
+                    ).show()
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
 
                 // 알림 권한 요청을 거부한 경우 설정 앱에서 직접 알림 권한 허용
                 is SettingEvent.NavigateToSettings -> {
-                    Toast.makeText(context,
-                        context.getString(R.string.request_alarm_permission_in_setting), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.request_alarm_permission_in_setting),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     val intent = android.content.Intent(
                         android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                     ).apply {
@@ -97,9 +101,14 @@ fun SettingScreen(
     SettingScreen(
         modifier = modifier,
         onBackClick = onBackClick,
-        navigateToWebView = navigateToWebView,
-        dialogState = state.showDialog,
-        clickAlarmState = state.checkAlarm,
+        onClickTermsOfService = {
+            navigateToWebView(context.resources.getString(R.string.terms_of_service_url))
+        },
+        onClickTermsOfPrivacy = {
+            navigateToWebView(context.resources.getString(R.string.terms_of_privacy_info_url))
+        },
+        showDialog = state.showDialog,
+        notificationState = state.checkAlarm,
         onDialogStateChange = viewModel::updateDialogState,
         onAlarmToggleChange = { isChecked ->
             viewModel.checkNotificationPermission(context, isChecked)
@@ -111,15 +120,15 @@ fun SettingScreen(
 
 @Composable
 fun SettingScreen(
+    showDialog: Boolean,
+    notificationState: Boolean,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    navigateToWebView: (String) -> Unit = {},
-    dialogState: Boolean = false,
-    clickAlarmState: Boolean = false,
     onDialogStateChange: (Boolean) -> Unit = {},
     onAlarmToggleChange: (Boolean) -> Unit = {},
-    onLogout: () -> Unit  = {},
-    context: Context = LocalContext.current
+    onLogout: () -> Unit = {},
+    onClickTermsOfService: () -> Unit = {},
+    onClickTermsOfPrivacy: () -> Unit = {},
 ) {
     YdsScaffold(
         topBar = {
@@ -127,7 +136,6 @@ fun SettingScreen(
                 navigationIcon = {
                     TopBarButton(
                         onClick = onBackClick,
-                        isDisabled = false,
                         icon = YdsR.drawable.ic_arrow_left_line
                     )
                 },
@@ -152,7 +160,7 @@ fun SettingScreen(
                 }
             }
 
-            if (dialogState) {
+            if (showDialog) {
                 TwoButtonDialog(
                     title = stringResource(R.string.logout_title),
                     positiveButtonText = stringResource(R.string.logout),
@@ -181,7 +189,7 @@ fun SettingScreen(
                         )
 
                         Toggle(
-                            checked = clickAlarmState,
+                            checked = notificationState,
                             onCheckedChange = onAlarmToggleChange
                         )
                     }
@@ -192,16 +200,12 @@ fun SettingScreen(
                 item {
                     ListItem(
                         text = stringResource(R.string.terms_of_service),
-                        onClick = {
-                            navigateToWebView(context.getString(R.string.terms_of_service_url))
-                        }
+                        onClick = onClickTermsOfService,
                     )
 
                     ListItem(
                         text = stringResource(R.string.terms_of_privacy_info),
-                        onClick = {
-                            navigateToWebView(context.getString(R.string.terms_of_privacy_info_url))
-                        }
+                        onClick = onClickTermsOfPrivacy,
                     )
                 }
             }
@@ -213,6 +217,9 @@ fun SettingScreen(
 @Composable
 fun PreviewSettingScreen() {
     YdsTheme {
-        SettingScreen()
+        SettingScreen(
+            showDialog = false,
+            notificationState = false,
+        )
     }
 }
