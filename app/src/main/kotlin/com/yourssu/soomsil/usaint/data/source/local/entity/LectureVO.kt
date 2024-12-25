@@ -17,7 +17,7 @@ import dev.eatsteak.rusaint.core.ClassScore
     )],
     indices = [
         Index(value = ["semesterId"]),
-        Index(value = ["code"], unique = true) // code 컬럼에 고유 인덱스를 추가
+        Index(value = ["semesterId", "code"], unique = true) // code 컬럼에 고유 인덱스를 추가
     ]
 )
 data class LectureVO(
