@@ -49,12 +49,6 @@ class HomeViewModel @Inject constructor(
         initialize()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        // ViewModel이 소멸될 때 Job도 함께 취소
-        cancelJob()
-    }
-
     fun cancelJob() {
         Timber.d("HomeViewModel cancelJob")
         isRefreshing = false
@@ -111,7 +105,7 @@ class HomeViewModel @Inject constructor(
                 studentInfoRepo.storeStudentInfo(stuDto).onFailure { e -> Timber.e(e) }
                 _uiEvent.emit(UiEvent.Success)
                 isRefreshing = false
-            } catch (e:CancellationException) {
+            } catch (e: CancellationException) {
                 Timber.e("Job was cancelled: $e")
             }
         }
