@@ -31,17 +31,14 @@ class CurrentSemesterRepository @Inject constructor(
     }
 
     suspend fun getLocalCurrentSemesterLectures(): Result<List<LectureVO>> {
-        val currentSemester = getLocalCurrentSemester().getOrElse { e ->
-            return Result.failure(e)
-        }
+        val currentSemester = getCurrentSemesterType()
 
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
                 semesterDao.getSemesterWithLectures(
                     year = currentSemester.year,
-                    semesterName = currentSemester.semester,
-                )?.lectures
-                    ?: throw Exception("semester(${currentSemester.year}-${currentSemester.semester})'s lectures not found")
+                    semesterName = currentSemester.storeFormat,
+                )?.lectures ?: throw Exception("semester($currentSemester)'s lectures not found")
             }
         }
     }

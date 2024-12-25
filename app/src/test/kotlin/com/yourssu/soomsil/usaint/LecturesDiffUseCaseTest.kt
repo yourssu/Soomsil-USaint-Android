@@ -2,7 +2,6 @@ package com.yourssu.soomsil.usaint
 
 import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
 import com.yourssu.soomsil.usaint.domain.type.LectureDiff
-import com.yourssu.soomsil.usaint.domain.type.LectureDiffOption
 import com.yourssu.soomsil.usaint.domain.usecase.LecturesDiffUseCase
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -52,10 +51,7 @@ class LecturesDiffUseCaseTest {
 
     @Test
     fun test() {
-        val diffOption = diffUseCase(oldList, newList)
-        assert(diffOption is LectureDiffOption.Some)
-
-        diffOption as LectureDiffOption.Some
+        val result = diffUseCase(oldList, newList)
 
         assertEquals(
             listOf(
@@ -66,13 +62,13 @@ class LecturesDiffUseCaseTest {
                     grade = "성적 미입력" to "A+",
                     score = "Empty" to "98",
                 )
-            ), diffOption.diff
+            ), result
         )
     }
 
     @Test
     fun `같은 리스트는 차이가 없음`() {
-        assert(diffUseCase(oldList, oldList) is LectureDiffOption.None)
+        assert(diffUseCase(oldList, oldList).isEmpty())
     }
 
     @Test
@@ -172,8 +168,7 @@ class LecturesDiffUseCaseTest {
             ),
         )
 
-        val resultOption = diffUseCase(before, after)
-        assert(resultOption is LectureDiffOption.Some)
+        val result = diffUseCase(before, after)
 
         val expectation = listOf(
             LectureDiff(
@@ -206,7 +201,6 @@ class LecturesDiffUseCaseTest {
             )
         )
 
-        resultOption as LectureDiffOption.Some
-        assertEquals(expectation, resultOption.diff)
+        assertEquals(expectation, result)
     }
 }

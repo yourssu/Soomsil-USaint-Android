@@ -2,13 +2,6 @@ package com.yourssu.soomsil.usaint.domain.type
 
 import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
 
-sealed interface LectureDiffOption {
-    data class Some(val diff: List<LectureDiff>) : LectureDiffOption
-
-    // there is no differences
-    data object None : LectureDiffOption
-}
-
 // Pair<before, after>
 data class LectureDiff(
     val title: String,

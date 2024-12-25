@@ -2,12 +2,11 @@ package com.yourssu.soomsil.usaint.domain.usecase
 
 import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
 import com.yourssu.soomsil.usaint.domain.type.LectureDiff
-import com.yourssu.soomsil.usaint.domain.type.LectureDiffOption
 import com.yourssu.soomsil.usaint.domain.type.diff
 import javax.inject.Inject
 
 class LecturesDiffUseCase @Inject constructor() {
-    operator fun invoke(old: List<LectureVO>, new: List<LectureVO>): LectureDiffOption {
+    operator fun invoke(old: List<LectureVO>, new: List<LectureVO>): List<LectureDiff> {
         val oldSorted = old.sortedBy { it.code }
         val newSorted = new.sortedBy { it.code }
         val diff = ArrayList<LectureDiff>()
@@ -68,6 +67,6 @@ class LecturesDiffUseCase @Inject constructor() {
             })
         }
 
-        return if (diff.isEmpty()) LectureDiffOption.None else LectureDiffOption.Some(diff)
+        return diff
     }
 }
