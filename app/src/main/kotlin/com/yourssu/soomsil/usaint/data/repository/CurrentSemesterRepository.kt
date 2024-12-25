@@ -30,6 +30,22 @@ class CurrentSemesterRepository @Inject constructor(
         }
     }
 
+    suspend fun getLocalCurrentSemesterLectures(): Result<List<LectureVO>> {
+        val currentSemester = getLocalCurrentSemester().getOrElse { e ->
+            return Result.failure(e)
+        }
+
+        return kotlin.runCatching {
+            withContext(Dispatchers.IO) {
+                semesterDao.getSemesterWithLectures(
+                    year = currentSemester.year,
+                    semesterName = currentSemester.semester,
+                )?.lectures
+                    ?: throw Exception("semester(${currentSemester.year}-${currentSemester.semester})'s lectures not found")
+            }
+        }
+    }
+
     // lecture 리스트로 학기 정보 업데이트
     suspend fun updateLocalCurrentSemester(lectures: List<LectureVO>): Result<SemesterVO> {
         val currentSemester = getLocalCurrentSemester().getOrElse { e ->
