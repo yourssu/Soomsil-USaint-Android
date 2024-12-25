@@ -47,7 +47,7 @@ fun USaintNavHost(
                     }
                 )
             },
-            navigateToBack = { navController.popBackStack() },
+            navigateToBack = { navController.navigateUp() },
         )
 
         homeScreen(
@@ -57,7 +57,7 @@ fun USaintNavHost(
 
         settingScreen(
             navigateToBack = {
-                navController.popBackStack()
+                navController.navigateUp()
             },
             navigateToWebView = { url ->
                 CustomTabsIntent.Builder().build().also {
@@ -80,11 +80,11 @@ fun USaintNavHost(
 
         semesterListScreen(
             navigateToSemesterListDetail = { idx -> navController.navigateToSemesterDetail(idx) },
-            navigateToBack = { navController.popBackStack() },
+            navigateToBack = { navController.navigateUp() },
         )
 
         semesterDetailScreen(
-            navigateToBack = { navController.popBackStack() },
+            navigateToBack = { navController.navigateUp() },
         )
     }
 }
