@@ -67,10 +67,11 @@ class HomeViewModel @Inject constructor(
             }
             val stuDto = studentInfoRepo.getRemoteStudentInfo(session).getOrElse { e ->
                 Timber.e(e)
-                when (e) {
-                    is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
-                    else -> _uiEvent.emit(UiEvent.Failure())
+                val errMsg = when (e) {
+                    is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
+                    else -> "알 수 없는 문제가 발생했습니다."
                 }
+                _uiEvent.emit(UiEvent.Failure(errMsg))
                 isRefreshing = false
                 return@launch
             }
