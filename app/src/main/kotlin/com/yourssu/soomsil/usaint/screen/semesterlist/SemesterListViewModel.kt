@@ -17,6 +17,7 @@ import com.yourssu.soomsil.usaint.ui.entities.toSemester
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
 import dev.eatsteak.rusaint.ffi.USaintSession
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -25,6 +26,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class SemesterListViewModel @Inject constructor(
@@ -45,16 +47,31 @@ class SemesterListViewModel @Inject constructor(
     var semesters: List<Semester> by mutableStateOf(emptyList())
         private set
 
+    // job 정의
+    private var refreshJob: Job? = null
+
     init {
         initialize()
     }
 
     fun refresh() {
-        viewModelScope.launch {
-            isRefreshing = true
-            refreshSemesters()
-            isRefreshing = false
+        // 이전에 진행 중이던 refreshJob이 있으면 취소
+        refreshJob?.cancel()
+        refreshJob = viewModelScope.launch {
+            try {
+                isRefreshing = true
+                refreshSemesters()
+                isRefreshing = false
+            } catch (e: CancellationException) {
+                Timber.e("refreshJob cancelled")
+            }
         }
+    }
+
+    fun cancelJob() {
+        Timber.d("SemesterListViewModel cancelJob")
+        isRefreshing = false
+        refreshJob?.cancel()
     }
 
     private fun initialize() {

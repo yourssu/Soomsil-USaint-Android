@@ -14,6 +14,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +53,7 @@ import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import com.yourssu.design.R as YdsR
 
 @Composable
@@ -95,6 +97,13 @@ fun SemesterListScreen(
                     else -> {}
                 }
             }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            Timber.d("SemesterListScreen DisposableEffect ::: cancelJob")
+            viewModel.cancelJob()
         }
     }
 
