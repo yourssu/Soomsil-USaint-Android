@@ -42,7 +42,6 @@ class HomeViewModel @Inject constructor(
         private set
 
     // job 정의
-    private var initJob: Job? = null
     private var refreshJob: Job? = null
 
     init {
@@ -52,7 +51,6 @@ class HomeViewModel @Inject constructor(
     fun cancelJob() {
         Timber.d("HomeViewModel cancelJob")
         isRefreshing = false
-        initJob?.cancel()
         refreshJob?.cancel()
     }
 
@@ -112,11 +110,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun initialize() {
-
-        // 이전에 진행 중이던 initJob이 있으면 취소
-        initJob?.cancel()
-
-        initJob = viewModelScope.launch {
+        viewModelScope.launch {
             try {
                 studentInfoRepo.getLocalStudentInfo()
                     .onSuccess { stu ->
