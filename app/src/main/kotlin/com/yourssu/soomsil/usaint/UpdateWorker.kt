@@ -40,14 +40,24 @@ class UpdateWorker @AssistedInject constructor(
                 Timber.e(e)
                 return Result.failure()
             }
+        val diffList = lecturesDiffUseCase(oldLectures, newLectures)
 
+        if (diffList.isEmpty()) {
+            if (BuildConfig.DEBUG) {
+                // 디버그 용
+                showNotification("디버그", "업데이트 된 성적이 없습니다.")
+            }
+            return Result.success()
+        }
 
-        // 알림 띄우기
-        showNotification(
-            "성적 업데이트",
-            "[기업가정신과행동] 성적이 업데이트 되었습니다. ${newLectures.toString()}"
-        ) // 알림 발행
-        Timber.d("WorkManager: show notification time : ${getCurrentTimeInHoursAndMinutes()}")
+        diffList.forEach { lectureDiff ->
+            // 각 변경사항에 대해 모두 알림 띄우기
+            showNotification("성적 업데이트", "[${lectureDiff.title}] 성적이 업데이트 되었습니다.")
+        }
+        currentSemesterRepo.updateLocalCurrentSemester(newLectures).onFailure { e ->
+            Timber.e(e)
+            return Result.failure()
+        }
 
         return Result.success()
     }
