@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,6 +42,8 @@ import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
+import dev.eatsteak.rusaint.core.Disposable
+import timber.log.Timber
 import com.yourssu.design.R as YdsR
 
 @Composable
@@ -85,6 +88,13 @@ fun HomeScreen(
                     else -> {}
                 }
             }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            Timber.d("HomeScreen DisposableEffect ::: cancelJob")
+            viewModel.cancelJob()
         }
     }
 

@@ -17,6 +17,7 @@ import com.yourssu.soomsil.usaint.ui.entities.toReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.toStudentInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -39,12 +40,24 @@ class HomeViewModel @Inject constructor(
     var reportCardSummary: ReportCardSummary by mutableStateOf(ReportCardSummary())
         private set
 
+    // job 정의
+    private var refreshJob: Job? = null
+
     init {
         initialize()
     }
 
+    fun cancelJob() {
+        Timber.d("HomeViewModel cancelJob")
+        isRefreshing = false
+        refreshJob?.cancel()
+    }
+
     fun refresh() {
-        viewModelScope.launch {
+        // 이전에 진행 중이던 refreshJob이 있으면 취소
+        refreshJob?.cancel()
+
+        refreshJob = viewModelScope.launch {
             isRefreshing = true
             val session = uSaintSessionRepo.getSession().getOrElse { e ->
                 Timber.e(e)
@@ -61,16 +74,16 @@ class HomeViewModel @Inject constructor(
                 isRefreshing = false
                 return@launch
             }
-            val totalReportCard = totalReportCardRepo.getRemoteReportCard(session).getOrElse { e ->
-                Timber.e(e)
-                val errMsg = when (e) {
-                    is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
-                    else -> "알 수 없는 문제가 발생했습니다."
+            val totalReportCard =
+                totalReportCardRepo.getRemoteReportCard(session).getOrElse { e ->
+                    Timber.e(e)
+                    when (e) {
+                        is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
+                        else -> _uiEvent.emit(UiEvent.Failure())
+                    }
+                    isRefreshing = false
+                    return@launch
                 }
-                _uiEvent.emit(UiEvent.Failure(errMsg))
-                isRefreshing = false
-                return@launch
-            }
             // ui state 변경
             studentInfo = StudentInfo(
                 name = stuDto.name,
