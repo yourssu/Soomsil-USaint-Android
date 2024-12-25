@@ -26,7 +26,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class SemesterListViewModel @Inject constructor(
@@ -58,13 +57,9 @@ class SemesterListViewModel @Inject constructor(
         // 이전에 진행 중이던 refreshJob이 있으면 취소
         refreshJob?.cancel()
         refreshJob = viewModelScope.launch {
-            try {
-                isRefreshing = true
-                refreshSemesters()
-                isRefreshing = false
-            } catch (e: CancellationException) {
-                Timber.e("refreshJob cancelled")
-            }
+            isRefreshing = true
+            refreshSemesters()
+            isRefreshing = false
         }
     }
 

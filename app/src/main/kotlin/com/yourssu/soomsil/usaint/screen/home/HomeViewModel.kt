@@ -17,7 +17,6 @@ import com.yourssu.soomsil.usaint.ui.entities.toReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.toStudentInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -59,72 +58,64 @@ class HomeViewModel @Inject constructor(
         refreshJob?.cancel()
 
         refreshJob = viewModelScope.launch {
-            try {
-                isRefreshing = true
-                val session = uSaintSessionRepo.getSession().getOrElse { e ->
-                    Timber.e(e)
-                    _uiEvent.emit(UiEvent.SessionFailure)
-                    isRefreshing = false
-                    return@launch
-                }
-                val stuDto = studentInfoRepo.getRemoteStudentInfo(session).getOrElse { e ->
-                    Timber.e(e)
-                    when (e) {
-                        is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
-                        else -> _uiEvent.emit(UiEvent.Failure())
-                    }
-                    isRefreshing = false
-                    return@launch
-                }
-                val totalReportCard =
-                    totalReportCardRepo.getRemoteReportCard(session).getOrElse { e ->
-                        Timber.e(e)
-                        val errMsg = when (e) {
-                            is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
-                            else -> "알 수 없는 문제가 발생했습니다."
-                        }
-                        _uiEvent.emit(UiEvent.Failure(errMsg))
-                        isRefreshing = false
-                        return@launch
-                    }
-                // ui state 변경
-                studentInfo = StudentInfo(
-                    name = stuDto.name,
-                    department = stuDto.department,
-                    grade = stuDto.grade.toInt(),
-                )
-                reportCardSummary = ReportCardSummary(
-                    gpa = totalReportCard.gpa.toGrade(),
-                    earnedCredit = totalReportCard.earnedCredit.toCredit(),
-                    graduateCredit = totalReportCard.graduateCredit.toCredit(),
-                )
-                // DB 갱신
-                totalReportCardRepo.storeReportCard(totalReportCard).onFailure { e -> Timber.e(e) }
-                studentInfoRepo.storeStudentInfo(stuDto).onFailure { e -> Timber.e(e) }
-                _uiEvent.emit(UiEvent.Success)
+            isRefreshing = true
+            val session = uSaintSessionRepo.getSession().getOrElse { e ->
+                Timber.e(e)
+                _uiEvent.emit(UiEvent.SessionFailure)
                 isRefreshing = false
-            } catch (e: CancellationException) {
-                Timber.e("Job was cancelled: $e")
+                return@launch
             }
+            val stuDto = studentInfoRepo.getRemoteStudentInfo(session).getOrElse { e ->
+                Timber.e(e)
+                when (e) {
+                    is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
+                    else -> _uiEvent.emit(UiEvent.Failure())
+                }
+                isRefreshing = false
+                return@launch
+            }
+            val totalReportCard =
+                totalReportCardRepo.getRemoteReportCard(session).getOrElse { e ->
+                    Timber.e(e)
+                    val errMsg = when (e) {
+                        is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
+                        else -> "알 수 없는 문제가 발생했습니다."
+                    }
+                    _uiEvent.emit(UiEvent.Failure(errMsg))
+                    isRefreshing = false
+                    return@launch
+                }
+            // ui state 변경
+            studentInfo = StudentInfo(
+                name = stuDto.name,
+                department = stuDto.department,
+                grade = stuDto.grade.toInt(),
+            )
+            reportCardSummary = ReportCardSummary(
+                gpa = totalReportCard.gpa.toGrade(),
+                earnedCredit = totalReportCard.earnedCredit.toCredit(),
+                graduateCredit = totalReportCard.graduateCredit.toCredit(),
+            )
+            // DB 갱신
+            totalReportCardRepo.storeReportCard(totalReportCard).onFailure { e -> Timber.e(e) }
+            studentInfoRepo.storeStudentInfo(stuDto).onFailure { e -> Timber.e(e) }
+            _uiEvent.emit(UiEvent.Success)
+            isRefreshing = false
         }
     }
 
     private fun initialize() {
         viewModelScope.launch {
-            try {
-                studentInfoRepo.getLocalStudentInfo()
-                    .onSuccess { stu ->
-                        studentInfo = stu.toStudentInfo()
-                    }
-                    .onFailure { e -> Timber.e(e) }
-                totalReportCardRepo.getLocalReportCard()
-                    .onSuccess { totalReportCard ->
-                        reportCardSummary = totalReportCard.toReportCardSummary()
-                    }
-                    .onFailure { e -> Timber.e(e) }
-            } catch (e: CancellationException) {
-                Timber.e("Job was cancelled: $e")
-            }
+            studentInfoRepo.getLocalStudentInfo()
+                .onSuccess { stu ->
+                    studentInfo = stu.toStudentInfo()
+                }
+                .onFailure { e -> Timber.e(e) }
+            totalReportCardRepo.getLocalReportCard()
+                .onSuccess { totalReportCard ->
+                    reportCardSummary = totalReportCard.toReportCardSummary()
+                }
+                .onFailure { e -> Timber.e(e) }
         }
     }
 }
