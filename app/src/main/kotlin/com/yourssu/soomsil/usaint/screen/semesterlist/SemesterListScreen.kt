@@ -133,7 +133,7 @@ fun SemesterListScreen(
     onBackClick: () -> Unit = {},
     onGradeListClick: (initialTabIndex: Int) -> Unit = {},
 ) {
-    val appliedSemesters = if (includeSeasonalSemester) {
+    val chartSemesters = if (includeSeasonalSemester) {
         semesters
     } else {
         semesters.filter { !it.type.isSeasonal }
@@ -181,11 +181,9 @@ fun SemesterListScreen(
                         modifier = Modifier.weight(1f),
                     )
                 }
-                if (appliedSemesters.isNotEmpty()) {
+                if (chartSemesters.isNotEmpty()) {
                     Chart(
-                        chartData = ChartData(
-                            semesters = appliedSemesters,
-                        ),
+                        chartData = ChartData(semesters = chartSemesters),
                         modifier = Modifier
                             .height(170.dp)
                             .padding(horizontal = 28.dp),
@@ -223,7 +221,7 @@ fun SemesterListScreen(
                     Column(
                         modifier = Modifier.padding(vertical = 8.dp),
                     ) {
-                        appliedSemesters.forEachIndexed { index, semester ->
+                        semesters.forEachIndexed { index, semester ->
                             SemesterReport(
                                 semester = semester,
                                 onClick = { onGradeListClick(index) },

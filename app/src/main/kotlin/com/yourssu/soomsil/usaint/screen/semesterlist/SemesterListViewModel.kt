@@ -9,6 +9,7 @@ import com.yourssu.soomsil.usaint.data.repository.CurrentSemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
+import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.Semester
@@ -83,7 +84,9 @@ class SemesterListViewModel @Inject constructor(
                         // 비어있는 경우 refresh
                         refreshSemesters()
                     } else {
-                        semesters = semesterList.map { vo -> vo.toSemester() }
+                        semesters = semesterList
+                            .map { vo -> vo.toSemester() }
+                            .sortedBy { it.type }
                     }
                 }
                 .onFailure { e -> Timber.e(e) }
@@ -102,8 +105,11 @@ class SemesterListViewModel @Inject constructor(
                     _uiEvent.emit(UiEvent.SessionFailure)
                     return
                 }
+            } else {
+                return
             }
         }
+        val semesterVOTemp = ArrayList<SemesterVO>()
         val totalReportCardDeferred = viewModelScope.async {
             totalReportCardRepo.getRemoteReportCard(session!!)
         }
@@ -112,25 +118,19 @@ class SemesterListViewModel @Inject constructor(
         }
 
         // ui state 변경 및 DB 갱신
-        totalReportCardDeferred.await()
-            .onSuccess {
-                reportCardSummary = it.toReportCardSummary()
-                totalReportCardRepo.storeReportCard(it)
+        val totalReportCard = totalReportCardDeferred.await().getOrElse { e ->
+            Timber.e(e)
+            when (e) {
+                is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
+                else -> _uiEvent.emit(UiEvent.Failure())
             }
-            .onFailure { e ->
-                Timber.e(e)
-                when (e) {
-                    is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
-                    else -> _uiEvent.emit(UiEvent.Failure())
-                }
-                session = null
-                return
-            }
+            session = null
+            return
+        }
+
         semesterDeferred.await()
-            .onSuccess {
-                val reversed = it.reversed()
-                semesters = reversed.map { vo -> vo.toSemester() }
-                semesterRepo.storeSemesters(*reversed.toTypedArray())
+            .onSuccess { semesterVOs ->
+                semesterVOTemp.addAll(semesterVOs)
             }
             .onFailure { e ->
                 Timber.e(e)
@@ -141,14 +141,12 @@ class SemesterListViewModel @Inject constructor(
                 session = null
                 return
             }
-        Timber.d("getCurrentSemester")
+
         // semesterDeferred와 겹치면 오류나기 때문에 따로 실행
         currentSemesterRepo.getRemoteCurrentSemester(session!!)
             .onSuccess { currentSemesterVO ->
                 if (currentSemesterVO == null) return@onSuccess
-                Timber.d("current semester: ${currentSemesterVO.year} ${currentSemesterVO.semester}")
-                semesters = semesters + listOf(currentSemesterVO.toSemester())
-                semesterRepo.storeSemesters(currentSemesterVO)
+                semesterVOTemp.add(currentSemesterVO)
             }
             .onFailure { e ->
                 Timber.e(e)
@@ -159,6 +157,14 @@ class SemesterListViewModel @Inject constructor(
                 session = null
                 return
             }
+
+        reportCardSummary = totalReportCard.toReportCardSummary()
+        semesters = semesterVOTemp
+            .map { it.toSemester() }
+            .sortedBy { it.type }
+
+        totalReportCardRepo.storeReportCard(totalReportCard)
+        semesterRepo.storeSemesters(*semesterVOTemp.toTypedArray())
 
         _uiEvent.emit(UiEvent.Success)
         session = null

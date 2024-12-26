@@ -75,7 +75,7 @@ class SemesterDetailViewModel @Inject constructor(
                         val semester = it.toSemester()
                         semesterLecturesMap[semester.type] = emptyList()
                         semester
-                    }
+                    }.sortedBy { it.type }
                 }
                 .onFailure { e -> Timber.e(e) }
 
