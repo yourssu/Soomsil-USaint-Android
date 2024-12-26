@@ -105,8 +105,6 @@ class SemesterListViewModel @Inject constructor(
                     _uiEvent.emit(UiEvent.SessionFailure)
                     return
                 }
-            } else {
-                return
             }
         }
         val semesterVOTemp = ArrayList<SemesterVO>()
