@@ -30,7 +30,12 @@ data class LectureVO(
     val professorName: String,  // 교수님 성함
     @ColumnInfo("semesterId")
     val semesterId: Int,        // foreign key
-)
+) {
+    fun equalsIgnoreIds(other: LectureVO): Boolean {
+        return title == other.title && code == other.code && credit == other.credit &&
+                grade == other.grade && score == other.score && professorName == other.professorName
+    }
+}
 
 fun ClassGrade.toLectureVO(semesterId: Int): LectureVO {
     val scoreString = when (score) {
