@@ -3,7 +3,6 @@ package com.yourssu.soomsil.usaint.data.source.local.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import com.yourssu.soomsil.usaint.PreferencesKeys
 import com.yourssu.soomsil.usaint.data.model.StudentInfoDto
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

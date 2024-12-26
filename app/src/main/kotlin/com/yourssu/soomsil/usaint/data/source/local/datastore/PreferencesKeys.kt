@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint
+package com.yourssu.soomsil.usaint.data.source.local.datastore
 
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
