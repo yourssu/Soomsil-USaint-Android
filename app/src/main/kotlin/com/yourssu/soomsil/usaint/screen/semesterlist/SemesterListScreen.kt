@@ -343,7 +343,10 @@ private fun SemesterReport(
                 vertical = 12.dp,
             ),
         )
-        Icon(id = YdsR.drawable.ic_arrow_right_line)
+        Icon(
+            id = YdsR.drawable.ic_arrow_right_line,
+            tint = YdsTheme.colors.buttonNormal,
+        )
     }
 }
 
