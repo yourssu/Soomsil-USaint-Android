@@ -6,7 +6,7 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
 import com.yourssu.soomsil.usaint.data.source.local.entity.toLectureVO
 import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
-import com.yourssu.soomsil.usaint.domain.type.toRsaintSemesterType
+import com.yourssu.soomsil.usaint.domain.type.toRusaintSemesterType
 import com.yourssu.soomsil.usaint.domain.usecase.CalculateGPAUseCase
 import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.Dispatchers
@@ -65,7 +65,7 @@ class CurrentSemesterRepository @Inject constructor(
         val currentClassGradeList = rusaintApi.getClassGradeList(
             session,
             currentSemester.year.toUInt(),
-            currentSemester.toRsaintSemesterType()
+            currentSemester.toRusaintSemesterType()
         ).getOrElse { e ->
             return Result.failure(e)
         }

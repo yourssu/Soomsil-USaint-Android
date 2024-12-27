@@ -41,7 +41,7 @@ fun makeSemesterType(year: Int, semester: String): SemesterType {
     }
 }
 
-fun SemesterType.toRsaintSemesterType(): RusaintSemesterType {
+fun SemesterType.toRusaintSemesterType(): RusaintSemesterType {
     return when (this) {
         is SemesterType.One -> RusaintSemesterType.ONE
         is SemesterType.Summer -> RusaintSemesterType.SUMMER
