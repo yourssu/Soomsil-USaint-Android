@@ -4,10 +4,12 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,15 +35,18 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.design.system.compose.atom.CheckBox
+import com.yourssu.design.system.compose.atom.Chip
 import com.yourssu.design.system.compose.atom.Divider
 import com.yourssu.design.system.compose.atom.Thickness
 import com.yourssu.design.system.compose.atom.TopBarButton
 import com.yourssu.design.system.compose.base.Icon
+import com.yourssu.design.system.compose.base.Surface
 import com.yourssu.design.system.compose.base.YdsScaffold
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.base.ydsClickable
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.component.chart.Chart
@@ -116,6 +121,7 @@ fun SemesterListScreen(
         onSeasonalFlagChange = { viewModel.includeSeasonalSemester = it },
         onBackClick = onBackClick,
         onGradeListClick = onGradeListClick,
+        currentSemester = viewModel.currentSemester,
         modifier = modifier,
     )
 }
@@ -130,6 +136,7 @@ fun SemesterListScreen(
     onSeasonalFlagChange: (Boolean) -> Unit,
     reportCardSummary: ReportCardSummary,
     modifier: Modifier = Modifier,
+    currentSemester: SemesterType? = null,
     onBackClick: () -> Unit = {},
     onGradeListClick: (initialTabIndex: Int) -> Unit = {},
 ) {
@@ -225,6 +232,7 @@ fun SemesterListScreen(
                             SemesterReport(
                                 semester = semester,
                                 onClick = { onGradeListClick(index) },
+                                isCurrentSemester = semester.type == currentSemester,
                             )
                         }
                     }
@@ -280,6 +288,7 @@ private fun SemesterReport(
     semester: Semester,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isCurrentSemester: Boolean = false,
 ) {
     Row(
         modifier = modifier
@@ -298,10 +307,22 @@ private fun SemesterReport(
                 .weight(1f)
                 .padding(top = 4.dp),
         ) {
-            YdsText(
-                text = semester.type.fullName,
-                style = YdsTheme.typography.subTitle2,
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                YdsText(
+                    text = semester.type.fullName,
+                    style = YdsTheme.typography.subTitle2,
+                )
+                if (isCurrentSemester) {
+                    Spacer(Modifier.width(8.dp))
+                    Chip(
+                        text = "성적 처리 기간",
+                        onSelectedChange = {},
+                        isSelected = true,
+                    )
+                }
+            }
             YdsText(
                 text = "${semester.earnedCredit.formatToString()}학점",
                 style = YdsTheme.typography.body2,
@@ -309,8 +330,13 @@ private fun SemesterReport(
             )
         }
         YdsText(
-            text = semester.gpa.formatToString(),
+            text = (if (isCurrentSemester) "(예상) " else "") + semester.gpa.formatToString(),
             style = YdsTheme.typography.subTitle2,
+            color = if (isCurrentSemester) {
+                YdsTheme.colors.buttonDisabled
+            } else {
+                YdsTheme.colors.buttonNormal
+            },
             modifier = Modifier.padding(
                 horizontal = 8.dp,
                 vertical = 12.dp,
@@ -386,5 +412,21 @@ private fun SemesterListScreenPreview_empty() {
                 graduateCredit = 133.toCredit(),
             ),
         )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun SemesterReportPreview() {
+    YdsTheme {
+        Surface {
+            SemesterReport(
+                semester = Semester(
+                    type = SemesterType.One(2024),
+                ),
+                onClick = {},
+                isCurrentSemester = true,
+            )
+        }
     }
 }
