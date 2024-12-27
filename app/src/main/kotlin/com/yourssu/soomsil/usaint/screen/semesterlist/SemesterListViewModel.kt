@@ -10,6 +10,8 @@ import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
+import com.yourssu.soomsil.usaint.domain.type.SemesterType
+import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterTypeUseCase
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.Semester
@@ -34,6 +36,7 @@ class SemesterListViewModel @Inject constructor(
     private val totalReportCardRepo: TotalReportCardRepository,
     private val semesterRepo: SemesterRepository,
     private val currentSemesterRepo: CurrentSemesterRepository,
+    getCurrentSemesterTypeUseCase: GetCurrentSemesterTypeUseCase,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -46,6 +49,8 @@ class SemesterListViewModel @Inject constructor(
         private set
     var semesters: List<Semester> by mutableStateOf(emptyList())
         private set
+
+    val currentSemester: SemesterType? = getCurrentSemesterTypeUseCase()
 
     // job 정의
     private var refreshJob: Job? = null
