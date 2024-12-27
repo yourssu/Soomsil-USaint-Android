@@ -228,10 +228,11 @@ fun SemesterListScreen(
                     Column(
                         modifier = Modifier.padding(vertical = 8.dp),
                     ) {
-                        semesters.forEachIndexed { index, semester ->
+                        val size = semesters.size
+                        semesters.reversed().forEachIndexed { index, semester ->
                             SemesterReport(
                                 semester = semester,
-                                onClick = { onGradeListClick(index) },
+                                onClick = { onGradeListClick(size - index - 1) },
                                 isCurrentSemester = semester.type == currentSemester,
                             )
                         }
