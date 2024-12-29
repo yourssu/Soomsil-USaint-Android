@@ -5,13 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourssu.soomsil.usaint.data.repository.CurrentSemesterRepository
+import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
-import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterTypeUseCase
+import com.yourssu.soomsil.usaint.domain.usecase.MakeSemesterFromLecturesUseCase
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.Semester
@@ -35,7 +35,8 @@ class SemesterListViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
     private val totalReportCardRepo: TotalReportCardRepository,
     private val semesterRepo: SemesterRepository,
-    private val currentSemesterRepo: CurrentSemesterRepository,
+    private val lectureRepo: LectureRepository,
+    private val makeSemesterUseCase: MakeSemesterFromLecturesUseCase,
     getCurrentSemesterTypeUseCase: GetCurrentSemesterTypeUseCase,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
@@ -112,7 +113,6 @@ class SemesterListViewModel @Inject constructor(
                 }
             }
         }
-        val semesterVOTemp = ArrayList<SemesterVO>()
         val totalReportCardDeferred = viewModelScope.async {
             totalReportCardRepo.getRemoteReportCard(session!!)
         }
@@ -121,55 +121,65 @@ class SemesterListViewModel @Inject constructor(
         }
 
         // ui state 변경 및 DB 갱신
-        val totalReportCard = totalReportCardDeferred.await().getOrElse { e ->
-            Timber.e(e)
-            when (e) {
-                is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
-                else -> _uiEvent.emit(UiEvent.Failure())
+        totalReportCardDeferred.await()
+            .onSuccess { totalReportCard ->
+                reportCardSummary = totalReportCard.toReportCardSummary()
+                totalReportCardRepo.storeReportCard(totalReportCard)
             }
-            session = null
-            return
-        }
+            .onFailure { e ->
+                handleError(e)
+                session = null
+                return
+            }
 
         semesterDeferred.await()
             .onSuccess { semesterVOs ->
-                semesterVOTemp.addAll(semesterVOs)
+                val semestersTemp = ArrayList<Semester>()
+                semestersTemp.addAll(semesterVOs.map { it.toSemester() })
+                semesterRepo.storeSemesters(*semesterVOs.toTypedArray())
+
+                // 각 상세 성적 정보 요청
+                for (semester in semestersTemp) {
+                    lectureRepo.getRemoteLectures(session!!, semester.type)
+                        .onSuccess { lectureRepo.storeLectures(*it.toTypedArray()) }
+                }
+
+                // 최근 학기에 대한 상세 성적 정보 요청
+                if (currentSemester != null && semestersTemp.find { it.type == currentSemester } == null) {
+                    lectureRepo.getRemoteLectures(session!!, currentSemester)
+                        .onSuccess { lectureList ->
+                            if (lectureList.isNotEmpty()) {
+                                val currentSemester =
+                                    makeSemesterUseCase(currentSemester, lectureList)
+                                semesterRepo.storeSemesters(currentSemester)
+                                lectureRepo.storeLectures(*lectureList.toTypedArray())
+                                semestersTemp.add(currentSemester.toSemester())
+                            }
+                        }
+                        .onFailure { e ->
+                            handleError(e, "최근 학기 정보를 가져오지 못했습니다.")
+                        }
+                }
+
+                semesters = semestersTemp.sortedBy { it.type }
             }
             .onFailure { e ->
-                Timber.e(e)
-                when (e) {
-                    is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
-                    else -> _uiEvent.emit(UiEvent.Failure())
-                }
+                handleError(e)
                 session = null
                 return
             }
-
-        // semesterDeferred와 겹치면 오류나기 때문에 따로 실행
-        currentSemesterRepo.getRemoteCurrentSemester(session!!)
-            .onSuccess { currentSemesterVO ->
-                if (currentSemesterVO == null) return@onSuccess
-                semesterVOTemp.add(currentSemesterVO)
-            }
-            .onFailure { e ->
-                Timber.e(e)
-                when (e) {
-                    is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
-                    else -> _uiEvent.emit(UiEvent.Failure())
-                }
-                session = null
-                return
-            }
-
-        reportCardSummary = totalReportCard.toReportCardSummary()
-        semesters = semesterVOTemp
-            .map { it.toSemester() }
-            .sortedBy { it.type }
-
-        totalReportCardRepo.storeReportCard(totalReportCard)
-        semesterRepo.storeSemesters(*semesterVOTemp.toTypedArray())
 
         _uiEvent.emit(UiEvent.Success)
         session = null
+    }
+
+    private fun handleError(e: Throwable, msg: String? = null) {
+        Timber.e(e)
+        viewModelScope.launch {
+            when (e) {
+                is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
+                else -> _uiEvent.emit(UiEvent.Failure(msg))
+            }
+        }
     }
 }
