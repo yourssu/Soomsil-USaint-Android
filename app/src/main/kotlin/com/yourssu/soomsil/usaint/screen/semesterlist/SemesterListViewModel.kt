@@ -123,38 +123,30 @@ class SemesterListViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            semesterRepo.getAllRemoteSemesters(session!!)
-                .onSuccess { semesterVOs ->
-                    val semestersTemp = ArrayList<Semester>()
-                    semestersTemp.addAll(semesterVOs.map { it.toSemester() })
-                    semesterRepo.storeSemesters(*semesterVOs.toTypedArray())
+            val semestersTemp = ArrayList<Semester>()
+            val semesterVOs = semesterRepo.getAllRemoteSemesters(session!!).getOrElse { e ->
+                handleError(e)
+                return@launch
+            }
+            semestersTemp.addAll(semesterVOs.map { it.toSemester() })
+            semesterRepo.storeSemesters(*semesterVOs.toTypedArray())
 
-                    // 각 상세 성적 정보 요청
-                    for (semester in semestersTemp) {
-                        lectureRepo.getRemoteLectures(session!!, semester.type)
-                            .onSuccess { lectureRepo.storeLectures(*it.toTypedArray()) }
+            // 최근 학기에 대한 상세 성적 정보 요청
+            if (currentSemester != null && semestersTemp.find { it.type == currentSemester } == null) {
+                val currentLectureVOs =
+                    lectureRepo.getRemoteLectures(session!!, currentSemester).getOrElse { e ->
+                        handleError(e, "최근 학기 정보를 가져오지 못했습니다.")
+                        return@launch
                     }
-
-                    // 최근 학기에 대한 상세 성적 정보 요청
-                    if (currentSemester != null && semestersTemp.find { it.type == currentSemester } == null) {
-                        lectureRepo.getRemoteLectures(session!!, currentSemester)
-                            .onSuccess { lectureList ->
-                                if (lectureList.isNotEmpty()) {
-                                    val currentSemester =
-                                        makeSemesterUseCase(currentSemester, lectureList)
-                                    semesterRepo.storeSemesters(currentSemester)
-                                    lectureRepo.storeLectures(*lectureList.toTypedArray())
-                                    semestersTemp.add(currentSemester.toSemester())
-                                }
-                            }
-                            .onFailure { e ->
-                                handleError(e, "최근 학기 정보를 가져오지 못했습니다.")
-                            }
-                    }
-
-                    semesters = semestersTemp.sortedBy { it.type }
+                if (currentLectureVOs.isNotEmpty()) {
+                    val currentSemester = makeSemesterUseCase(currentSemester, currentLectureVOs)
+                    semesterRepo.storeSemesters(currentSemester)
+                    lectureRepo.storeLectures(*currentLectureVOs.toTypedArray())
+                    semestersTemp.add(currentSemester.toSemester())
                 }
-                .onFailure { e -> handleError(e) }
+            }
+
+            semesters = semestersTemp.sortedBy { it.type }
         }
         session = null
     }
