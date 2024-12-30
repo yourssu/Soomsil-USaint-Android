@@ -29,6 +29,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class SemesterListViewModel @Inject constructor(
@@ -65,7 +66,8 @@ class SemesterListViewModel @Inject constructor(
         refreshJob?.cancel()
         refreshJob = viewModelScope.launch {
             isRefreshing = true
-            refreshSemesters()
+            val millis = measureTimeMillis { refreshSemesters() }
+            Timber.d("Refresh SemesterList: ${millis}ms") // about 7000ms
             isRefreshing = false
         }
     }
