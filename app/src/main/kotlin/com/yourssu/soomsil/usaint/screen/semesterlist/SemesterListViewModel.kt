@@ -88,7 +88,7 @@ class SemesterListViewModel @Inject constructor(
                     Timber.d(semesterList.toString()) // fixme: 가끔씩 빈 리스트 들어오는 경우 있음
                     if (semesterList.isEmpty()) {
                         // 비어있는 경우 refresh
-                        refreshSemesters()
+                        refreshJob = launch { refreshSemesters() }
                     } else {
                         semesters = semesterList
                             .map { vo -> vo.toSemester() }
