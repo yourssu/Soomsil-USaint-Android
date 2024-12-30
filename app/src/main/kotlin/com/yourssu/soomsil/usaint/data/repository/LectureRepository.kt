@@ -58,7 +58,7 @@ class LectureRepository @Inject constructor(
         if (classGradeList.isEmpty())
             return Result.success(emptyList())
 
-        val semesterId = semesterRepo.getOrStoreLocalSemester(semester.year, semester)
+        val semesterId = semesterRepo.getLocalSemester(semester.year, semester)
             .getOrElse { e ->
                 return Result.failure(e)
             }.id

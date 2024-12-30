@@ -10,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 class SemesterRepository @Inject constructor(
@@ -25,24 +24,12 @@ class SemesterRepository @Inject constructor(
         }
     }
 
-    suspend fun getOrStoreLocalSemester(year: Int, semesterType: SemesterType): Result<SemesterVO> {
+    suspend fun getLocalSemester(year: Int, semesterType: SemesterType): Result<SemesterVO> {
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
                 // 해당 Semester가 저장되어 있지 않다면 새로 만들고 저장
                 semesterDao.getSemesterByYearAndSemester(year, semesterType.storeFormat)
-                    ?: SemesterVO(
-                        year = year,
-                        semester = semesterType.storeFormat,
-                        semesterRank = -1,
-                        semesterStudentCount = -1,
-                        overallRank = -1,
-                        overallStudentCount = -1,
-                        earnedCredit = 0f,
-                        gpa = 0f,
-                    ).also {
-                        Timber.d("Store new SemesterVO: $semesterType")
-                        storeSemesters(it)
-                    }
+                    ?: throw Exception("semester $semesterType not found")
             }
         }
     }
