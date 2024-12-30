@@ -27,7 +27,6 @@ class SemesterRepository @Inject constructor(
     suspend fun getLocalSemester(year: Int, semesterType: SemesterType): Result<SemesterVO> {
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
-                // 해당 Semester가 저장되어 있지 않다면 새로 만들고 저장
                 semesterDao.getSemesterByYearAndSemester(year, semesterType.storeFormat)
                     ?: throw Exception("semester $semesterType not found")
             }

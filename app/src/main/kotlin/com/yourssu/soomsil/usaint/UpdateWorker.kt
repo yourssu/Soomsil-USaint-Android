@@ -32,8 +32,8 @@ class UpdateWorker @AssistedInject constructor(
     private val makeSemesterUseCase: MakeSemesterFromLecturesUseCase,
 ) : CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
+        // TODO: UseCase로 분리하기
         val currentSemester = getCurrentSemesterTypeUseCase() ?: return Result.success()
-        // 작업 수행
         val session = uSaintSessionRepo.getSession().getOrElse { e ->
             Timber.e(e)
             return Result.failure()

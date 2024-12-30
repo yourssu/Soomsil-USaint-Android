@@ -58,11 +58,6 @@ class LectureRepository @Inject constructor(
         if (classGradeList.isEmpty())
             return Result.success(emptyList())
 
-        val semesterId = semesterRepo.getLocalSemester(semester.year, semester)
-            .getOrElse { e ->
-                return Result.failure(e)
-            }.id
-
-        return Result.success(classGradeList.map { it.toLectureVO(semesterId) })
+        return Result.success(classGradeList.map { it.toLectureVO(semesterId = -1) })
     }
 }
