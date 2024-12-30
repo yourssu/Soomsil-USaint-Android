@@ -7,9 +7,12 @@ import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.yourssu.soomsil.usaint.data.repository.CurrentSemesterRepository
+import com.yourssu.soomsil.usaint.data.repository.LectureRepository
+import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
+import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterTypeUseCase
 import com.yourssu.soomsil.usaint.domain.usecase.LecturesDiffUseCase
+import com.yourssu.soomsil.usaint.domain.usecase.MakeSemesterFromLecturesUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import timber.log.Timber
@@ -21,25 +24,28 @@ import java.util.Locale
 class UpdateWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val lecturesDiffUseCase: LecturesDiffUseCase,
     private val uSaintSessionRepo: USaintSessionRepository,
-    private val currentSemesterRepo: CurrentSemesterRepository,
+    private val lectureRepo: LectureRepository,
+    private val semesterRepo: SemesterRepository,
+    private val lecturesDiffUseCase: LecturesDiffUseCase,
+    private val getCurrentSemesterTypeUseCase: GetCurrentSemesterTypeUseCase,
+    private val makeSemesterUseCase: MakeSemesterFromLecturesUseCase,
 ) : CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
+        val currentSemester = getCurrentSemesterTypeUseCase() ?: return Result.success()
         // 작업 수행
         val session = uSaintSessionRepo.getSession().getOrElse { e ->
             Timber.e(e)
             return Result.failure()
         }
-        val oldLectures = currentSemesterRepo.getLocalCurrentSemesterLectures().getOrElse { e ->
+        val oldLectures = lectureRepo.getLocalLectures(currentSemester).getOrElse { e ->
             Timber.e(e)
             return Result.failure()
         }
-        val newLectures =
-            currentSemesterRepo.getRemoteCurrentSemesterLectures(session).getOrElse { e ->
-                Timber.e(e)
-                return Result.failure()
-            }
+        val newLectures = lectureRepo.getRemoteLectures(session, currentSemester).getOrElse { e ->
+            Timber.e(e)
+            return Result.failure()
+        }
         val diffList = lecturesDiffUseCase(oldLectures, newLectures)
 
         if (diffList.isEmpty()) {
@@ -50,11 +56,19 @@ class UpdateWorker @AssistedInject constructor(
             return Result.success()
         }
 
-        diffList.forEach { lectureDiff ->
+        for (lectureDiff in diffList) {
             // 각 변경사항에 대해 모두 알림 띄우기
             showNotification("성적 업데이트", "[${lectureDiff.title}] 성적이 업데이트 되었습니다.")
         }
-        currentSemesterRepo.updateLocalCurrentSemester(newLectures).onFailure { e ->
+
+        // 학기 정보 업데이트
+        val newCurrentSemester = makeSemesterUseCase(currentSemester, newLectures)
+        semesterRepo.storeSemesters(newCurrentSemester).onFailure { e ->
+            Timber.e(e)
+            return Result.failure()
+        }
+        // 강의 성적 정보 업데이트
+        lectureRepo.storeLectures(*newLectures.toTypedArray()).onFailure { e ->
             Timber.e(e)
             return Result.failure()
         }
