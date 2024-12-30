@@ -23,6 +23,7 @@ import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -113,7 +114,7 @@ class SemesterListViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch {
+        val job1 = viewModelScope.launch {
             totalReportCardRepo.getRemoteReportCard(session!!)
                 .onSuccess { totalReportCard ->
                     reportCardSummary = totalReportCard.toReportCardSummary()
@@ -122,7 +123,7 @@ class SemesterListViewModel @Inject constructor(
                 .onFailure { e -> handleError(e) }
         }
 
-        viewModelScope.launch {
+        val job2 = viewModelScope.launch {
             val semestersTemp = ArrayList<Semester>()
             val semesterVOs = semesterRepo.getAllRemoteSemesters(session!!).getOrElse { e ->
                 handleError(e)
@@ -148,6 +149,9 @@ class SemesterListViewModel @Inject constructor(
 
             semesters = semestersTemp.sortedBy { it.type }
         }
+
+        // 모두 완료될 때까지 기다림
+        joinAll(job1, job2)
         session = null
     }
 
