@@ -118,7 +118,7 @@ fun SemesterListScreen(
         reportCardSummary = viewModel.reportCardSummary,
         semesters = viewModel.semesters,
         includeSeasonalSemester = viewModel.includeSeasonalSemester,
-        onSeasonalFlagChange = { viewModel.includeSeasonalSemester = it },
+        onSeasonalFlagChange = viewModel::setChartFlag,
         onBackClick = onBackClick,
         onGradeListClick = onGradeListClick,
         currentSemester = viewModel.currentSemester,

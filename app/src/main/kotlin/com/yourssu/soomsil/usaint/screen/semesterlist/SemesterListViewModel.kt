@@ -9,6 +9,7 @@ import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
+import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesDataStore
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterTypeUseCase
 import com.yourssu.soomsil.usaint.domain.usecase.MakeSemesterFromLecturesUseCase
@@ -38,6 +39,7 @@ class SemesterListViewModel @Inject constructor(
     private val semesterRepo: SemesterRepository,
     private val lectureRepo: LectureRepository,
     private val makeSemesterUseCase: MakeSemesterFromLecturesUseCase,
+    private val userPreferencesDataStore: UserPreferencesDataStore,
     getCurrentSemesterTypeUseCase: GetCurrentSemesterTypeUseCase,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
@@ -46,7 +48,7 @@ class SemesterListViewModel @Inject constructor(
     var isRefreshing by mutableStateOf(false)
         private set
     var includeSeasonalSemester by mutableStateOf(false)
-
+        private set
     var reportCardSummary: ReportCardSummary by mutableStateOf(ReportCardSummary())
         private set
     var semesters: List<Semester> by mutableStateOf(emptyList())
@@ -78,16 +80,26 @@ class SemesterListViewModel @Inject constructor(
         refreshJob?.cancel()
     }
 
+    fun setChartFlag(value: Boolean) {
+        includeSeasonalSemester = value
+        viewModelScope.launch {
+            userPreferencesDataStore.setChartIncludeSeasonal(value)
+        }
+    }
+
     private fun initialize() {
         viewModelScope.launch {
+            includeSeasonalSemester =
+                userPreferencesDataStore.getChartIncludeSeasonal().getOrDefault(false)
+
             totalReportCardRepo.getLocalReportCard()
                 .onSuccess { reportCard ->
                     reportCardSummary = reportCard.toReportCardSummary()
                 }
                 .onFailure { e -> Timber.e(e) }
+
             semesterRepo.getAllLocalSemesters()
                 .onSuccess { semesterList ->
-                    Timber.d(semesterList.toString()) // fixme: 가끔씩 빈 리스트 들어오는 경우 있음
                     if (semesterList.isEmpty()) {
                         // 비어있는 경우 refresh
                         refreshJob = launch { refreshSemesters() }
