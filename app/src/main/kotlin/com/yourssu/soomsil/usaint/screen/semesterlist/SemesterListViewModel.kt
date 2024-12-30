@@ -21,7 +21,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
 import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -113,73 +112,58 @@ class SemesterListViewModel @Inject constructor(
                 }
             }
         }
-        val totalReportCardDeferred = viewModelScope.async {
+
+        viewModelScope.launch {
             totalReportCardRepo.getRemoteReportCard(session!!)
+                .onSuccess { totalReportCard ->
+                    reportCardSummary = totalReportCard.toReportCardSummary()
+                    totalReportCardRepo.storeReportCard(totalReportCard)
+                }
+                .onFailure { e -> handleError(e) }
         }
-        val semesterDeferred = viewModelScope.async {
+
+        viewModelScope.launch {
             semesterRepo.getAllRemoteSemesters(session!!)
-        }
+                .onSuccess { semesterVOs ->
+                    val semestersTemp = ArrayList<Semester>()
+                    semestersTemp.addAll(semesterVOs.map { it.toSemester() })
+                    semesterRepo.storeSemesters(*semesterVOs.toTypedArray())
 
-        // ui state 변경 및 DB 갱신
-        totalReportCardDeferred.await()
-            .onSuccess { totalReportCard ->
-                reportCardSummary = totalReportCard.toReportCardSummary()
-                totalReportCardRepo.storeReportCard(totalReportCard)
-            }
-            .onFailure { e ->
-                handleError(e)
-                session = null
-                return
-            }
+                    // 각 상세 성적 정보 요청
+                    for (semester in semestersTemp) {
+                        lectureRepo.getRemoteLectures(session!!, semester.type)
+                            .onSuccess { lectureRepo.storeLectures(*it.toTypedArray()) }
+                    }
 
-        semesterDeferred.await()
-            .onSuccess { semesterVOs ->
-                val semestersTemp = ArrayList<Semester>()
-                semestersTemp.addAll(semesterVOs.map { it.toSemester() })
-                semesterRepo.storeSemesters(*semesterVOs.toTypedArray())
-
-                // 각 상세 성적 정보 요청
-                for (semester in semestersTemp) {
-                    lectureRepo.getRemoteLectures(session!!, semester.type)
-                        .onSuccess { lectureRepo.storeLectures(*it.toTypedArray()) }
-                }
-
-                // 최근 학기에 대한 상세 성적 정보 요청
-                if (currentSemester != null && semestersTemp.find { it.type == currentSemester } == null) {
-                    lectureRepo.getRemoteLectures(session!!, currentSemester)
-                        .onSuccess { lectureList ->
-                            if (lectureList.isNotEmpty()) {
-                                val currentSemester =
-                                    makeSemesterUseCase(currentSemester, lectureList)
-                                semesterRepo.storeSemesters(currentSemester)
-                                lectureRepo.storeLectures(*lectureList.toTypedArray())
-                                semestersTemp.add(currentSemester.toSemester())
+                    // 최근 학기에 대한 상세 성적 정보 요청
+                    if (currentSemester != null && semestersTemp.find { it.type == currentSemester } == null) {
+                        lectureRepo.getRemoteLectures(session!!, currentSemester)
+                            .onSuccess { lectureList ->
+                                if (lectureList.isNotEmpty()) {
+                                    val currentSemester =
+                                        makeSemesterUseCase(currentSemester, lectureList)
+                                    semesterRepo.storeSemesters(currentSemester)
+                                    lectureRepo.storeLectures(*lectureList.toTypedArray())
+                                    semestersTemp.add(currentSemester.toSemester())
+                                }
                             }
-                        }
-                        .onFailure { e ->
-                            handleError(e, "최근 학기 정보를 가져오지 못했습니다.")
-                        }
+                            .onFailure { e ->
+                                handleError(e, "최근 학기 정보를 가져오지 못했습니다.")
+                            }
+                    }
+
+                    semesters = semestersTemp.sortedBy { it.type }
                 }
-
-                semesters = semestersTemp.sortedBy { it.type }
-            }
-            .onFailure { e ->
-                handleError(e)
-                session = null
-                return
-            }
-
-        _uiEvent.emit(UiEvent.Success)
+                .onFailure { e -> handleError(e) }
+        }
         session = null
     }
 
-    private fun handleError(e: Throwable, msg: String? = null) {
+    private suspend fun handleError(e: Throwable, msg: String? = null) {
         Timber.e(e)
-        viewModelScope.launch {
-            when (e) {
-                is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
-                else -> _uiEvent.emit(UiEvent.Failure(msg))
-            }
+        when {
+            e is RusaintException && msg == null -> _uiEvent.emit(UiEvent.RefreshFailure)
+            else -> _uiEvent.emit(UiEvent.Failure(msg))
         }
     }
 }

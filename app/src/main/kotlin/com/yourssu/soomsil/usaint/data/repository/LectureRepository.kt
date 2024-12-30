@@ -16,7 +16,6 @@ class LectureRepository @Inject constructor(
     private val lectureDao: LectureDao,
     private val semesterDao: SemesterDao,
     private val rusaintApi: RusaintApi,
-    private val semesterRepo: SemesterRepository,
 ) {
     suspend fun getLocalLectures(semester: SemesterType): Result<List<LectureVO>> {
         return kotlin.runCatching {
