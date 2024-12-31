@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 data class SettingState(
     val showDialog: Boolean = false,
-    val checkAlarm: Boolean = false,
+    val notificationToggle: Boolean = false,
 )
 
 sealed class SettingEvent {
@@ -53,10 +53,10 @@ class SettingViewModel @Inject constructor(
         _state.value = _state.value.copy(showDialog = showDialog)
     }
 
-    fun updateAlarmState(checkAlarm: Boolean) {
+    fun updateNotificationState(notificationToggle: Boolean) {
         viewModelScope.launch {
-            _state.value = _state.value.copy(checkAlarm = checkAlarm)
-            if (checkAlarm) {
+            _state.value = _state.value.copy(notificationToggle = notificationToggle)
+            if (notificationToggle) {
                 _uiEvent.emit(SettingEvent.ClickToggle("알림이 켜졌습니다."))
             } else {
                 _uiEvent.emit(SettingEvent.ClickToggle("알림이 꺼졌습니다."))
@@ -99,7 +99,7 @@ class SettingViewModel @Inject constructor(
                         context,
                         Manifest.permission.POST_NOTIFICATIONS
                     ) == PackageManager.PERMISSION_GRANTED -> {
-                        updateAlarmState(true)
+                        updateNotificationState(true)
                     }
 
                     shouldShowRequestPermissionRationale(
@@ -118,18 +118,18 @@ class SettingViewModel @Inject constructor(
                     }
                 }
             } else {
-                updateAlarmState(true) // Android 13 미만은 권한 요청이 불필요
+                updateNotificationState(true) // Android 13 미만은 권한 요청이 불필요
             }
         } else {
-            updateAlarmState(false)
+            updateNotificationState(false)
         }
     }
 
     fun handlePermissionResult(isGranted: Boolean) {
         if (isGranted) {
-            updateAlarmState(true)
+            updateNotificationState(true)
         } else {
-            updateAlarmState(false)
+            updateNotificationState(false)
         }
     }
 }

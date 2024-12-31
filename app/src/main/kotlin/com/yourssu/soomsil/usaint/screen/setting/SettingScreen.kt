@@ -1,7 +1,10 @@
 package com.yourssu.soomsil.usaint.screen.setting
 
 import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,10 +40,10 @@ import com.yourssu.design.R as YdsR
 @RequiresApi(Build.VERSION_CODES.TIRAMISU) // Android 13 버전부터 알림 권한 허용 받아야 함 (POST_NOTIFICATIONS)
 @Composable
 fun SettingScreen(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
-    navigateToWebView: (url: String) -> Unit = {},
-    navigateToLogin: () -> Unit = {},
+    navigateToWebView: (url: String) -> Unit,
+    navigateToLogin: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: SettingViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -72,10 +75,10 @@ fun SettingScreen(
                         context.getString(R.string.request_alarm_permission_in_setting),
                         Toast.LENGTH_SHORT
                     ).show()
-                    val intent = android.content.Intent(
-                        android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    val intent = Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                     ).apply {
-                        data = android.net.Uri.fromParts("package", context.packageName, null)
+                        data = Uri.fromParts("package", context.packageName, null)
                     }
                     context.startActivity(intent)
                 }
@@ -108,9 +111,9 @@ fun SettingScreen(
             navigateToWebView(context.resources.getString(R.string.terms_of_privacy_info_url))
         },
         showDialog = state.showDialog,
-        notificationState = state.checkAlarm,
-        onDialogStateChange = viewModel::updateDialogState,
-        onAlarmToggleChange = { isChecked ->
+        notificationToggle = state.notificationToggle,
+        onShowDialogChange = viewModel::updateDialogState,
+        onNotificationToggleChange = { isChecked ->
             viewModel.checkNotificationPermission(context, isChecked)
         },
         onLogout = viewModel::logout
@@ -121,11 +124,11 @@ fun SettingScreen(
 @Composable
 fun SettingScreen(
     showDialog: Boolean,
-    notificationState: Boolean,
+    onShowDialogChange: (Boolean) -> Unit,
+    notificationToggle: Boolean,
+    onNotificationToggleChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onDialogStateChange: (Boolean) -> Unit = {},
-    onAlarmToggleChange: (Boolean) -> Unit = {},
     onLogout: () -> Unit = {},
     onClickTermsOfService: () -> Unit = {},
     onClickTermsOfPrivacy: () -> Unit = {},
@@ -155,7 +158,7 @@ fun SettingScreen(
                 item {
                     ListItem(
                         text = stringResource(id = R.string.setting_logout),
-                        onClick = { onDialogStateChange(true) }
+                        onClick = { onShowDialogChange(true) }
                     )
                 }
             }
@@ -167,9 +170,9 @@ fun SettingScreen(
                     negativeButtonText = stringResource(R.string.cancel),
                     onPositiveButtonClicked = {
                         onLogout()
-                        onDialogStateChange(false)
+                        onShowDialogChange(false)
                     },
-                    onNegativeButtonClicked = { onDialogStateChange(false) },
+                    onNegativeButtonClicked = { onShowDialogChange(false) },
                 )
             }
 
@@ -189,8 +192,8 @@ fun SettingScreen(
                         )
 
                         Toggle(
-                            checked = notificationState,
-                            onCheckedChange = onAlarmToggleChange
+                            checked = notificationToggle,
+                            onCheckedChange = onNotificationToggleChange
                         )
                     }
                 }
@@ -219,7 +222,9 @@ fun PreviewSettingScreen() {
     YdsTheme {
         SettingScreen(
             showDialog = false,
-            notificationState = false,
+            onShowDialogChange = {},
+            notificationToggle = false,
+            onNotificationToggleChange = {},
         )
     }
 }
