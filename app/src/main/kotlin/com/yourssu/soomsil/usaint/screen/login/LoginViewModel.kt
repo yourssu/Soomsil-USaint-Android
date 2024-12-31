@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
+import com.yourssu.soomsil.usaint.domain.type.UserCredential
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
@@ -32,14 +33,13 @@ class LoginViewModel @Inject constructor(
     var studentPw: String by mutableStateOf("")
 
     fun login() {
-        val id = studentId
-        val pw = studentPw
+        val userCredential = UserCredential(id = studentId, pw = studentPw)
 
         viewModelScope.launch {
             isLoading = true
             // 로그인 시도
             // 실패 시 Error 이벤트 발생 후 종료
-            val session = uSaintSessionRepo.withPassword(id, pw).getOrElse { e ->
+            val session = uSaintSessionRepo.withPassword(userCredential).getOrElse { e ->
                 Timber.e(e)
                 when (e) {
                     is RusaintException -> _uiEvent.emit(UiEvent.SessionFailure)
@@ -61,7 +61,7 @@ class LoginViewModel @Inject constructor(
                 return@launch
             }
             // 성공 시 id/pw, 학생 정보 저장
-            studentInfoRepo.storePassword(id, pw).onFailure { e -> Timber.e(e) }
+            studentInfoRepo.storeUserCredential(userCredential).onFailure { e -> Timber.e(e) }
             studentInfoRepo.storeStudentInfo(studentInfoVO).onFailure { e -> Timber.e(e) }
             totalReportCardRepo.storeReportCard(totalReportCard).onFailure { e -> Timber.e(e) }
             _uiEvent.emit(UiEvent.Success)

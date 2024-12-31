@@ -6,7 +6,7 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
 import com.yourssu.soomsil.usaint.data.source.local.entity.toLectureVO
 import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
-import com.yourssu.soomsil.usaint.domain.type.toRsaintSemesterType
+import com.yourssu.soomsil.usaint.domain.type.toRusaintSemesterType
 import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,7 +16,6 @@ class LectureRepository @Inject constructor(
     private val lectureDao: LectureDao,
     private val semesterDao: SemesterDao,
     private val rusaintApi: RusaintApi,
-    private val semesterRepo: SemesterRepository,
 ) {
     suspend fun getLocalLectures(semester: SemesterType): Result<List<LectureVO>> {
         return kotlin.runCatching {
@@ -50,15 +49,14 @@ class LectureRepository @Inject constructor(
         val classGradeList = rusaintApi.getClassGradeList(
             session,
             semester.year.toUInt(),
-            semester.toRsaintSemesterType()
+            semester.toRusaintSemesterType()
         ).getOrElse { e ->
             return Result.failure(e)
         }
 
-        val semesterId = semesterRepo.getLocalSemester(semester.year, semester).getOrElse { e ->
-            return Result.failure(e)
-        }.id
+        if (classGradeList.isEmpty())
+            return Result.success(emptyList())
 
-        return Result.success(classGradeList.map { it.toLectureVO(semesterId) })
+        return Result.success(classGradeList.map { it.toLectureVO(semesterId = -1) })
     }
 }
