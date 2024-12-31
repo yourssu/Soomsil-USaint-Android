@@ -17,7 +17,7 @@ import dev.eatsteak.rusaint.core.ClassScore
     )],
     indices = [
         Index(value = ["semesterId"]),
-        Index(value = ["code"], unique = true) // code 컬럼에 고유 인덱스를 추가
+        Index(value = ["semesterId", "code"], unique = true) // code 컬럼에 고유 인덱스를 추가
     ]
 )
 data class LectureVO(
@@ -30,7 +30,12 @@ data class LectureVO(
     val professorName: String,  // 교수님 성함
     @ColumnInfo("semesterId")
     val semesterId: Int,        // foreign key
-)
+) {
+    fun equalsIgnoreIds(other: LectureVO): Boolean {
+        return title == other.title && code == other.code && credit == other.credit &&
+                grade == other.grade && score == other.score && professorName == other.professorName
+    }
+}
 
 fun ClassGrade.toLectureVO(semesterId: Int): LectureVO {
     val scoreString = when (score) {

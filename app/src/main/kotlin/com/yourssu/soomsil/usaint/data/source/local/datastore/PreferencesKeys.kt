@@ -1,5 +1,6 @@
-package com.yourssu.soomsil.usaint
+package com.yourssu.soomsil.usaint.data.source.local.datastore
 
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 
@@ -11,4 +12,6 @@ object PreferencesKeys {
     val STUDENT_MAJOR = stringPreferencesKey("student_major")
     val STUDENT_GRADE = intPreferencesKey("student_grade")
     val STUDENT_TERM = intPreferencesKey("student_term")
+
+    val CHART_INCLUDE_SEASONAL_SEMESTER = booleanPreferencesKey("chart_include_seasonal_semester")
 }

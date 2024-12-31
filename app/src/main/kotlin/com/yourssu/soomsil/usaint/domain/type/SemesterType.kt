@@ -2,17 +2,31 @@ package com.yourssu.soomsil.usaint.domain.type
 
 typealias RusaintSemesterType = dev.eatsteak.rusaint.core.SemesterType
 
-sealed class SemesterType(val storeFormat: String, val isSeasonal: Boolean) {
+sealed class SemesterType(
+    val storeFormat: String,
+    val isSeasonal: Boolean,
+    private val order: Int,
+) : Comparable<SemesterType> {
+
     abstract val year: Int
+
     val fullName: String
         get() = "${year}년 ${storeFormat}학기"
+
     val shortHandedName: String
         get() = "${year % 100}-${storeFormat}"
 
-    data class One(override val year: Int) : SemesterType("1", false)
-    data class Summer(override val year: Int) : SemesterType("여름", true)
-    data class Two(override val year: Int) : SemesterType("2", false)
-    data class Winter(override val year: Int) : SemesterType("겨울", true)
+    data class One(override val year: Int) : SemesterType("1", false, order = 0)
+    data class Summer(override val year: Int) : SemesterType("여름", true, order = 1)
+    data class Two(override val year: Int) : SemesterType("2", false, order = 2)
+    data class Winter(override val year: Int) : SemesterType("겨울", true, order = 3)
+
+    override fun compareTo(other: SemesterType): Int {
+        if (this == other) return 0
+        if (year == other.year)
+            return order.compareTo(other.order)
+        return year.compareTo(other.year)
+    }
 }
 
 fun makeSemesterType(year: Int, semester: String): SemesterType {
@@ -27,7 +41,7 @@ fun makeSemesterType(year: Int, semester: String): SemesterType {
     }
 }
 
-fun SemesterType.toRsaintSemesterType(): RusaintSemesterType {
+fun SemesterType.toRusaintSemesterType(): RusaintSemesterType {
     return when (this) {
         is SemesterType.One -> RusaintSemesterType.ONE
         is SemesterType.Summer -> RusaintSemesterType.SUMMER

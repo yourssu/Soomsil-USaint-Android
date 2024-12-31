@@ -15,8 +15,8 @@ android {
         applicationId = "com.yourssu.soomsil.usaint"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "0.0.2"
+        versionCode = 4
+        versionName = "0.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -60,8 +60,10 @@ dependencies {
 
     // hilt dependencies
     implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)
+    ksp(libs.androidx.hilt.compiler)
     //
 
     // Preferences DataStore

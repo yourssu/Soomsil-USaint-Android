@@ -17,11 +17,14 @@ import com.yourssu.soomsil.usaint.ui.entities.toReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.toStudentInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -39,53 +42,27 @@ class HomeViewModel @Inject constructor(
     var reportCardSummary: ReportCardSummary by mutableStateOf(ReportCardSummary())
         private set
 
+    // job 정의
+    private var refreshJob: Job? = null
+
     init {
         initialize()
     }
 
+    fun cancelJob() {
+        Timber.d("HomeViewModel cancelJob")
+        isRefreshing = false
+        refreshJob?.cancel()
+    }
+
     fun refresh() {
-        viewModelScope.launch {
+        // 이전에 진행 중이던 refreshJob이 있으면 취소
+        refreshJob?.cancel()
+
+        refreshJob = viewModelScope.launch {
             isRefreshing = true
-            val session = uSaintSessionRepo.getSession().getOrElse { e ->
-                Timber.e(e)
-                _uiEvent.emit(UiEvent.SessionFailure)
-                isRefreshing = false
-                return@launch
-            }
-            val stuDto = studentInfoRepo.getRemoteStudentInfo(session).getOrElse { e ->
-                Timber.e(e)
-                when (e) {
-                    is RusaintException -> _uiEvent.emit(UiEvent.RefreshFailure)
-                    else -> _uiEvent.emit(UiEvent.Failure())
-                }
-                isRefreshing = false
-                return@launch
-            }
-            val totalReportCard = totalReportCardRepo.getRemoteReportCard(session).getOrElse { e ->
-                Timber.e(e)
-                val errMsg = when (e) {
-                    is RusaintException -> "새로고침에 실패했습니다. 다시 시도해주세요."
-                    else -> "알 수 없는 문제가 발생했습니다."
-                }
-                _uiEvent.emit(UiEvent.Failure(errMsg))
-                isRefreshing = false
-                return@launch
-            }
-            // ui state 변경
-            studentInfo = StudentInfo(
-                name = stuDto.name,
-                department = stuDto.department,
-                grade = stuDto.grade.toInt(),
-            )
-            reportCardSummary = ReportCardSummary(
-                gpa = totalReportCard.gpa.toGrade(),
-                earnedCredit = totalReportCard.earnedCredit.toCredit(),
-                graduateCredit = totalReportCard.graduateCredit.toCredit(),
-            )
-            // DB 갱신
-            totalReportCardRepo.storeReportCard(totalReportCard).onFailure { e -> Timber.e(e) }
-            studentInfoRepo.storeStudentInfo(stuDto).onFailure { e -> Timber.e(e) }
-            _uiEvent.emit(UiEvent.Success)
+            val millis = measureTimeMillis { refreshHome() }
+            Timber.d("Refresh Home: ${millis}ms") // about 6500ms
             isRefreshing = false
         }
     }
@@ -102,6 +79,56 @@ class HomeViewModel @Inject constructor(
                     reportCardSummary = totalReportCard.toReportCardSummary()
                 }
                 .onFailure { e -> Timber.e(e) }
+        }
+    }
+
+    private suspend fun refreshHome() {
+        val session = uSaintSessionRepo.getSession().getOrElse { e ->
+            Timber.e(e)
+            _uiEvent.emit(UiEvent.SessionFailure)
+            return
+        }
+
+        val job1 = viewModelScope.launch {
+            studentInfoRepo.getRemoteStudentInfo(session)
+                .onSuccess { stuDto ->
+                    studentInfo = StudentInfo(
+                        name = stuDto.name,
+                        department = stuDto.department,
+                        grade = stuDto.grade.toInt(),
+                    )
+                    studentInfoRepo.storeStudentInfo(stuDto)
+                }
+                .getOrElse { e ->
+                    handleError(e)
+                    return@launch
+                }
+        }
+
+        val job2 = viewModelScope.launch {
+            totalReportCardRepo.getRemoteReportCard(session)
+                .onSuccess { totalReportCard ->
+                    reportCardSummary = ReportCardSummary(
+                        gpa = totalReportCard.gpa.toGrade(),
+                        earnedCredit = totalReportCard.earnedCredit.toCredit(),
+                        graduateCredit = totalReportCard.graduateCredit.toCredit(),
+                    )
+                    totalReportCardRepo.storeReportCard(totalReportCard)
+                }
+                .onFailure { e ->
+                    handleError(e)
+                    return@launch
+                }
+        }
+
+        joinAll(job1, job2)
+    }
+
+    private suspend fun handleError(e: Throwable, msg: String? = null) {
+        Timber.e(e)
+        when {
+            e is RusaintException && msg == null -> _uiEvent.emit(UiEvent.RefreshFailure)
+            else -> _uiEvent.emit(UiEvent.Failure(msg))
         }
     }
 }

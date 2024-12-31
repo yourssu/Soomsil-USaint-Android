@@ -6,11 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourssu.soomsil.usaint.data.repository.CurrentSemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
+import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterTypeUseCase
+import com.yourssu.soomsil.usaint.domain.usecase.MakeSemesterFromLecturesUseCase
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
 import com.yourssu.soomsil.usaint.ui.entities.Semester
@@ -26,13 +27,15 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class SemesterDetailViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
     private val semesterRepo: SemesterRepository,
     private val lectureRepo: LectureRepository,
-    private val currentSemesterRepo: CurrentSemesterRepository
+    private val makeSemesterUseCase: MakeSemesterFromLecturesUseCase,
+    getCurrentSemesterTypeUseCase: GetCurrentSemesterTypeUseCase,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -44,7 +47,7 @@ class SemesterDetailViewModel @Inject constructor(
         private set
     val semesterLecturesMap: MutableMap<SemesterType, List<LectureInfo>> = mutableStateMapOf()
 
-    private var currentSemester: SemesterType = currentSemesterRepo.getCurrentSemesterType()
+    private var currentSemester: SemesterType? = getCurrentSemesterTypeUseCase()
 
     init {
         initialize()
@@ -53,7 +56,8 @@ class SemesterDetailViewModel @Inject constructor(
     fun refresh(semester: SemesterType) {
         viewModelScope.launch {
             isRefreshing = true
-            refreshLectureInfos(semester)
+            val millis = measureTimeMillis { refreshLectureInfos(semester) }
+            Timber.d("Refresh SemesterDetail(${semester}): ${millis}ms") // about 2000ms
             isRefreshing = false
         }
     }
@@ -75,7 +79,7 @@ class SemesterDetailViewModel @Inject constructor(
                         val semester = it.toSemester()
                         semesterLecturesMap[semester.type] = emptyList()
                         semester
-                    }
+                    }.sortedBy { it.type }
                 }
                 .onFailure { e -> Timber.e(e) }
 
@@ -115,15 +119,16 @@ class SemesterDetailViewModel @Inject constructor(
                 lectureRepo.storeLectures(*lectureVOs.toTypedArray())
 
                 // 현재 학기는 학기 정보도 갱신시켜줘야 함
-                if (semester == currentSemester) {
+                if (currentSemester != null && semester == currentSemester) {
                     Timber.d("update semester")
-                    val newSemesterVO =
-                        currentSemesterRepo.updateLocalCurrentSemester(lectureVOs).getOrElse { e ->
-                            Timber.e(e)
-                            _uiEvent.emit(UiEvent.Failure("학기 정보를 갱신하는 도중 문제가 발생했습니다."))
-                            return@onSuccess
-                        }
-                    semesters = semesters.dropLast(1) + listOf(newSemesterVO.toSemester())
+                    val newSemester = makeSemesterUseCase(currentSemester!!, lectureVOs)
+                    semesterRepo.storeSemesters(newSemester).onFailure { e ->
+                        Timber.e(e)
+                        _uiEvent.emit(UiEvent.Failure("학기 정보를 갱신하는 도중 문제가 발생했습니다."))
+                        return@onSuccess
+                    }
+
+                    semesters = semesters.dropLast(1) + listOf(newSemester.toSemester())
                 }
             }
             .onFailure { e ->

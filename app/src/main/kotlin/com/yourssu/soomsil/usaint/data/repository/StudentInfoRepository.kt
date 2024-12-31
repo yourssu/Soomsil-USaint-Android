@@ -3,6 +3,7 @@ package com.yourssu.soomsil.usaint.data.repository
 import com.yourssu.soomsil.usaint.data.model.StudentInfoDto
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentInfoDataStore
 import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
+import com.yourssu.soomsil.usaint.domain.type.UserCredential
 import dev.eatsteak.rusaint.ffi.USaintSession
 import timber.log.Timber
 import javax.inject.Inject
@@ -11,16 +12,16 @@ class StudentInfoRepository @Inject constructor(
     private val studentInfoDataStore: StudentInfoDataStore,
     private val rusaintApi: RusaintApi
 ) {
-    suspend fun getLocalPassword(): Result<Pair<String, String>> {
-        return studentInfoDataStore.getPassword()
+    suspend fun getLocalUserCredential(): Result<UserCredential> {
+        return studentInfoDataStore.getUserCredential()
     }
 
     suspend fun getLocalStudentInfo(): Result<StudentInfoDto> {
         return studentInfoDataStore.getStudentInfo()
     }
 
-    suspend fun storePassword(id: String, pw: String): Result<Unit> {
-        return studentInfoDataStore.setPassword(id, pw)
+    suspend fun storeUserCredential(userCredential: UserCredential): Result<Unit> {
+        return studentInfoDataStore.setUserCredential(userCredential)
     }
 
     suspend fun storeStudentInfo(studentInfo: StudentInfoDto): Result<Unit> {

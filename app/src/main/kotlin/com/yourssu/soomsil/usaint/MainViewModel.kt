@@ -19,7 +19,7 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            isLoggedIn = studentInfoRepository.getLocalPassword().isSuccess
+            isLoggedIn = studentInfoRepository.getLocalUserCredential().isSuccess
         }
     }
 }

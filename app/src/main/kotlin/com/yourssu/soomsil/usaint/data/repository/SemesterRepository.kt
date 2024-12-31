@@ -28,7 +28,7 @@ class SemesterRepository @Inject constructor(
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
                 semesterDao.getSemesterByYearAndSemester(year, semesterType.storeFormat)
-                    ?: throw Exception("semester (year=$year, semester=$semesterType) not found")
+                    ?: throw Exception("semester $semesterType not found")
             }
         }
     }

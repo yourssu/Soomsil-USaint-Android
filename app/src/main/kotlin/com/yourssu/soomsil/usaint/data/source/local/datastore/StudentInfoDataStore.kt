@@ -3,8 +3,8 @@ package com.yourssu.soomsil.usaint.data.source.local.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import com.yourssu.soomsil.usaint.PreferencesKeys
 import com.yourssu.soomsil.usaint.data.model.StudentInfoDto
+import com.yourssu.soomsil.usaint.domain.type.UserCredential
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -12,22 +12,22 @@ import javax.inject.Inject
 class StudentInfoDataStore @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
-    suspend fun getPassword(): Result<Pair<String, String>> {
+    suspend fun getUserCredential(): Result<UserCredential> {
         return kotlin.runCatching {
             dataStore.data.map { pref ->
-                Pair(
-                    pref[PreferencesKeys.STUDENT_ID] ?: throw Exception("id not found"),
-                    pref[PreferencesKeys.STUDENT_PW] ?: throw Exception("pw not found"),
+                UserCredential(
+                    id = pref[PreferencesKeys.STUDENT_ID] ?: throw Exception("id not found"),
+                    pw = pref[PreferencesKeys.STUDENT_PW] ?: throw Exception("pw not found"),
                 )
             }.first()
         }
     }
 
-    suspend fun setPassword(id: String, pw: String): Result<Unit> {
+    suspend fun setUserCredential(userCredential: UserCredential): Result<Unit> {
         return kotlin.runCatching {
             dataStore.edit { pref ->
-                pref[PreferencesKeys.STUDENT_ID] = id
-                pref[PreferencesKeys.STUDENT_PW] = pw
+                pref[PreferencesKeys.STUDENT_ID] = userCredential.id
+                pref[PreferencesKeys.STUDENT_PW] = userCredential.pw
             }
         }
     }
