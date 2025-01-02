@@ -115,8 +115,8 @@ class SemesterDetailViewModel @Inject constructor(
                 semesterLecturesMap[semester] = lectureVOs
                     .map { it.toLectureInfo() }
                     .sortByGrade()
+
                 // store
-                lectureRepo.storeLectures(*lectureVOs.toTypedArray())
 
                 // 현재 학기는 학기 정보도 갱신시켜줘야 함
                 if (currentSemester != null && semester == currentSemester) {
@@ -130,6 +130,14 @@ class SemesterDetailViewModel @Inject constructor(
 
                     semesters = semesters.dropLast(1) + listOf(newSemester.toSemester())
                 }
+
+                // fixme #44
+                val semesterId = semesterRepo.getLocalSemester(semester).getOrElse { e ->
+                    Timber.e(e)
+                    return
+                }.id
+                lectureRepo.storeLectures(*lectureVOs.map { it.copy(semesterId = semesterId) }
+                    .toTypedArray())
             }
             .onFailure { e ->
                 Timber.e(e)

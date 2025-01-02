@@ -38,9 +38,8 @@ class UpdateWorker @AssistedInject constructor(
             Timber.e(e)
             return Result.failure()
         }
-        val oldLectures = lectureRepo.getLocalLectures(currentSemester).getOrElse { e ->
-            Timber.e(e)
-            return Result.failure()
+        val oldLectures = lectureRepo.getLocalLectures(currentSemester).getOrElse {
+            emptyList()
         }
         val newLectures = lectureRepo.getRemoteLectures(session, currentSemester).getOrElse { e ->
             Timber.e(e)
@@ -61,6 +60,7 @@ class UpdateWorker @AssistedInject constructor(
             showNotification("성적 업데이트", "[${lectureDiff.title}] 성적이 업데이트 되었습니다.")
         }
 
+        // fixme #44
         // 학기 정보 업데이트
         val newCurrentSemester = makeSemesterUseCase(currentSemester, newLectures)
         semesterRepo.storeSemesters(newCurrentSemester).onFailure { e ->
@@ -68,7 +68,12 @@ class UpdateWorker @AssistedInject constructor(
             return Result.failure()
         }
         // 강의 성적 정보 업데이트
-        lectureRepo.storeLectures(*newLectures.toTypedArray()).onFailure { e ->
+        val newCurrentSemesterId = semesterRepo.getLocalSemester(currentSemester).getOrElse { e ->
+            Timber.e(e)
+            return Result.failure()
+        }.id
+        lectureRepo.storeLectures(*newLectures.map { it.copy(semesterId = newCurrentSemesterId) }
+            .toTypedArray()).onFailure { e ->
             Timber.e(e)
             return Result.failure()
         }

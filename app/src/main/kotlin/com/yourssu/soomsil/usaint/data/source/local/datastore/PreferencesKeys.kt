@@ -14,4 +14,5 @@ object PreferencesKeys {
     val STUDENT_TERM = intPreferencesKey("student_term")
 
     val CHART_INCLUDE_SEASONAL_SEMESTER = booleanPreferencesKey("chart_include_seasonal_semester")
+    val SETTING_NOTIFICATION = booleanPreferencesKey("setting_notification")
 }
