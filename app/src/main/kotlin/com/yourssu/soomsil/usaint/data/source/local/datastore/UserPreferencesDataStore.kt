@@ -41,4 +41,13 @@ class UserPreferencesDataStore @Inject constructor(
             }
         }
     }
+
+    suspend fun deleteUserPreferences(): Result<Unit> {
+        return kotlin.runCatching {
+            dataStore.edit { pref ->
+                pref.remove(PreferencesKeys.SETTING_NOTIFICATION)
+                pref.remove(PreferencesKeys.CHART_INCLUDE_SEASONAL_SEMESTER)
+            }
+        }
+    }
 }

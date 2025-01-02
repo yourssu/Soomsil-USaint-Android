@@ -23,8 +23,8 @@ data class SettingState(
 )
 
 sealed class SettingEvent {
-    data class SuccessLogout(val msg: String) : SettingEvent()
-    data class FailureLogout(val msg: String) : SettingEvent()
+    data object SuccessLogout : SettingEvent()
+    data object FailureLogout : SettingEvent()
     data class ClickToggle(val msg: String) : SettingEvent()
 }
 
@@ -71,25 +71,26 @@ class SettingViewModel @Inject constructor(
             // 하위의 데이터부터 차례로 지우는 것이 좋음
             lectureRepository.deleteAllLectures().onFailure { e ->
                 Timber.e(e)
-                _uiEvent.emit(SettingEvent.FailureLogout("로그아웃을 다시 시도해주세요."))
+                _uiEvent.emit(SettingEvent.FailureLogout)
                 return@launch
             }
             semesterRepository.deleteAllSemester().onFailure { e ->
                 Timber.e(e)
-                _uiEvent.emit(SettingEvent.FailureLogout("로그아웃을 다시 시도해주세요."))
+                _uiEvent.emit(SettingEvent.FailureLogout)
                 return@launch
             }
             totalReportCardRepository.deleteTotalReportCard().onFailure { e ->
                 Timber.e(e)
-                _uiEvent.emit(SettingEvent.FailureLogout("로그아웃을 다시 시도해주세요."))
+                _uiEvent.emit(SettingEvent.FailureLogout)
                 return@launch
             }
             studentInfoRepository.deleteStudentInfo().onFailure { e ->
                 Timber.e(e)
-                _uiEvent.emit(SettingEvent.FailureLogout("로그아웃을 다시 시도해주세요."))
+                _uiEvent.emit(SettingEvent.FailureLogout)
                 return@launch
             }
-            _uiEvent.emit(SettingEvent.SuccessLogout("로그아웃 되었습니다."))
+            userPreferencesDataStore.deleteUserPreferences()
+            _uiEvent.emit(SettingEvent.SuccessLogout)
         }
     }
 }

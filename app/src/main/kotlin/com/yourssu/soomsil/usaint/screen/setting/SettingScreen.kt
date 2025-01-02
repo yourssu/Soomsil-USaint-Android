@@ -65,12 +65,12 @@ fun SettingScreen(
             when (event) {
                 // 로그아웃
                 is SettingEvent.SuccessLogout -> {
-                    Toast.makeText(context, event.msg, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
                     navigateToLogin()
                 }
 
                 is SettingEvent.FailureLogout -> {
-                    Toast.makeText(context, event.msg, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "로그아웃을 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                 }
 
                 // 알림 토글 클릭
