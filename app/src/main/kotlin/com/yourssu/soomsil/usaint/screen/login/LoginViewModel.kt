@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
+import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesDataStore
 import com.yourssu.soomsil.usaint.domain.type.UserCredential
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,7 @@ class LoginViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
     private val studentInfoRepo: StudentInfoRepository,
     private val totalReportCardRepo: TotalReportCardRepository,
+    private val userPreferencesDataStore: UserPreferencesDataStore,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -31,6 +33,12 @@ class LoginViewModel @Inject constructor(
         private set
     var studentId: String by mutableStateOf("")
     var studentPw: String by mutableStateOf("")
+
+    fun updateNotificationSetting(enabled: Boolean) {
+        viewModelScope.launch {
+            userPreferencesDataStore.setSettingNotification(enabled)
+        }
+    }
 
     fun login() {
         val userCredential = UserCredential(id = studentId, pw = studentPw)

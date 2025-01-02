@@ -1,6 +1,10 @@
 package com.yourssu.soomsil.usaint.screen.login
 
+import android.Manifest
+import android.os.Build
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +44,7 @@ import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.screen.UiEvent
+import com.yourssu.soomsil.usaint.util.NotificationUtil
 import com.yourssu.design.R as YdsR
 
 @Composable
@@ -51,13 +56,28 @@ fun LoginScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    // 알림 권한 요청 런처
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        viewModel.updateNotificationSetting(isGranted)
+        navigateToHome()
+    }
+
     LaunchedEffect(lifecycleOwner.lifecycle) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.uiEvent.collect { uiEvent ->
                 when (uiEvent) {
                     is UiEvent.Success -> {
                         Toast.makeText(context, "로그인 되었습니다.", Toast.LENGTH_SHORT).show()
-                        navigateToHome()
+                        // 로그인 시 알림 권한 요청
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                            !NotificationUtil.areNotificationEnabled(context)
+                        ) {
+                            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        } else {
+                            navigateToHome()
+                        }
                     }
 
                     is UiEvent.Failure -> {
