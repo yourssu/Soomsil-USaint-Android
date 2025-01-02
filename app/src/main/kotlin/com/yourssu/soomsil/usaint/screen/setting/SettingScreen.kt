@@ -17,6 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,6 +37,7 @@ import com.yourssu.design.system.compose.base.YdsScaffold
 import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.design.system.compose.component.List
 import com.yourssu.design.system.compose.component.topbar.TopBar
+import com.yourssu.soomsil.usaint.BuildConfig
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.util.TwoButtonDialog
 import com.yourssu.design.R as YdsR
@@ -136,6 +141,7 @@ fun SettingScreen(
     YdsScaffold(
         topBar = {
             TopBar(
+                title = stringResource(id = R.string.setting),
                 navigationIcon = {
                     TopBarButton(
                         onClick = onBackClick,
@@ -145,15 +151,7 @@ fun SettingScreen(
             )
         },
     ) {
-        Column(
-            modifier = modifier.padding(horizontal = 16.dp)
-        ) {
-            YdsText(
-                text = stringResource(id = R.string.setting),
-                style = YdsTheme.typography.title1,
-                modifier = Modifier.padding(top = 6.dp, bottom = 8.dp)
-            )
-
+        Column {
             List(subHeader = stringResource(R.string.manage_account)) {
                 item {
                     ListItem(
@@ -161,19 +159,6 @@ fun SettingScreen(
                         onClick = { onShowDialogChange(true) }
                     )
                 }
-            }
-
-            if (showDialog) {
-                TwoButtonDialog(
-                    title = stringResource(R.string.logout_title),
-                    positiveButtonText = stringResource(R.string.logout),
-                    negativeButtonText = stringResource(R.string.cancel),
-                    onPositiveButtonClicked = {
-                        onLogout()
-                        onShowDialogChange(false)
-                    },
-                    onNegativeButtonClicked = { onShowDialogChange(false) },
-                )
             }
 
             List(subHeader = stringResource(R.string.alarm)) {
@@ -212,6 +197,28 @@ fun SettingScreen(
                     )
                 }
             }
+
+            List(subHeader = "버전 정보") {
+                item {
+                    ListItem(
+                        text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                        onClick = {},
+                    )
+                }
+            }
+        }
+
+        if (showDialog) {
+            TwoButtonDialog(
+                title = stringResource(R.string.logout_title),
+                positiveButtonText = stringResource(R.string.logout),
+                negativeButtonText = stringResource(R.string.cancel),
+                onPositiveButtonClicked = {
+                    onLogout()
+                    onShowDialogChange(false)
+                },
+                onNegativeButtonClicked = { onShowDialogChange(false) },
+            )
         }
     }
 }
@@ -219,10 +226,11 @@ fun SettingScreen(
 @Preview
 @Composable
 fun PreviewSettingScreen() {
+    var showDialog by remember { mutableStateOf(false) }
     YdsTheme {
         SettingScreen(
-            showDialog = false,
-            onShowDialogChange = {},
+            showDialog = showDialog,
+            onShowDialogChange = { showDialog = it },
             notificationToggle = false,
             onNotificationToggleChange = {},
         )
