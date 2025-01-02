@@ -7,6 +7,7 @@ import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesDataStore
+import com.yourssu.soomsil.usaint.domain.usecase.UpdateWorkerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +36,7 @@ class SettingViewModel @Inject constructor(
     private val semesterRepository: SemesterRepository,
     private val lectureRepository: LectureRepository,
     private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingState())
@@ -60,8 +62,10 @@ class SettingViewModel @Inject constructor(
             userPreferencesDataStore.setSettingNotification(notificationToggle)
             if (notificationToggle) {
                 _uiEvent.emit(SettingEvent.ClickToggle("알림이 켜졌습니다."))
+                updateWorkerUseCase.enqueue()
             } else {
                 _uiEvent.emit(SettingEvent.ClickToggle("알림이 꺼졌습니다."))
+                updateWorkerUseCase.dequeue()
             }
         }
     }
