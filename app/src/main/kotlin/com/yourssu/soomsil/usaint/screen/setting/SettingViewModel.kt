@@ -1,23 +1,18 @@
 package com.yourssu.soomsil.usaint.screen.setting
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.activity.ComponentActivity
-import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
+import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -30,8 +25,6 @@ data class SettingState(
 sealed class SettingEvent {
     data class SuccessLogout(val msg: String) : SettingEvent()
     data class FailureLogout(val msg: String) : SettingEvent()
-    object ShowPermissionRequest : SettingEvent()
-    object NavigateToSettings : SettingEvent()
     data class ClickToggle(val msg: String) : SettingEvent()
 }
 
@@ -41,6 +34,7 @@ class SettingViewModel @Inject constructor(
     private val totalReportCardRepository: TotalReportCardRepository,
     private val semesterRepository: SemesterRepository,
     private val lectureRepository: LectureRepository,
+    private val userPreferencesDataStore: UserPreferencesDataStore,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingState())
@@ -49,13 +43,21 @@ class SettingViewModel @Inject constructor(
     private val _uiEvent = MutableSharedFlow<SettingEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
+    init {
+        viewModelScope.launch {
+            val noti = userPreferencesDataStore.getSettingNotification().getOrDefault(false)
+            _state.update { it.copy(notificationToggle = noti) }
+        }
+    }
+
     fun updateDialogState(showDialog: Boolean) {
-        _state.value = _state.value.copy(showDialog = showDialog)
+        _state.update { it.copy(showDialog = showDialog) }
     }
 
     fun updateNotificationState(notificationToggle: Boolean) {
+        _state.update { it.copy(notificationToggle = notificationToggle) }
         viewModelScope.launch {
-            _state.value = _state.value.copy(notificationToggle = notificationToggle)
+            userPreferencesDataStore.setSettingNotification(notificationToggle)
             if (notificationToggle) {
                 _uiEvent.emit(SettingEvent.ClickToggle("알림이 켜졌습니다."))
             } else {
@@ -88,48 +90,6 @@ class SettingViewModel @Inject constructor(
                 return@launch
             }
             _uiEvent.emit(SettingEvent.SuccessLogout("로그아웃 되었습니다."))
-        }
-    }
-
-    fun checkNotificationPermission(context: Context, isChecked: Boolean) {
-        if (isChecked) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                when {
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.POST_NOTIFICATIONS
-                    ) == PackageManager.PERMISSION_GRANTED -> {
-                        updateNotificationState(true)
-                    }
-
-                    shouldShowRequestPermissionRationale(
-                        context as ComponentActivity,
-                        Manifest.permission.POST_NOTIFICATIONS
-                    ) -> {
-                        viewModelScope.launch {
-                            _uiEvent.emit(SettingEvent.ShowPermissionRequest)
-                        }
-                    }
-
-                    else -> {
-                        viewModelScope.launch {
-                            _uiEvent.emit(SettingEvent.NavigateToSettings)
-                        }
-                    }
-                }
-            } else {
-                updateNotificationState(true) // Android 13 미만은 권한 요청이 불필요
-            }
-        } else {
-            updateNotificationState(false)
-        }
-    }
-
-    fun handlePermissionResult(isGranted: Boolean) {
-        if (isGranted) {
-            updateNotificationState(true)
-        } else {
-            updateNotificationState(false)
         }
     }
 }

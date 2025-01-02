@@ -8,7 +8,6 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,10 +38,10 @@ import com.yourssu.design.system.compose.component.List
 import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.BuildConfig
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.util.NotificationUtil
 import com.yourssu.soomsil.usaint.util.TwoButtonDialog
 import com.yourssu.design.R as YdsR
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU) // Android 13 버전부터 알림 권한 허용 받아야 함 (POST_NOTIFICATIONS)
 @Composable
 fun SettingScreen(
     onBackClick: () -> Unit,
@@ -52,42 +51,18 @@ fun SettingScreen(
     viewModel: SettingViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val state = viewModel.state.collectAsStateWithLifecycle().value
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     // 알림 권한 요청 런처
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        viewModel.handlePermissionResult(isGranted)
+        viewModel.updateNotificationState(isGranted)
     }
 
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                // 최초 알림 권한 요청
-                is SettingEvent.ShowPermissionRequest -> {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.request_alarm_permission), Toast.LENGTH_SHORT
-                    ).show()
-                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-
-                // 알림 권한 요청을 거부한 경우 설정 앱에서 직접 알림 권한 허용
-                is SettingEvent.NavigateToSettings -> {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.request_alarm_permission_in_setting),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    val intent = Intent(
-                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    ).apply {
-                        data = Uri.fromParts("package", context.packageName, null)
-                    }
-                    context.startActivity(intent)
-                }
-
                 // 로그아웃
                 is SettingEvent.SuccessLogout -> {
                     Toast.makeText(context, event.msg, Toast.LENGTH_SHORT).show()
@@ -102,6 +77,8 @@ fun SettingScreen(
                 is SettingEvent.ClickToggle -> {
                     Toast.makeText(context, event.msg, Toast.LENGTH_SHORT).show()
                 }
+
+                else -> {}
             }
         }
     }
@@ -118,8 +95,36 @@ fun SettingScreen(
         showDialog = state.showDialog,
         notificationToggle = state.notificationToggle,
         onShowDialogChange = viewModel::updateDialogState,
-        onNotificationToggleChange = { isChecked ->
-            viewModel.checkNotificationPermission(context, isChecked)
+        onNotificationToggleChange = a@{ isChecked ->
+            if (!isChecked) {
+                viewModel.updateNotificationState(false)
+                return@a
+            }
+            // Android 13 미만은 권한 요청 불필요
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                viewModel.updateNotificationState(true)
+                return@a
+            }
+            when {
+                NotificationUtil.areNotificationEnabled(context) ->
+                    viewModel.updateNotificationState(true)
+
+                // 알림 권한 요청을 한 번 거부한 경우
+                NotificationUtil.shouldShowRationale(context) -> {
+                    // TODO: show rationale
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+
+                else -> {
+                    Toast.makeText(
+                        context, R.string.request_alarm_permission_in_setting, Toast.LENGTH_SHORT
+                    ).show()
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                        context.startActivity(this)
+                    }
+                }
+            }
         },
         onLogout = viewModel::logout
     )
