@@ -24,11 +24,13 @@ class SemesterRepository @Inject constructor(
         }
     }
 
-    suspend fun getLocalSemester(year: Int, semesterType: SemesterType): Result<SemesterVO> {
+    suspend fun getLocalSemester(semesterType: SemesterType): Result<SemesterVO> {
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
-                semesterDao.getSemesterByYearAndSemester(year, semesterType.storeFormat)
-                    ?: throw Exception("semester $semesterType not found")
+                semesterDao.getSemesterByYearAndSemester(
+                    semesterType.year,
+                    semesterType.storeFormat
+                ) ?: throw Exception("semester $semesterType not found")
             }
         }
     }

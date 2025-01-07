@@ -25,4 +25,29 @@ class UserPreferencesDataStore @Inject constructor(
             }
         }
     }
+
+    suspend fun getSettingNotification(default: Boolean = false): Result<Boolean> {
+        return kotlin.runCatching {
+            dataStore.data.map { pref ->
+                pref[PreferencesKeys.SETTING_NOTIFICATION] ?: default
+            }.first()
+        }
+    }
+
+    suspend fun setSettingNotification(value: Boolean): Result<Unit> {
+        return kotlin.runCatching {
+            dataStore.edit { pref ->
+                pref[PreferencesKeys.SETTING_NOTIFICATION] = value
+            }
+        }
+    }
+
+    suspend fun deleteUserPreferences(): Result<Unit> {
+        return kotlin.runCatching {
+            dataStore.edit { pref ->
+                pref.remove(PreferencesKeys.SETTING_NOTIFICATION)
+                pref.remove(PreferencesKeys.CHART_INCLUDE_SEASONAL_SEMESTER)
+            }
+        }
+    }
 }
