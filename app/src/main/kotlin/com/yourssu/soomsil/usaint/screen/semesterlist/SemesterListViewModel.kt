@@ -150,14 +150,21 @@ class SemesterListViewModel @Inject constructor(
             if (currentSemester != null && semestersTemp.find { it.type == currentSemester } == null) {
                 val currentLectureVOs =
                     lectureRepo.getRemoteLectures(session!!, currentSemester).getOrElse { e ->
-                        handleError(e, "최근 학기 정보를 가져오지 못했습니다.")
+                        handleError(e, "최근 학기 성적 정보를 가져오지 못했습니다.")
                         return@launch
                     }
                 if (currentLectureVOs.isNotEmpty()) {
-                    val currentSemester = makeSemesterUseCase(currentSemester, currentLectureVOs)
-                    semesterRepo.storeSemesters(currentSemester)
-                    lectureRepo.storeLectures(*currentLectureVOs.toTypedArray())
-                    semestersTemp.add(currentSemester.toSemester())
+                    val currentSemesterVO = makeSemesterUseCase(currentSemester, currentLectureVOs)
+                    semesterRepo.storeSemesters(currentSemesterVO)
+
+                    // fixme #44: semesterId를 가져와서 lecture에 넣어줘야 함
+                    val semesterId = semesterRepo.getLocalSemester(currentSemester).getOrElse {
+                        Timber.e("local currentSemester not found")
+                        return@launch
+                    }.id
+                    lectureRepo.storeLectures(*currentLectureVOs.map { it.copy(semesterId = semesterId) }
+                        .toTypedArray())
+                    semestersTemp.add(currentSemesterVO.toSemester())
                 }
             }
 
