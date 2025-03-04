@@ -2,6 +2,8 @@ package com.yourssu.soomsil.usaint.screen
 
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,7 +33,9 @@ fun USaintNavHost(
 
     NavHost(
         navController = navController,
-        modifier = modifier,
+        modifier = modifier
+            .navigationBarsPadding()
+            .statusBarsPadding(),
         startDestination = startDestination,
     ) {
         loginScreen(
