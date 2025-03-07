@@ -29,10 +29,10 @@ class MainActivity : ComponentActivity() {
                 viewModel.isLoggedIn?.let { isLoggedIn ->
                     USaintNavHost(
                         navController = rememberNavController(),
+                        startDestination = if (isLoggedIn) Home else Login,
                         modifier = Modifier
                             .navigationBarsPadding()
-                            .statusBarsPadding(),
-                        startDestination = if (isLoggedIn) Home else Login
+                            .statusBarsPadding()
                     )
                 }
             }

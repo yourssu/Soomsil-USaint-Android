@@ -24,8 +24,8 @@ import com.yourssu.soomsil.usaint.screen.setting.navigation.settingScreen
 @Composable
 fun USaintNavHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier,
-    startDestination: Any = Login,
+    startDestination: Any,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
