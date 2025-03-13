@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.soomsil.usaint.screen.USaintNavHost
@@ -26,7 +29,10 @@ class MainActivity : ComponentActivity() {
                 viewModel.isLoggedIn?.let { isLoggedIn ->
                     USaintNavHost(
                         navController = rememberNavController(),
-                        startDestination = if (isLoggedIn) Home else Login
+                        startDestination = if (isLoggedIn) Home else Login,
+                        modifier = Modifier
+                            .navigationBarsPadding()
+                            .statusBarsPadding()
                     )
                 }
             }
