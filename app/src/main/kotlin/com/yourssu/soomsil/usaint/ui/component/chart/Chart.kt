@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,18 +38,17 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.core.graphics.component1
 import androidx.core.graphics.component2
-import com.yourssu.design.system.compose.YdsTheme
-import com.yourssu.design.system.compose.rule.YdsBorder
 import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -61,32 +61,28 @@ fun Chart(
     modifier: Modifier = Modifier,
     dotRadius: Dp = ChartDefaults.DotRadius,
     lineWidth: Dp = ChartDefaults.LineWidth,
-    lineColor: Color = YdsTheme.colors.textPointed,
+    lineColor: Color = MaterialTheme.colorScheme.primary,
+    fillBrush: Brush = SolidColor(lineColor.copy(alpha = 0.4f)),
+    dividerColor: Color = MaterialTheme.colorScheme.outline,
+    highlightTextColor: Color = MaterialTheme.colorScheme.primary,
+    highlightBoxColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    highlightTextStyle: TextStyle = MaterialTheme.typography.labelMedium.copy(
+        fontWeight = FontWeight(600),
+    ),
+    axisTextStyle: TextStyle = MaterialTheme.typography.titleSmall,
+    axisTextColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
     require(chartData.semesters.isNotEmpty()) {
         "chartData.semesters should not empty"
     }
 
-    val dividerColor = YdsTheme.colors.borderNormal
-    val fillBrush: Brush = SolidColor(lineColor.copy(alpha = 0.4f))
-
     val textMeasurer = rememberTextMeasurer()
-    val axisTextStyle = YdsTheme.typography.subTitle3.toTextStyle()
-    val axisTextColor = YdsTheme.colors.textTertiary
-
-    val highlightTextStyle = YdsTheme.typography.caption0.toTextStyle().copy(
-        fontWeight = FontWeight(600),
-    )
-    val highlightTextColor = YdsTheme.colors.textPointed
-    val highlightBoxColor = YdsTheme.colors.buttonDisabledBG
+    val animationProgress = remember { Animatable(0f) }
+    var highlightedIndex by remember { mutableStateOf<Int?>(null) }
 
     val grades: List<Grade> = chartData.semesters.map { it.gpa }
     val yAxis: List<Grade> = ChartDefaults.generateYAxisLabel(grades)
-
-    val animationProgress = remember { Animatable(0f) }
-
-    var highlightedIndex by remember { mutableStateOf<Int?>(null) }
-    var graphOffsetX: Float? = null
+    var graphOffsetX = 0f
 
     LaunchedEffect(chartData, grades) {
         // 최댓값의 인덱스로 초기화
@@ -111,7 +107,7 @@ fun Chart(
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { offset ->
-                        val graphOffset = graphOffsetX ?: 0f
+                        val graphOffset = graphOffsetX
                         val selected = if (offset.x < graphOffset) {
                             0
                         } else {
@@ -218,7 +214,7 @@ fun Chart(
                             color = dividerColor,
                             start = Offset(graphLeftTop.x, y),
                             end = Offset(graphSize.width + graphLeftTop.x, y),
-                            strokeWidth = YdsBorder.Thin.dp.toPx(),
+                            strokeWidth = 0.3.dp.toPx(),
                         )
                     }
 
@@ -401,14 +397,14 @@ object ChartDefaults {
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 private fun ChartPreview() {
-    YdsTheme {
+    SoomsilUSaintTheme {
         Box(
             modifier = Modifier
                 .size(width = 300.dp, height = 200.dp)
-                .background(YdsTheme.colors.bgNormal),
+                .background(MaterialTheme.colorScheme.surface),
         ) {
             Chart(
                 chartData = ChartData(
@@ -424,14 +420,14 @@ private fun ChartPreview() {
     }
 }
 
-@Preview("single data")
+@PreviewLightDark
 @Composable
-private fun ChartPreview_2() {
-    YdsTheme {
+private fun ChartPreview_single_data() {
+    SoomsilUSaintTheme {
         Box(
             modifier = Modifier
                 .size(width = 300.dp, height = 200.dp)
-                .background(YdsTheme.colors.bgNormal),
+                .background(MaterialTheme.colorScheme.surface),
         ) {
             Chart(
                 chartData = ChartData(
@@ -442,14 +438,14 @@ private fun ChartPreview_2() {
     }
 }
 
-@Preview("many items")
+@PreviewLightDark
 @Composable
-private fun ChartPreview_3() {
-    YdsTheme {
+private fun ChartPreview_many_items() {
+    SoomsilUSaintTheme {
         Box(
             modifier = Modifier
                 .size(width = 300.dp, height = 200.dp)
-                .background(YdsTheme.colors.bgNormal),
+                .background(MaterialTheme.colorScheme.surface),
         ) {
             Chart(
                 chartData = ChartData(
