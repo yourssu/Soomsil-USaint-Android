@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.serialization)
@@ -38,19 +38,21 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
-        compose = true
         buildConfig = true
     }
 }
 
 dependencies {
-    // rusaint
+    implementation(libs.yds.android)
     implementation(libs.rusaint)
 
     // room dependencies
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+
+    // Preferences DataStore
+    implementation(libs.androidx.datastore.preferences)
 
     // webview
     implementation(libs.androidx.browser)
@@ -64,10 +66,6 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)
     ksp(libs.androidx.hilt.compiler)
-    //
-
-    // Preferences DataStore
-    implementation(libs.androidx.datastore.preferences)
 
     // util
     implementation(libs.timber)
@@ -75,11 +73,9 @@ dependencies {
     // worker (Kotlin + coroutines)
     implementation(libs.androidx.work.runtime.ktx)
 
-    implementation(libs.yds.android)
     implementation(libs.androidx.viewpager2)
     implementation(libs.compose.navigation)
     implementation(libs.kotlinx.serialization.json)
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
