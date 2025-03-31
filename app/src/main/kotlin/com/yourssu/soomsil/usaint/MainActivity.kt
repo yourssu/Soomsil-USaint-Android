@@ -12,6 +12,7 @@ import com.yourssu.design.system.compose.YdsTheme
 import com.yourssu.soomsil.usaint.screen.USaintNavHost
 import com.yourssu.soomsil.usaint.screen.home.navigation.Home
 import com.yourssu.soomsil.usaint.screen.login.navigation.Login
+import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,9 +24,7 @@ class MainActivity : ComponentActivity() {
 //        enableEdgeToEdge()
 
         setContent {
-            YdsTheme(
-                isDarkMode = false
-            ) {
+            SoomsilUSaintTheme {
                 viewModel.isLoggedIn?.let { isLoggedIn ->
                     USaintNavHost(
                         navController = rememberNavController(),
