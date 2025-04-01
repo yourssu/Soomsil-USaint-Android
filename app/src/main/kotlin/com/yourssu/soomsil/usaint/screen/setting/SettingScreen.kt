@@ -8,12 +8,25 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,25 +35,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yourssu.design.system.compose.YdsTheme
-import com.yourssu.design.system.compose.atom.ListItem
-import com.yourssu.design.system.compose.atom.Toggle
-import com.yourssu.design.system.compose.atom.TopBarButton
-import com.yourssu.design.system.compose.base.YdsScaffold
-import com.yourssu.design.system.compose.base.YdsText
-import com.yourssu.design.system.compose.component.List
-import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.BuildConfig
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import com.yourssu.soomsil.usaint.util.NotificationUtil
 import com.yourssu.soomsil.usaint.util.TwoButtonDialog
-import com.yourssu.design.R as YdsR
 
 @Composable
 fun SettingScreen(
@@ -130,7 +138,7 @@ fun SettingScreen(
     )
 }
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(
     showDialog: Boolean,
@@ -143,74 +151,70 @@ fun SettingScreen(
     onClickTermsOfService: () -> Unit = {},
     onClickTermsOfPrivacy: () -> Unit = {},
 ) {
-    YdsScaffold(
+    Scaffold(
+        containerColor = Color.White,
+        contentColor = Color.Black,
         topBar = {
-            TopBar(
-                title = stringResource(id = R.string.setting),
+            CenterAlignedTopAppBar(
+                title = { Text(text = stringResource(id = R.string.setting), color = Color.Black) },
                 navigationIcon = {
-                    TopBarButton(
-                        onClick = onBackClick,
-                        icon = YdsR.drawable.ic_arrow_left_line
-                    )
+                    IconButton(onClick = { onBackClick() }) {
+                        Icon(
+                            modifier = modifier.size(30.dp),
+                            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                            contentDescription = null
+                        )
+                    }
                 },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White,
+                    titleContentColor = Color.Black,
+                    navigationIconContentColor = Color.Black
+                )
             )
         },
     ) {
-        Column {
-            List(subHeader = stringResource(R.string.manage_account)) {
-                item {
-                    ListItem(
-                        text = stringResource(id = R.string.setting_logout),
-                        onClick = { onShowDialogChange(true) }
-                    )
-                }
+        innerPadding ->
+        Column(
+            modifier = modifier.padding(innerPadding)
+        ) {
+            TitleText(stringResource(R.string.manage_account))
+            ContentText(
+                text = stringResource(id = R.string.setting_logout),
+                onClick = { onShowDialogChange(true) }
+            )
+
+            TitleText(stringResource(R.string.alarm))
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.get_alarm)
+                )
+                Switch(
+                    checked = notificationToggle,
+                    onCheckedChange = onNotificationToggleChange
+                )
             }
 
-            List(subHeader = stringResource(R.string.alarm)) {
-                item {
-                    Row(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .padding(horizontal = 20.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        YdsText(
-                            text = stringResource(R.string.get_alarm),
-                            style = YdsTheme.typography.body1
-                        )
+            TitleText(stringResource(R.string.terms_title))
+            ContentText(
+                text = stringResource(R.string.terms_of_service),
+                onClick = onClickTermsOfService
+            )
 
-                        Toggle(
-                            checked = notificationToggle,
-                            onCheckedChange = onNotificationToggleChange
-                        )
-                    }
-                }
-            }
+            ContentText(
+                text = stringResource(R.string.terms_of_privacy_info),
+                onClick = onClickTermsOfPrivacy
+            )
 
-            List(subHeader = stringResource(R.string.terms_title)) {
-                item {
-                    ListItem(
-                        text = stringResource(R.string.terms_of_service),
-                        onClick = onClickTermsOfService,
-                    )
-
-                    ListItem(
-                        text = stringResource(R.string.terms_of_privacy_info),
-                        onClick = onClickTermsOfPrivacy,
-                    )
-                }
-            }
-
-            List(subHeader = "버전 정보") {
-                item {
-                    ListItem(
-                        text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-                        onClick = {},
-                    )
-                }
-            }
+            TitleText("버전 정보")
+            ContentText("${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
         }
 
         if (showDialog) {
@@ -228,11 +232,47 @@ fun SettingScreen(
     }
 }
 
+@Composable
+fun TitleText(
+    text : String
+) {
+    Box(
+        modifier = Modifier
+            .height(42.dp)
+            .padding(horizontal = 20.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun ContentText(
+    text: String,
+    onClick: () -> Unit = {}
+) {
+    Box(
+        modifier = Modifier
+            .height(42.dp)
+            .padding(horizontal = 20.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            modifier = Modifier.clickable { onClick() },
+            text = text,
+            fontSize = 15.sp
+        )
+    }
+}
+
 @Preview
 @Composable
 fun PreviewSettingScreen() {
     var showDialog by remember { mutableStateOf(false) }
-    YdsTheme {
+    SoomsilUSaintTheme {
         SettingScreen(
             showDialog = showDialog,
             onShowDialogChange = { showDialog = it },
