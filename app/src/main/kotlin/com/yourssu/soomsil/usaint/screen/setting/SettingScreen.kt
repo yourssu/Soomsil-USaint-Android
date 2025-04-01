@@ -26,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -152,31 +154,25 @@ fun SettingScreen(
     onClickTermsOfPrivacy: () -> Unit = {},
 ) {
     Scaffold(
-        containerColor = Color.White,
-        contentColor = Color.Black,
+        modifier = modifier,
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = stringResource(id = R.string.setting), color = Color.Black) },
+                title = { Text(text = stringResource(id = R.string.setting)) },
                 navigationIcon = {
-                    IconButton(onClick = { onBackClick() }) {
+                    IconButton(onClick = onBackClick) {
                         Icon(
-                            modifier = modifier.size(30.dp),
+                            modifier = Modifier.size(24.dp),
                             imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
                             contentDescription = null
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = Color.Black,
-                    navigationIconContentColor = Color.Black
-                )
+                }
             )
         },
     ) {
         innerPadding ->
         Column(
-            modifier = modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
         ) {
             TitleText(stringResource(R.string.manage_account))
             ContentText(
@@ -268,7 +264,7 @@ fun ContentText(
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 fun PreviewSettingScreen() {
     var showDialog by remember { mutableStateOf(false) }

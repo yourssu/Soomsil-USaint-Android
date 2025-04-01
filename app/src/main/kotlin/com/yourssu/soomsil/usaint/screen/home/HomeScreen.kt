@@ -42,7 +42,6 @@ import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
-import dev.eatsteak.rusaint.core.Disposable
 import timber.log.Timber
 import com.yourssu.design.R as YdsR
 
