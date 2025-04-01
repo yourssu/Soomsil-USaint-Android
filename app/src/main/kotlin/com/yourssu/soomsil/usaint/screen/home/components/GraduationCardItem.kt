@@ -1,10 +1,10 @@
-package com.yourssu.soomsil.usaint.screen.home
+package com.yourssu.soomsil.usaint.screen.home.components
 
-/*
-@Composable
-private fun ChapelCardItem(
+
+/*@Composable
+private fun GraduationCard(
     isLoggedIn: Boolean,
-    onChapelCardClick: () -> Unit,
+    onGraduationCardClick: () -> Unit,
 ) {
     Surface(
         rounding = 8.dp,
@@ -16,7 +16,7 @@ private fun ChapelCardItem(
                 .padding(bottom = 10.dp),
         ) {
             YdsText(
-                text = stringResource(id = R.string.saint_chapel),
+                text = stringResource(id = R.string.saint_graduation),
                 modifier = Modifier
                     .padding(
                         top = 20.dp,
@@ -30,16 +30,9 @@ private fun ChapelCardItem(
                 ),
             )
             ActionTitle(
-                title = stringResource(id = R.string.saint_chapel_seat_title),
-                subTitle = stringResource(id = R.string.saint_chapel_seat_subtitle),
-                onClick = onChapelCardClick,
-                enable = false,
-                enable = isLoggedIn,
-            )
-            ActionTitle(
-                title = stringResource(id = R.string.saint_chapel_attendance_title),
-                subTitle = stringResource(id = R.string.saint_chapel_attendance_subtitle),
-                onClick = onChapelCardClick,
+                title = stringResource(id = R.string.saint_graduation_title),
+                subTitle = stringResource(id = R.string.saint_graduation_subtitle),
+                onClick = onGraduationCardClick,
                 enable = false,
                 enable = isLoggedIn,
             )
