@@ -9,6 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,16 +21,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.yourssu.design.system.compose.YdsTheme
-import com.yourssu.design.system.compose.atom.Divider
-import com.yourssu.design.system.compose.atom.Thickness
-import com.yourssu.design.system.compose.base.Surface
-import com.yourssu.design.system.compose.base.YdsText
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.ui.entities.Grade
 import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 
 @Composable
 fun ReportCardItem(
@@ -35,8 +35,7 @@ fun ReportCardItem(
     onReportCardClick: () -> Unit = {},
 ) {
     Surface(
-        rounding = 8.dp,
-        color = YdsTheme.colors.bgNormal,
+        shape = RoundedCornerShape(8.dp),
         modifier = modifier,
     ) {
         Column(
@@ -44,7 +43,7 @@ fun ReportCardItem(
                 .fillMaxWidth()
                 .padding(bottom = 10.dp),
         ) {
-            YdsText(
+            Text(
                 text = stringResource(id = R.string.saint_grade),
                 modifier = Modifier
                     .padding(
@@ -53,8 +52,8 @@ fun ReportCardItem(
                         start = 16.dp,
                         end = 16.dp,
                     ),
-                style = YdsTheme.typography.title3,
-                color = YdsTheme.colors.textPrimary,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
             )
             ActionTitle(
                 title = stringResource(id = R.string.saint_grade_title),
@@ -81,8 +80,7 @@ private fun ReportCardSummary(
             actualValue = reportCardSummary.gpa.formatToString(),
             maxValue = Grade.Max.formatToString(),
         )
-        Divider(
-            thickness = Thickness.Thin,
+        HorizontalDivider(
             modifier = Modifier.padding(horizontal = 14.dp),
         )
         ReportOutline(
@@ -92,25 +90,25 @@ private fun ReportCardSummary(
         )
 
         // 전체성적 보기 버튼
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 10.dp,
-                )
-                .clip(RoundedCornerShape(8.dp))
-                .height(40.dp)
-                .background(color = YdsTheme.colors.bgSelected)
-                .clickable(onClick = onReportCardClick),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            YdsText(
-                text = stringResource(R.string.saint_grade_see_all)
-            )
-        }
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(
+//                    start = 16.dp,
+//                    end = 16.dp,
+//                    top = 10.dp,
+//                )
+//                .clip(RoundedCornerShape(8.dp))
+//                .height(40.dp)
+//                .background(color = MaterialTheme.colorScheme.surface)
+//                .clickable(onClick = onReportCardClick),
+//            horizontalArrangement = Arrangement.Center,
+//            verticalAlignment = Alignment.CenterVertically,
+//        ) {
+//            Text(
+//                text = stringResource(R.string.saint_grade_see_all)
+//            )
+//        }
 //        BoxButton(
 //            modifier = Modifier
 //                .fillMaxWidth()
@@ -142,33 +140,33 @@ private fun ReportOutline(
             ),
         verticalAlignment = Alignment.Bottom,
     ) {
-        YdsText(
+        Text(
             text = title,
             modifier = Modifier.weight(1f),
-            style = YdsTheme.typography.body1,
-            color = YdsTheme.colors.textSecondary,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
         )
-        YdsText(
+        Text(
             text = actualValue,
-            style = YdsTheme.typography.subTitle2.copy(
+            style = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = FontWeight.Bold,
             ),
-            color = YdsTheme.colors.textPointed,
+            color = MaterialTheme.colorScheme.primary,
         )
-        YdsText(
+        Text(
             text = "/",
-            style = YdsTheme.typography.caption0.copy(
+            style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Bold,
             ),
-            color = YdsTheme.colors.textTertiary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 2.dp),
         )
-        YdsText(
+        Text(
             text = maxValue,
-            style = YdsTheme.typography.caption0.copy(
+            style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Bold,
             ),
-            color = YdsTheme.colors.textTertiary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
@@ -176,7 +174,7 @@ private fun ReportOutline(
 @PreviewLightDark
 @Composable
 private fun ReportCardItemPreview() {
-    YdsTheme {
+    SoomsilUSaintTheme {
         ReportCardItem(
             reportCardSummary = ReportCardSummary(
                 gpa = 4.22.toGrade(),
@@ -190,7 +188,7 @@ private fun ReportCardItemPreview() {
 @PreviewLightDark
 @Composable
 private fun ReportCardSummaryPreview() {
-    YdsTheme {
+    SoomsilUSaintTheme {
         Surface {
             ReportCardSummary(
                 reportCardSummary = ReportCardSummary(
@@ -206,7 +204,7 @@ private fun ReportCardSummaryPreview() {
 @PreviewLightDark
 @Composable
 private fun ReportOutlinePreview() {
-    YdsTheme {
+    SoomsilUSaintTheme {
         Surface {
             ReportOutline(
                 title = "평균학점",
