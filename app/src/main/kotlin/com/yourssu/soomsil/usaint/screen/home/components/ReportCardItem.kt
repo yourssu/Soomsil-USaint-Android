@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -29,9 +29,9 @@ fun ReportCardItem(
     modifier: Modifier = Modifier,
     onReportCardClick: () -> Unit = {},
 ) {
-    Surface(
-        shape = RoundedCornerShape(8.dp),
+    ElevatedCard(
         modifier = modifier,
+        onClick = onReportCardClick,
     ) {
         Column(
             modifier = Modifier
@@ -47,13 +47,14 @@ fun ReportCardItem(
                         start = 16.dp,
                         end = 16.dp,
                     ),
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold
+                ),
                 color = MaterialTheme.colorScheme.onSurface,
             )
             ActionTitle(
                 title = stringResource(id = R.string.saint_grade_title),
                 subTitle = stringResource(id = R.string.saint_grade_subtitle),
-                onClick = onReportCardClick,
             )
             ReportCardSummary(
                 reportCardSummary = reportCardSummary,

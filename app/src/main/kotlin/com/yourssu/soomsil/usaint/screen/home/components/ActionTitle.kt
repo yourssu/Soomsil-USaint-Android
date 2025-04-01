@@ -1,7 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.home.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.R
@@ -28,7 +28,6 @@ import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 fun ActionTitle(
     title: String,
     subTitle: String,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -37,8 +36,7 @@ fun ActionTitle(
             .padding(
                 horizontal = 16.dp,
                 vertical = 12.dp,
-            )
-            .clickable(onClick = onClick),
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
@@ -55,12 +53,16 @@ fun ActionTitle(
         ) {
             Text(
                 text = subTitle,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleSmall.copy(
+                    fontWeight = FontWeight(600),
+                ),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight(600),
+                ),
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
@@ -78,9 +80,8 @@ private fun ActionTitlePreview() {
     SoomsilUSaintTheme {
         Surface {
             ActionTitle(
-                title = "asdf",
-                subTitle = "asdfasdf",
-                onClick = {},
+                title = "전체학기",
+                subTitle = "성적 확인하기",
             )
         }
     }
