@@ -253,11 +253,12 @@ fun ContentText(
     Box(
         modifier = Modifier
             .height(42.dp)
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 20.dp)
+            .clickable(onClick = onClick)
+        ,
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            modifier = Modifier.clickable(onClick = onClick),
             text = text,
         )
     }
