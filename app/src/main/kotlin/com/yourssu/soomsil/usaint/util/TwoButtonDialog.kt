@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
@@ -99,7 +100,7 @@ fun TwoButtonDialog(
 }
 
 @Composable
-@Preview
+@PreviewLightDark
 fun TwoButtonDialogPreview() {
     SoomsilUSaintTheme {
         TwoButtonDialog(
@@ -113,7 +114,7 @@ fun TwoButtonDialogPreview() {
 }
 
 @Composable
-@Preview
+@PreviewLightDark
 fun TwoButtonDialogWithDescriptionPreview() {
     SoomsilUSaintTheme {
         TwoButtonDialog(
