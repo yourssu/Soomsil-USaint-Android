@@ -182,7 +182,7 @@ fun SettingScreen(
 
             TitleText(stringResource(R.string.alarm))
             Row(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
                     .padding(horizontal = 20.dp),
@@ -259,7 +259,6 @@ fun ContentText(
         Text(
             modifier = Modifier.clickable { onClick() },
             text = text,
-            fontSize = 15.sp
         )
     }
 }
