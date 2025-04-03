@@ -12,16 +12,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.yourssu.design.system.compose.YdsTheme
-import com.yourssu.design.system.compose.base.YdsText
+import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 
 @Composable
 fun TwoButtonDialog(
@@ -29,8 +30,8 @@ fun TwoButtonDialog(
     positiveButtonText: String,
     onNegativeButtonClicked: () -> Unit,
     onPositiveButtonClicked: () -> Unit,
-    negativeButtonTextColor: Color = YdsTheme.colors.buttonWarned,
-    positiveButtonTextColor: Color = YdsTheme.colors.logoDarkBlue,
+    negativeButtonTextColor: Color = MaterialTheme.colorScheme.error,
+    positiveButtonTextColor: Color = MaterialTheme.colorScheme.primary,
     modifier: Modifier = Modifier,
     title: String? = null,
     description: String? = null,
@@ -40,7 +41,7 @@ fun TwoButtonDialog(
             modifier = modifier.padding(horizontal = 36.dp),
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
-                containerColor = White
+                containerColor = MaterialTheme.colorScheme.surfaceBright
             ),
         ) {
             Column(
@@ -49,20 +50,17 @@ fun TwoButtonDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                if (title != null) {
-                    YdsText(
+                title?.let {
+                    Text(
                         text = title,
-                        style = YdsTheme.typography.subTitle2,
-                        color = YdsTheme.colors.textPrimary,
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+                        fontWeight = FontWeight.Bold,
                     )
                 }
 
-                if (description != null) {
-                    YdsText(
+                description?.let {
+                    Text(
                         text = description,
-                        style = YdsTheme.typography.body1,
-                        color = YdsTheme.colors.textPrimary,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 10.dp)
@@ -76,22 +74,22 @@ fun TwoButtonDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    YdsText(
+                    Text(
                         text = negativeButtonText,
                         modifier = Modifier
                             .padding(10.dp)
-                            .clickable { onNegativeButtonClicked() },
+                            .clickable(onClick = onNegativeButtonClicked),
                         color = negativeButtonTextColor,
-                        style = YdsTheme.typography.subTitle3
+                        fontWeight = FontWeight.SemiBold,
                     )
                     Spacer(modifier = Modifier.width(24.dp))
-                    YdsText(
+                    Text(
                         text = positiveButtonText,
                         modifier = Modifier
                             .padding(10.dp)
-                            .clickable { onPositiveButtonClicked() },
+                            .clickable(onClick = onPositiveButtonClicked),
                         color = positiveButtonTextColor,
-                        style = YdsTheme.typography.subTitle3
+                        fontWeight = FontWeight.SemiBold,
                     )
 
                 }
@@ -103,7 +101,7 @@ fun TwoButtonDialog(
 @Composable
 @Preview
 fun TwoButtonDialogPreview() {
-    YdsTheme {
+    SoomsilUSaintTheme {
         TwoButtonDialog(
             negativeButtonText = "취소",
             positiveButtonText = "확인",
@@ -117,7 +115,7 @@ fun TwoButtonDialogPreview() {
 @Composable
 @Preview
 fun TwoButtonDialogWithDescriptionPreview() {
-    YdsTheme {
+    SoomsilUSaintTheme {
         TwoButtonDialog(
             negativeButtonText = "취소",
             positiveButtonText = "확인",
