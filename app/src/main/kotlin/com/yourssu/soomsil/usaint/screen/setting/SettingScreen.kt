@@ -257,7 +257,7 @@ fun ContentText(
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            modifier = Modifier.clickable { onClick() },
+            modifier = Modifier.clickable(onClick = onClick),
             text = text,
         )
     }
