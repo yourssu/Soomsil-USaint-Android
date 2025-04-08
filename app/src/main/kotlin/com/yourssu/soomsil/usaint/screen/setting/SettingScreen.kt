@@ -168,12 +168,10 @@ fun SettingScreen(
     ) {
         innerPadding ->
         Column(
-            modifier = Modifier.padding(
-                PaddingValues(
-                    horizontal = 20.dp,
-                    vertical = innerPadding.calculateTopPadding()
-                )
-            ),
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 20.dp)
+            ,
         ) {
             TitleText(stringResource(R.string.manage_account))
             ContentText(
@@ -252,8 +250,7 @@ fun ContentText(
     Box(
         modifier = Modifier
             .height(42.dp)
-            .clickable(onClick = onClick)
-        ,
+            .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Text(
