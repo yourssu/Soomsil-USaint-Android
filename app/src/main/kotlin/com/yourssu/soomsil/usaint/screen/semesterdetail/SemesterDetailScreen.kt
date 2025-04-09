@@ -43,6 +43,7 @@ import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
+import com.yourssu.soomsil.usaint.screen.semesterdetail.components.SemesterDetailItem
 import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
 import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.Tier
