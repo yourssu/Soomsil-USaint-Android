@@ -30,6 +30,7 @@
     <string name="reportcard_credit">취득 학점</string>
     <string name="reportcard_include_seasonal_semester">계절학기 포함</string>
 
+    <string name="gradelist_title">상세 성적</string>
     <string name="gradelist_summary_credit">취득 학점</string>
     <string name="gradelist_summary_rank">학기별 석차</string>
     <string name="gradelist_summary_overall_rank">전체 석차</string>
