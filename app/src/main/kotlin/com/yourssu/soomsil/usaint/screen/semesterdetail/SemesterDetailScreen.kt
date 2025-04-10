@@ -15,6 +15,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -148,7 +151,6 @@ fun SemesterDetailScreen(
         if (pagerState.currentPage in semesters.indices)
             onInitialRefresh(semesters[pagerState.currentPage].type)
     }
-
     YdsScaffold(
         modifier = modifier,
         topBar = {

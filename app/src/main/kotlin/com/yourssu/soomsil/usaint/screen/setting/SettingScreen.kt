@@ -13,12 +13,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -26,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,13 +45,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yourssu.soomsil.usaint.BuildConfig
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import com.yourssu.soomsil.usaint.util.NotificationUtil
-import com.yourssu.soomsil.usaint.util.TwoButtonDialog
 
 @Composable
 fun SettingScreen(
@@ -164,13 +170,11 @@ fun SettingScreen(
                 }
             )
         },
-    ) {
-        innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(horizontal = 20.dp)
-            ,
+                .padding(horizontal = 20.dp),
         ) {
             TitleText(stringResource(R.string.manage_account))
             ContentText(
@@ -211,23 +215,61 @@ fun SettingScreen(
         }
 
         if (showDialog) {
-            TwoButtonDialog(
-                title = stringResource(R.string.logout_title),
-                positiveButtonText = stringResource(R.string.logout),
-                negativeButtonText = stringResource(R.string.cancel),
-                onPositiveButtonClicked = {
-                    onLogout()
-                    onShowDialogChange(false)
-                },
-                onNegativeButtonClicked = { onShowDialogChange(false) },
-            )
+            Dialog(onDismissRequest = { onShowDialogChange(false) }) {
+                Card(
+                    modifier = modifier.padding(horizontal = 36.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceBright
+                    ),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        Text(
+                            text = stringResource(R.string.logout_title),
+                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+                            fontWeight = FontWeight.Bold,
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.cancel),
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .clickable(onClick = { onShowDialogChange(false) }),
+                                color = MaterialTheme.colorScheme.error,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Spacer(modifier = Modifier.width(24.dp))
+                            Text(
+                                text = stringResource(R.string.logout),
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .clickable(onClick = {
+                                        onLogout()
+                                        onShowDialogChange(false)
+                                    }),
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
 fun TitleText(
-    text : String
+    text: String
 ) {
     Box(
         modifier = Modifier
@@ -269,5 +311,59 @@ fun PreviewSettingScreen() {
             notificationToggle = false,
             onNotificationToggleChange = {},
         )
+    }
+}
+
+@Composable
+@PreviewLightDark
+fun DialogPreview() {
+    SoomsilUSaintTheme {
+        Dialog(onDismissRequest = { }) {
+            Card(
+                modifier = Modifier.padding(horizontal = 36.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceBright
+                ),
+            ) {
+                Column(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Text(
+                        text = stringResource(R.string.logout_title),
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+                        fontWeight = FontWeight.Bold,
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.cancel),
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .clickable(onClick = { }),
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Spacer(modifier = Modifier.width(24.dp))
+                        Text(
+                            text = stringResource(R.string.logout),
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .clickable(onClick = {
+
+                                }),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
+            }
+        }
     }
 }
