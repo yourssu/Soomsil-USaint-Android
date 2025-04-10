@@ -290,12 +290,14 @@ fun ContentText(
 ) {
     Box(
         modifier = Modifier
+            .fillMaxWidth()
             .height(42.dp)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = text,
+            modifier = Modifier.align(Alignment.CenterStart)
         )
     }
 }
