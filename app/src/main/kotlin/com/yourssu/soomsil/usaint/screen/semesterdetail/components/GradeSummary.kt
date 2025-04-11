@@ -104,7 +104,7 @@ private fun SummaryList(
     title: String,
     actualValue: Float,
     modifier: Modifier = Modifier,
-    maxValue: Int = 0,
+    maxValue: Int? = null,
 ) {
     Row(
         modifier = modifier.padding(vertical = 8.dp),
@@ -125,10 +125,10 @@ private fun SummaryList(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        if (maxValue > 0) {
+        maxValue?.let {
             Spacer(Modifier.width(2.dp))
             Text(
-                text = stringResource(R.string.grade_delimiter) + maxValue.toString(),
+                text = stringResource(R.string.grade_delimiter) + it.toString(),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
