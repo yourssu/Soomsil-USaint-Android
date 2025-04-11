@@ -11,7 +11,7 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.TotalReportCardVO
 
 @Database(
     entities = [TotalReportCardVO::class, SemesterVO::class, LectureVO::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
