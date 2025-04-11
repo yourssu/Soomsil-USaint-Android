@@ -57,6 +57,6 @@ class LectureRepository @Inject constructor(
         if (classGradeList.isEmpty())
             return Result.success(emptyList())
 
-        return Result.success(classGradeList.map { it.toLectureVO(semesterId = -1) })
+        return Result.success(classGradeList.map { it.toLectureVO() })
     }
 }

@@ -43,6 +43,7 @@ android {
 }
 
 dependencies {
+    // rusaint
     implementation(libs.rusaint)
 
     // room dependencies
@@ -65,6 +66,10 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)
     ksp(libs.androidx.hilt.compiler)
+    //
+
+    // Preferences DataStore
+    implementation(libs.androidx.datastore.preferences)
 
     // util
     implementation(libs.timber)

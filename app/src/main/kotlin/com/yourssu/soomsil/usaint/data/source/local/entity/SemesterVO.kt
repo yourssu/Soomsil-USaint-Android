@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "Semester",
+    primaryKeys = ["year", "semester"], // 복합키
     foreignKeys = [ForeignKey(
         entity = TotalReportCardVO::class,
         parentColumns = ["id"],
@@ -19,7 +20,6 @@ import androidx.room.PrimaryKey
     ],
 )
 data class SemesterVO(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val year: Int,                  // ex: 2024
     val semester: String,           // ex: “1”, “여름”
     val semesterRank: Int,          // 학기 석차
