@@ -14,6 +14,11 @@
 
     <!-- Home - 채플 -->
     <string name="saint_chapel">채플</string>
+    <string name="saint_chapel_count">%d회</string>
+    <string name="saint_chapel_time">시간표</string>
+    <string name="saint_chapel_seat_position">좌석</string>
+    <string name="saint_chapel_pass_until">Pass까지 </string>
+    <string name="saint_chapel_pass_left"> 남았어요</string>
     <string name="saint_chapel_seat_title">좌석 위치 확인하기</string>
     <string name="saint_chapel_seat_subtitle">내 자리가 어디였지?</string>
     <string name="saint_chapel_attendance_title">출석 횟수 확인하기</string>
