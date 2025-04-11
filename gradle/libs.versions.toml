@@ -18,7 +18,6 @@ roomRuntime = "2.6.1"
 rusaint = "0.8.2"
 timber = "5.0.1"
 workRuntimeKtx = "2.10.0"
-yds = "2.6.3"
 viewpager2 = "1.1.0"
 ksp = "2.0.0-1.0.24"
 hilt = "2.52"
@@ -54,7 +53,6 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 rusaint = { module = "dev.eatsteak:rusaint", version.ref = "rusaint" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
-yds-android = { module = "com.github.yourssu:YDS-Android", version.ref = "yds" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }

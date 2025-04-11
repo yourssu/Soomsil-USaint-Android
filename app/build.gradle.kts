@@ -43,7 +43,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.yds.android)
     implementation(libs.rusaint)
 
     // room dependencies
