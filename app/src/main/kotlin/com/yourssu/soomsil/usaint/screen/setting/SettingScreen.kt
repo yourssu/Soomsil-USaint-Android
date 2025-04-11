@@ -8,12 +8,30 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,23 +42,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yourssu.design.system.compose.YdsTheme
-import com.yourssu.design.system.compose.atom.ListItem
-import com.yourssu.design.system.compose.atom.Toggle
-import com.yourssu.design.system.compose.atom.TopBarButton
-import com.yourssu.design.system.compose.base.YdsScaffold
-import com.yourssu.design.system.compose.base.YdsText
-import com.yourssu.design.system.compose.component.List
-import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.BuildConfig
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import com.yourssu.soomsil.usaint.util.NotificationUtil
-import com.yourssu.soomsil.usaint.util.TwoButtonDialog
-import com.yourssu.design.R as YdsR
 
 @Composable
 fun SettingScreen(
@@ -130,7 +141,7 @@ fun SettingScreen(
     )
 }
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(
     showDialog: Boolean,
@@ -143,101 +154,218 @@ fun SettingScreen(
     onClickTermsOfService: () -> Unit = {},
     onClickTermsOfPrivacy: () -> Unit = {},
 ) {
-    YdsScaffold(
+    Scaffold(
+        modifier = modifier,
         topBar = {
-            TopBar(
-                title = stringResource(id = R.string.setting),
+            CenterAlignedTopAppBar(
+                title = { Text(text = stringResource(id = R.string.setting)) },
                 navigationIcon = {
-                    TopBarButton(
-                        onClick = onBackClick,
-                        icon = YdsR.drawable.ic_arrow_left_line
-                    )
-                },
-            )
-        },
-    ) {
-        Column {
-            List(subHeader = stringResource(R.string.manage_account)) {
-                item {
-                    ListItem(
-                        text = stringResource(id = R.string.setting_logout),
-                        onClick = { onShowDialogChange(true) }
-                    )
-                }
-            }
-
-            List(subHeader = stringResource(R.string.alarm)) {
-                item {
-                    Row(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .padding(horizontal = 20.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        YdsText(
-                            text = stringResource(R.string.get_alarm),
-                            style = YdsTheme.typography.body1
-                        )
-
-                        Toggle(
-                            checked = notificationToggle,
-                            onCheckedChange = onNotificationToggleChange
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                            contentDescription = null
                         )
                     }
                 }
+            )
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 20.dp),
+        ) {
+            TitleText(stringResource(R.string.manage_account))
+            ContentText(
+                text = stringResource(id = R.string.setting_logout),
+                onClick = { onShowDialogChange(true) }
+            )
+
+            TitleText(stringResource(R.string.alarm))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.get_alarm)
+                )
+                Switch(
+                    checked = notificationToggle,
+                    onCheckedChange = onNotificationToggleChange
+                )
             }
 
-            List(subHeader = stringResource(R.string.terms_title)) {
-                item {
-                    ListItem(
-                        text = stringResource(R.string.terms_of_service),
-                        onClick = onClickTermsOfService,
-                    )
+            TitleText(stringResource(R.string.terms_title))
+            ContentText(
+                text = stringResource(R.string.terms_of_service),
+                onClick = onClickTermsOfService
+            )
 
-                    ListItem(
-                        text = stringResource(R.string.terms_of_privacy_info),
-                        onClick = onClickTermsOfPrivacy,
-                    )
-                }
-            }
+            ContentText(
+                text = stringResource(R.string.terms_of_privacy_info),
+                onClick = onClickTermsOfPrivacy
+            )
 
-            List(subHeader = "버전 정보") {
-                item {
-                    ListItem(
-                        text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-                        onClick = {},
-                    )
-                }
-            }
+            TitleText("버전 정보")
+            ContentText("${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
         }
 
         if (showDialog) {
-            TwoButtonDialog(
-                title = stringResource(R.string.logout_title),
-                positiveButtonText = stringResource(R.string.logout),
-                negativeButtonText = stringResource(R.string.cancel),
-                onPositiveButtonClicked = {
-                    onLogout()
-                    onShowDialogChange(false)
-                },
-                onNegativeButtonClicked = { onShowDialogChange(false) },
-            )
+            Dialog(onDismissRequest = { onShowDialogChange(false) }) {
+                Card(
+                    modifier = modifier.padding(horizontal = 36.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceBright
+                    ),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        Text(
+                            text = stringResource(R.string.logout_title),
+                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+                            fontWeight = FontWeight.Bold,
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.cancel),
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .clickable(onClick = { onShowDialogChange(false) }),
+                                color = MaterialTheme.colorScheme.error,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Spacer(modifier = Modifier.width(24.dp))
+                            Text(
+                                text = stringResource(R.string.logout),
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .clickable(onClick = {
+                                        onLogout()
+                                        onShowDialogChange(false)
+                                    }),
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
-@Preview
+@Composable
+fun TitleText(
+    text: String
+) {
+    Box(
+        modifier = Modifier
+            .height(42.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun ContentText(
+    text: String,
+    onClick: () -> Unit = {}
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(42.dp)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.align(Alignment.CenterStart)
+        )
+    }
+}
+
+@PreviewLightDark
 @Composable
 fun PreviewSettingScreen() {
     var showDialog by remember { mutableStateOf(false) }
-    YdsTheme {
+    SoomsilUSaintTheme {
         SettingScreen(
             showDialog = showDialog,
             onShowDialogChange = { showDialog = it },
             notificationToggle = false,
             onNotificationToggleChange = {},
         )
+    }
+}
+
+@Composable
+@PreviewLightDark
+fun DialogPreview() {
+    SoomsilUSaintTheme {
+        Dialog(onDismissRequest = { }) {
+            Card(
+                modifier = Modifier.padding(horizontal = 36.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceBright
+                ),
+            ) {
+                Column(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Text(
+                        text = stringResource(R.string.logout_title),
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+                        fontWeight = FontWeight.Bold,
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.cancel),
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .clickable(onClick = { }),
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Spacer(modifier = Modifier.width(24.dp))
+                        Text(
+                            text = stringResource(R.string.logout),
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .clickable(onClick = {
+
+                                }),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
+            }
+        }
     }
 }
