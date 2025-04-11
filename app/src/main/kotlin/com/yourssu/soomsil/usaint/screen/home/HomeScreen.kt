@@ -30,8 +30,10 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.screen.UiEvent
+import com.yourssu.soomsil.usaint.screen.home.components.ChapelCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.StudentInfoItem
+import com.yourssu.soomsil.usaint.ui.entities.ChapelInfo
 import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
@@ -156,6 +158,16 @@ fun HomeScreen(
                 ReportCardItem(
                     reportCardSummary = reportCardSummary,
                     onReportCardClick = onReportCardClick,
+                )
+                Spacer(Modifier.height(12.dp))
+                ChapelCardItem(
+                    onChapelCardClick = {},
+                    chapelInfo = ChapelInfo(
+                        "D-11-4",
+                        "(월) 13:30~14:20",
+                        12,
+                        6
+                    )
                 )
             }
         }
