@@ -2,48 +2,42 @@ package com.yourssu.soomsil.usaint.screen.home
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import com.yourssu.design.system.compose.YdsTheme
-import com.yourssu.design.system.compose.atom.ProfileImageView
-import com.yourssu.design.system.compose.base.Icon
-import com.yourssu.design.system.compose.base.YdsScaffold
-import com.yourssu.design.system.compose.base.YdsText
-import com.yourssu.design.system.compose.base.ydsClickable
-import com.yourssu.design.system.compose.component.topbar.SingleTitleTopBar
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.screen.UiEvent
+import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItem
+import com.yourssu.soomsil.usaint.screen.home.components.StudentInfoItem
 import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import timber.log.Timber
-import com.yourssu.design.R as YdsR
 
 @Composable
 fun HomeScreen(
@@ -121,21 +115,31 @@ fun HomeScreen(
     onSettingClick: () -> Unit = {},
     onReportCardClick: () -> Unit = {},
 ) {
-    YdsScaffold(
+    Scaffold(
         modifier = modifier,
         topBar = {
-            SingleTitleTopBar(title = stringResource(id = R.string.saint_title))
-        },
-    ) {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.saint_title),
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                    )
+                }
+            )
+        }
+    ) { padding ->
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = onRefresh,
+            modifier = Modifier.padding(padding)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .background(YdsTheme.colors.bgSelected)
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(
                         horizontal = 16.dp,
                         vertical = 12.dp,
@@ -158,55 +162,10 @@ fun HomeScreen(
     }
 }
 
-@Composable
-fun ActionTitle(
-    title: String,
-    subTitle: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
-                vertical = 12.dp,
-            )
-            .ydsClickable(
-                interactionSource = remember { MutableInteractionSource() },
-                onClick = onClick,
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        ProfileImageView(painter = painterResource(id = R.drawable.default_profile_image))
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 12.dp),
-        ) {
-            YdsText(
-                text = subTitle,
-                style = YdsTheme.typography.subTitle3,
-                color = YdsTheme.colors.textSecondary,
-            )
-            YdsText(
-                text = title,
-                style = YdsTheme.typography.subTitle1,
-                color = YdsTheme.colors.textPrimary,
-            )
-        }
-        Icon(
-            id = YdsR.drawable.ic_arrow_right_line,
-            tint = YdsTheme.colors.textPrimary,
-        )
-    }
-}
-
-
 @PreviewLightDark
 @Composable
 private fun HomePreview() {
-    YdsTheme {
+    SoomsilUSaintTheme {
         HomeScreen(
             isRefreshing = false,
             onRefresh = {},
