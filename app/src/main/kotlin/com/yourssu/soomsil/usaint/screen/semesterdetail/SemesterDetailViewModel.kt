@@ -131,18 +131,7 @@ class SemesterDetailViewModel @Inject constructor(
                     semesters = semesters.dropLast(1) + listOf(newSemester.toSemester())
                 }
 
-                // fixme #44
-                val semesterValue = semesterRepo.getLocalSemester(semester).getOrElse { e ->
-                    Timber.e(e)
-                    return
-                }.semester
-
-                val yearValue = semesterRepo.getLocalSemester(semester).getOrElse { e ->
-                    Timber.e(e)
-                    return
-                }.year
-                lectureRepo.storeLectures(*lectureVOs.map { it.copy(semester = semesterValue, year = yearValue) }
-                    .toTypedArray())
+                lectureRepo.storeLectures(*lectureVOs.toTypedArray())
             }
             .onFailure { e ->
                 Timber.e(e)

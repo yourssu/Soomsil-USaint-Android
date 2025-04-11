@@ -68,16 +68,7 @@ class UpdateWorker @AssistedInject constructor(
             return Result.failure()
         }
         // 강의 성적 정보 업데이트
-        val newCurrentYearValue = semesterRepo.getLocalSemester(currentSemester).getOrElse { e ->
-            Timber.e(e)
-            return Result.failure()
-        }.year
-        val newCurrentSemesterValue = semesterRepo.getLocalSemester(currentSemester).getOrElse { e ->
-            Timber.e(e)
-            return Result.failure()
-        }.semester
-        lectureRepo.storeLectures(*newLectures.map { it.copy(year = newCurrentYearValue, semester = newCurrentSemesterValue) }
-            .toTypedArray()).onFailure { e ->
+        lectureRepo.storeLectures(*newLectures.toTypedArray()).onFailure { e ->
             Timber.e(e)
             return Result.failure()
         }

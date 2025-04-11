@@ -53,6 +53,6 @@ fun ClassGrade.toLectureVO(): LectureVO {
         score = scoreString,
         professorName = professor,
         year = year.toIntOrNull() ?: -1,
-        semester = semester
+        semester = semester.replace("학기", ""), // "1학기"를 "1"로 만들기 위함
     )
 }

@@ -157,18 +157,7 @@ class SemesterListViewModel @Inject constructor(
                     val currentSemesterVO = makeSemesterUseCase(currentSemester, currentLectureVOs)
                     semesterRepo.storeSemesters(currentSemesterVO)
 
-                    // fixme #44: semester, year를 가져와서 lecture에 넣어줘야 함
-                    val semesterValue = semesterRepo.getLocalSemester(currentSemester).getOrElse {
-                        Timber.e("local currentSemester not found")
-                        return@launch
-                    }.semester
-                    val yearValue = semesterRepo.getLocalSemester(currentSemester).getOrElse {
-                        Timber.e("local currentSemester not found")
-                        return@launch
-                    }.year
-
-                    lectureRepo.storeLectures(*currentLectureVOs.map { it.copy(semester = semesterValue, year = yearValue) }
-                        .toTypedArray())
+                    lectureRepo.storeLectures(*currentLectureVOs.toTypedArray())
                     semestersTemp.add(currentSemesterVO.toSemester())
                 }
             }
