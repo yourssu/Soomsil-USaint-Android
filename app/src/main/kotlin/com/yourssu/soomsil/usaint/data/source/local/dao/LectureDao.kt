@@ -14,8 +14,8 @@ interface LectureDao {
     @Query("SELECT * FROM Lecture WHERE code = :code LIMIT 1")
     suspend fun getLectureByCode(code: String): LectureVO?
 
-    @Query("SELECT * FROM Lecture WHERE semesterId = :semesterId")
-    suspend fun getLecturesBySemesterId(semesterId: Int): List<LectureVO>
+    @Query("SELECT * FROM Lecture WHERE year = :year AND semester = :semester")
+    suspend fun getLecturesByYearAndSemester(year: Int, semester: String): List<LectureVO>
 
     @Query("DELETE FROM Lecture")
     suspend fun deleteAll()

@@ -12,12 +12,12 @@ import dev.eatsteak.rusaint.core.ClassScore
     tableName = "Lecture",
     foreignKeys = [ForeignKey(
         entity = SemesterVO::class,
-        parentColumns = ["id"],
-        childColumns = ["semesterId"],
+        parentColumns = ["year", "semester"],
+        childColumns = ["year", "semester"],
     )],
     indices = [
-        Index(value = ["semesterId"]),
-        Index(value = ["semesterId", "code"], unique = true) // code 컬럼에 고유 인덱스를 추가
+        Index(value = ["year", "semester"]),
+        Index(value = ["year", "semester", "code"], unique = true) // code 컬럼에 고유 인덱스를 추가
     ]
 )
 data class LectureVO(
@@ -28,8 +28,8 @@ data class LectureVO(
     val grade: String,          // 등급 (ex: "A+", "P", "F")
     val score: String,          // 성적 (ex: "90", "Pass", "Failed")
     val professorName: String,  // 교수님 성함
-    @ColumnInfo("semesterId")
-    val semesterId: Int,        // foreign key
+    val year: String,        // foreign key
+    val semester: String,        // foreign key
 ) {
     fun equalsIgnoreIds(other: LectureVO): Boolean {
         return title == other.title && code == other.code && credit == other.credit &&
@@ -51,6 +51,7 @@ fun ClassGrade.toLectureVO(semesterId: Int): LectureVO {
         grade = rank,
         score = scoreString,
         professorName = professor,
-        semesterId = semesterId,
+        year = year,
+        semester = semester
     )
 }

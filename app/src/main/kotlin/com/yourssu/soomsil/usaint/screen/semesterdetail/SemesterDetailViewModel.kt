@@ -132,11 +132,16 @@ class SemesterDetailViewModel @Inject constructor(
                 }
 
                 // fixme #44
-                val semesterId = semesterRepo.getLocalSemester(semester).getOrElse { e ->
+                val semesterValue = semesterRepo.getLocalSemester(semester).getOrElse { e ->
                     Timber.e(e)
                     return
-                }.id
-                lectureRepo.storeLectures(*lectureVOs.map { it.copy(semesterId = semesterId) }
+                }.semester
+
+                val yearValue = semesterRepo.getLocalSemester(semester).getOrElse { e ->
+                    Timber.e(e)
+                    return
+                }.year
+                lectureRepo.storeLectures(*lectureVOs.map { it.copy(semester = semesterValue, year = yearValue.toString()) }
                     .toTypedArray())
             }
             .onFailure { e ->
