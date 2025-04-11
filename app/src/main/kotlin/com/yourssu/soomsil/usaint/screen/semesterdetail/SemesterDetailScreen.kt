@@ -148,10 +148,6 @@ fun SemesterDetailScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
     var selectedTabIndex by remember { mutableIntStateOf(initialTabIndex) }
 
-    LaunchedEffect(initialTabIndex, semesters) {
-        // initial
-        pagerState.scrollToPage(initialTabIndex)
-    }
     LaunchedEffect(selectedTabIndex) {
         pagerState.animateScrollToPage(selectedTabIndex)
     }
