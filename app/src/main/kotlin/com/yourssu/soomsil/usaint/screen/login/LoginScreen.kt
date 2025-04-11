@@ -133,7 +133,7 @@ fun LoginScreen(
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showPassword by remember { mutableStateOf(true) }
+    var showPassword by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
