@@ -76,7 +76,7 @@ class UpdateWorker @AssistedInject constructor(
             Timber.e(e)
             return Result.failure()
         }.semester
-        lectureRepo.storeLectures(*newLectures.map { it.copy(year = newCurrentYearValue.toString(), semester = newCurrentSemesterValue) }
+        lectureRepo.storeLectures(*newLectures.map { it.copy(year = newCurrentYearValue, semester = newCurrentSemesterValue) }
             .toTypedArray()).onFailure { e ->
             Timber.e(e)
             return Result.failure()

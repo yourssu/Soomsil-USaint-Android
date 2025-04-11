@@ -141,7 +141,7 @@ class SemesterDetailViewModel @Inject constructor(
                     Timber.e(e)
                     return
                 }.year
-                lectureRepo.storeLectures(*lectureVOs.map { it.copy(semester = semesterValue, year = yearValue.toString()) }
+                lectureRepo.storeLectures(*lectureVOs.map { it.copy(semester = semesterValue, year = yearValue) }
                     .toTypedArray())
             }
             .onFailure { e ->

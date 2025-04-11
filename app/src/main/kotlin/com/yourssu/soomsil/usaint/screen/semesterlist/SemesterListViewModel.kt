@@ -167,7 +167,7 @@ class SemesterListViewModel @Inject constructor(
                         return@launch
                     }.year
 
-                    lectureRepo.storeLectures(*currentLectureVOs.map { it.copy(semester = semesterValue, year = yearValue.toString()) }
+                    lectureRepo.storeLectures(*currentLectureVOs.map { it.copy(semester = semesterValue, year = yearValue) }
                         .toTypedArray())
                     semestersTemp.add(currentSemesterVO.toSemester())
                 }

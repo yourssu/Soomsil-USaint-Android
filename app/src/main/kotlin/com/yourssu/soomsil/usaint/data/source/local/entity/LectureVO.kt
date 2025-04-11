@@ -28,7 +28,7 @@ data class LectureVO(
     val grade: String,          // 등급 (ex: "A+", "P", "F")
     val score: String,          // 성적 (ex: "90", "Pass", "Failed")
     val professorName: String,  // 교수님 성함
-    val year: String,        // foreign key
+    val year: Int,        // foreign key
     val semester: String,        // foreign key
 ) {
     fun equalsIgnoreIds(other: LectureVO): Boolean {
@@ -37,13 +37,14 @@ data class LectureVO(
     }
 }
 
-fun ClassGrade.toLectureVO(semesterId: Int): LectureVO {
+fun ClassGrade.toLectureVO(): LectureVO {
     val scoreString = when (score) {
         is ClassScore.Score -> (score as ClassScore.Score).v1.toString()
         is ClassScore.Pass -> "Pass"
         is ClassScore.Failed -> "Failed"
         is ClassScore.Empty -> "Empty"
     }
+
     return LectureVO(
         title = className,
         code = code,
@@ -51,7 +52,7 @@ fun ClassGrade.toLectureVO(semesterId: Int): LectureVO {
         grade = rank,
         score = scoreString,
         professorName = professor,
-        year = year,
+        year = year.toIntOrNull() ?: -1,
         semester = semester
     )
 }
