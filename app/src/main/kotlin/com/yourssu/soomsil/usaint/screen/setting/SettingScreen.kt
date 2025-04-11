@@ -8,39 +8,43 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yourssu.design.system.compose.YdsTheme
-import com.yourssu.design.system.compose.atom.ListItem
-import com.yourssu.design.system.compose.atom.Toggle
-import com.yourssu.design.system.compose.atom.TopBarButton
-import com.yourssu.design.system.compose.base.YdsScaffold
-import com.yourssu.design.system.compose.base.YdsText
-import com.yourssu.design.system.compose.component.List
-import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.BuildConfig
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import com.yourssu.soomsil.usaint.util.NotificationUtil
-import com.yourssu.soomsil.usaint.util.TwoButtonDialog
-import com.yourssu.design.R as YdsR
 
 @Composable
 fun SettingScreen(
@@ -77,8 +81,6 @@ fun SettingScreen(
                 is SettingEvent.ClickToggle -> {
                     Toast.makeText(context, event.msg, Toast.LENGTH_SHORT).show()
                 }
-
-                else -> {}
             }
         }
     }
@@ -130,7 +132,7 @@ fun SettingScreen(
     )
 }
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(
     showDialog: Boolean,
@@ -143,101 +145,149 @@ fun SettingScreen(
     onClickTermsOfService: () -> Unit = {},
     onClickTermsOfPrivacy: () -> Unit = {},
 ) {
-    YdsScaffold(
+    Scaffold(
+        modifier = modifier,
         topBar = {
-            TopBar(
-                title = stringResource(id = R.string.setting),
+            CenterAlignedTopAppBar(
+                title = { Text(text = stringResource(id = R.string.setting)) },
                 navigationIcon = {
-                    TopBarButton(
-                        onClick = onBackClick,
-                        icon = YdsR.drawable.ic_arrow_left_line
-                    )
-                },
-            )
-        },
-    ) {
-        Column {
-            List(subHeader = stringResource(R.string.manage_account)) {
-                item {
-                    ListItem(
-                        text = stringResource(id = R.string.setting_logout),
-                        onClick = { onShowDialogChange(true) }
-                    )
-                }
-            }
-
-            List(subHeader = stringResource(R.string.alarm)) {
-                item {
-                    Row(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .padding(horizontal = 20.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        YdsText(
-                            text = stringResource(R.string.get_alarm),
-                            style = YdsTheme.typography.body1
-                        )
-
-                        Toggle(
-                            checked = notificationToggle,
-                            onCheckedChange = onNotificationToggleChange
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                            contentDescription = null
                         )
                     }
                 }
-            }
+            )
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            Spacer(Modifier.height(16.dp))
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = stringResource(R.string.manage_account),
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Spacer(Modifier.height(8.dp))
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onShowDialogChange(true) },
+                headlineContent = {
+                    Text(
+                        text = stringResource(R.string.setting_logout),
+                    )
+                }
+            )
 
-            List(subHeader = stringResource(R.string.terms_title)) {
-                item {
-                    ListItem(
+            Spacer(Modifier.height(16.dp))
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = stringResource(R.string.alarm),
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Spacer(Modifier.height(8.dp))
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNotificationToggleChange(!notificationToggle) },
+                headlineContent = {
+                    Text(
+                        text = stringResource(R.string.get_alarm),
+                    )
+                },
+                trailingContent = {
+                    Switch(
+                        checked = notificationToggle,
+                        onCheckedChange = onNotificationToggleChange,
+                    )
+                }
+            )
+
+            Spacer(Modifier.height(16.dp))
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = stringResource(R.string.terms_title),
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Spacer(Modifier.height(8.dp))
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onClickTermsOfService),
+                headlineContent = {
+                    Text(
                         text = stringResource(R.string.terms_of_service),
-                        onClick = onClickTermsOfService,
                     )
-
-                    ListItem(
+                }
+            )
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onClickTermsOfPrivacy),
+                headlineContent = {
+                    Text(
                         text = stringResource(R.string.terms_of_privacy_info),
-                        onClick = onClickTermsOfPrivacy,
                     )
                 }
-            }
+            )
 
-            List(subHeader = "버전 정보") {
-                item {
-                    ListItem(
+            Spacer(Modifier.height(16.dp))
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = "버전 정보",
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Spacer(Modifier.height(8.dp))
+            ListItem(
+                modifier = Modifier.fillMaxWidth(),
+                headlineContent = {
+                    Text(
                         text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-                        onClick = {},
                     )
                 }
-            }
+            )
         }
 
         if (showDialog) {
-            TwoButtonDialog(
-                title = stringResource(R.string.logout_title),
-                positiveButtonText = stringResource(R.string.logout),
-                negativeButtonText = stringResource(R.string.cancel),
-                onPositiveButtonClicked = {
-                    onLogout()
-                    onShowDialogChange(false)
+            AlertDialog(
+                onDismissRequest = { onShowDialogChange(false) },
+                title = { Text(text = stringResource(R.string.logout)) },
+                text = { Text(text = stringResource(R.string.logout_title)) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        onLogout()
+                        onShowDialogChange(false)
+                    }) {
+                        Text(text = stringResource(R.string.logout))
+                    }
                 },
-                onNegativeButtonClicked = { onShowDialogChange(false) },
+                dismissButton = {
+                    TextButton(onClick = {
+                        onShowDialogChange(false)
+                    }) {
+                        Text(text = stringResource(R.string.cancel))
+                    }
+                },
             )
         }
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 fun PreviewSettingScreen() {
     var showDialog by remember { mutableStateOf(false) }
-    YdsTheme {
+    var notiToggle by remember { mutableStateOf(false) }
+    SoomsilUSaintTheme {
         SettingScreen(
             showDialog = showDialog,
             onShowDialogChange = { showDialog = it },
-            notificationToggle = false,
-            onNotificationToggleChange = {},
+            notificationToggle = notiToggle,
+            onNotificationToggleChange = { notiToggle = it },
         )
     }
 }

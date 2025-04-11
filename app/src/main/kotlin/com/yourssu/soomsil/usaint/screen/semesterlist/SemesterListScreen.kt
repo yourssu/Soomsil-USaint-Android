@@ -5,15 +5,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -27,24 +34,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import com.yourssu.design.system.compose.YdsTheme
-import com.yourssu.design.system.compose.atom.CheckBox
-import com.yourssu.design.system.compose.atom.Chip
-import com.yourssu.design.system.compose.atom.Divider
-import com.yourssu.design.system.compose.atom.Thickness
-import com.yourssu.design.system.compose.atom.TopBarButton
-import com.yourssu.design.system.compose.base.Icon
-import com.yourssu.design.system.compose.base.Surface
-import com.yourssu.design.system.compose.base.YdsScaffold
-import com.yourssu.design.system.compose.base.YdsText
-import com.yourssu.design.system.compose.base.ydsClickable
-import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
@@ -56,10 +52,10 @@ import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import com.yourssu.design.R as YdsR
 
 @Composable
 fun SemesterListScreen(
@@ -146,34 +142,39 @@ fun SemesterListScreen(
         semesters.filter { !it.type.isSeasonal }
     }
 
-    YdsScaffold(
+    Scaffold(
         modifier = modifier,
         topBar = {
-            TopBar(
-                navigationIcon = {
-                    TopBarButton(
-                        icon = YdsR.drawable.ic_arrow_left_line,
-                        onClick = onBackClick,
-                    )
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(text = stringResource(R.string.reportcard_title))
                 },
-                title = stringResource(id = R.string.reportcard_title),
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                            contentDescription = "back",
+                        )
+                    }
+                }
             )
         },
-    ) {
+    ) { padding ->
         PullToRefreshBox(
+            modifier = Modifier.padding(padding),
             isRefreshing = isRefreshing,
             onRefresh = onRefresh,
         ) {
             Column(
-                modifier = Modifier.verticalScroll(rememberScrollState())
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        horizontal = 24.dp,
+                        vertical = 20.dp,
+                    )
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = 24.dp,
-                            vertical = 20.dp,
-                        ),
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     ScoreDetail(
                         title = stringResource(id = R.string.reportcard_average_grade),
@@ -191,52 +192,19 @@ fun SemesterListScreen(
                 if (chartSemesters.isNotEmpty()) {
                     Chart(
                         chartData = ChartData(semesters = chartSemesters),
-                        modifier = Modifier
-                            .height(170.dp)
-                            .padding(horizontal = 28.dp),
+                        modifier = Modifier.height(170.dp),
                     )
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = 18.dp,
-                            end = 34.dp,
-                            bottom = 15.dp,
-                        ),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    CheckBox(
-                        text = stringResource(id = R.string.reportcard_include_seasonal_semester),
+                    Text(text = stringResource(R.string.reportcard_include_seasonal_semester))
+                    Checkbox(
                         checked = includeSeasonalSemester,
                         onCheckedChange = onSeasonalFlagChange,
                     )
-                }
-                Divider(thickness = Thickness.Thick)
-                if (semesters.isEmpty()) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.padding(20.dp),
-                            color = YdsTheme.colors.buttonPoint
-                        )
-                    }
-                } else {
-                    Column(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                    ) {
-                        val size = semesters.size
-                        semesters.reversed().forEachIndexed { index, semester ->
-                            SemesterReport(
-                                semester = semester,
-                                onClick = { onGradeListClick(size - index - 1) },
-                                isCurrentSemester = semester.type == currentSemester,
-                            )
-                        }
-                    }
                 }
             }
         }
@@ -250,103 +218,35 @@ private fun ScoreDetail(
     maxValue: String,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier,
-    ) {
-        YdsText(
+    Column(modifier = modifier) {
+        Text(
             text = title,
-            style = YdsTheme.typography.subTitle3,
-            modifier = Modifier.padding(bottom = 2.dp),
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Medium,
         )
+        Spacer(Modifier.height(2.dp))
         Row(
             verticalAlignment = Alignment.Bottom,
         ) {
-            YdsText(
+            Text(
                 text = actualValue,
-                style = YdsTheme.typography.display2,
-                color = YdsTheme.colors.textPointed,
+                style = MaterialTheme.typography.displaySmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
             )
-            YdsText(
-                text = stringResource(id = R.string.grade_delimiter),
-                style = YdsTheme.typography.body1,
-                modifier = Modifier.padding(
-                    start = 4.dp,
-                    end = 4.dp,
-                ),
-                color = YdsTheme.colors.textTertiary,
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = stringResource(R.string.grade_delimiter),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            YdsText(
+            Spacer(Modifier.width(4.dp))
+            Text(
                 text = maxValue,
-                style = YdsTheme.typography.body1,
-                color = YdsTheme.colors.textTertiary,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-    }
-}
-
-@Composable
-private fun SemesterReport(
-    semester: Semester,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    isCurrentSemester: Boolean = false,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .ydsClickable(onClick = onClick)
-            .padding(
-                top = 16.dp,
-                bottom = 16.dp,
-                start = 24.dp,
-                end = 20.dp,
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(top = 4.dp),
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                YdsText(
-                    text = semester.type.fullName,
-                    style = YdsTheme.typography.subTitle2,
-                )
-                if (isCurrentSemester) {
-                    Spacer(Modifier.width(8.dp))
-                    Chip(
-                        text = "성적 처리 기간",
-                        onSelectedChange = {},
-                        isSelected = true,
-                    )
-                }
-            }
-            YdsText(
-                text = "${semester.earnedCredit.formatToString()}학점",
-                style = YdsTheme.typography.body2,
-                color = YdsTheme.colors.textTertiary,
-            )
-        }
-        YdsText(
-            text = (if (isCurrentSemester) "(예상) " else "") + semester.gpa.formatToString(),
-            style = YdsTheme.typography.subTitle2,
-            color = if (isCurrentSemester) {
-                YdsTheme.colors.buttonDisabled
-            } else {
-                YdsTheme.colors.buttonNormal
-            },
-            modifier = Modifier.padding(
-                horizontal = 8.dp,
-                vertical = 12.dp,
-            ),
-        )
-        Icon(
-            id = YdsR.drawable.ic_arrow_right_line,
-            tint = YdsTheme.colors.buttonNormal,
-        )
     }
 }
 
@@ -357,7 +257,7 @@ private fun SemesterListScreenPreview() {
     var isRefreshing by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
-    YdsTheme {
+    SoomsilUSaintTheme {
         SemesterListScreen(
             isRefreshing = isRefreshing,
             onRefresh = {
@@ -403,7 +303,7 @@ private fun SemesterListScreenPreview() {
 @PreviewLightDark
 @Composable
 private fun SemesterListScreenPreview_empty() {
-    YdsTheme {
+    SoomsilUSaintTheme {
         SemesterListScreen(
             isRefreshing = false,
             onRefresh = {},
@@ -416,21 +316,5 @@ private fun SemesterListScreenPreview_empty() {
                 graduateCredit = 133.toCredit(),
             ),
         )
-    }
-}
-
-@PreviewLightDark
-@Composable
-private fun SemesterReportPreview() {
-    YdsTheme {
-        Surface {
-            SemesterReport(
-                semester = Semester(
-                    type = SemesterType.One(2024),
-                ),
-                onClick = {},
-                isCurrentSemester = true,
-            )
-        }
     }
 }
