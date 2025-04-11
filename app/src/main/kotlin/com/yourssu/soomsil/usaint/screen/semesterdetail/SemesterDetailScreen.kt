@@ -2,58 +2,66 @@ package com.yourssu.soomsil.usaint.screen.semesterdetail
 
 import android.graphics.Bitmap
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryScrollableTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import com.yourssu.design.system.compose.YdsTheme
-import com.yourssu.design.system.compose.atom.ListItem
-import com.yourssu.design.system.compose.atom.TopBarButton
-import com.yourssu.design.system.compose.base.YdsScaffold
-import com.yourssu.design.system.compose.component.ScrollableTabBar
-import com.yourssu.design.system.compose.component.Tab
-import com.yourssu.design.system.compose.component.topbar.TopBar
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
+import com.yourssu.soomsil.usaint.screen.semesterdetail.components.SemesterDetailItem
 import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
 import com.yourssu.soomsil.usaint.ui.entities.Semester
 import com.yourssu.soomsil.usaint.ui.entities.Tier
 import com.yourssu.soomsil.usaint.ui.entities.toCredit
+import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import com.yourssu.soomsil.usaint.util.Capturable
 import com.yourssu.soomsil.usaint.util.CaptureController
 import com.yourssu.soomsil.usaint.util.rememberCaptureController
 import com.yourssu.soomsil.usaint.util.saveBitmapUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.yourssu.design.R as YdsR
 
 @Composable
 fun SemesterDetailScreen(
@@ -138,9 +146,14 @@ fun SemesterDetailScreen(
     val coroutineScope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
+    var selectedTabIndex by remember { mutableIntStateOf(initialTabIndex) }
 
-    LaunchedEffect(initialTabIndex, semesters) {
-        pagerState.scrollToPage(initialTabIndex)
+    LaunchedEffect(selectedTabIndex) {
+        pagerState.animateScrollToPage(selectedTabIndex)
+    }
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+        if (!pagerState.isScrollInProgress)
+            selectedTabIndex = pagerState.currentPage
     }
 
     LaunchedEffect(pagerState.currentPage, semesters) {
@@ -149,53 +162,63 @@ fun SemesterDetailScreen(
             onInitialRefresh(semesters[pagerState.currentPage].type)
     }
 
-    YdsScaffold(
+    Scaffold(
         modifier = modifier,
         topBar = {
             Column {
-                TopBar(
-                    navigationIcon = {
-                        TopBarButton(
-                            onClick = onBackClick,
-                            icon = YdsR.drawable.ic_arrow_left_line,
-                        )
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(text = stringResource(R.string.gradelist_title))
                     },
-                ) {
-                    TopBarButton(
-                        onClick = {
-                            coroutineScope.launch { showBottomSheet = true }
-                        },
-                        icon = YdsR.drawable.ic_camera_line,
-                    )
-                    TopBarButton(
-                        onClick = {
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                                contentDescription = "back",
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { showBottomSheet = true }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.outline_add_photo_alternate_24),
+                                contentDescription = "add to photo",
+                            )
+                        }
+                        IconButton(onClick = {
                             onRefresh(semesters[pagerState.currentPage].type)
-                        },
-                        icon = YdsR.drawable.ic_refresh_line,
-                    )
-                }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Refresh,
+                                contentDescription = "refresh",
+                            )
+                        }
+                    }
+                )
                 if (semesters.isNotEmpty()) {
-                    ScrollableTabBar(selectedTabIndex = pagerState.currentPage) {
-                        semesters.forEachIndexed { i, semester ->
+                    SecondaryScrollableTabRow(selectedTabIndex = pagerState.currentPage) {
+                        semesters.forEachIndexed { index, semester ->
                             Tab(
-                                selected = pagerState.currentPage == i,
-                                onClick = {
-                                    coroutineScope.launch { pagerState.animateScrollToPage(i) }
-                                },
-                                text = semester.type.fullName.substring(2),
+                                selected = pagerState.currentPage == index,
+                                onClick = { selectedTabIndex = index },
+                                text = {
+                                    Text(text = semester.type.fullName.substring(2))
+                                }
                             )
                         }
                     }
                 }
             }
         },
-    ) {
+    ) { padding ->
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = {
                 onRefresh(semesters[pagerState.currentPage].type)
             },
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize(),
         ) {
             HorizontalPager(state = pagerState) { pagerIdx ->
                 val semester = semesters[pagerIdx]
@@ -222,41 +245,43 @@ fun SemesterDetailScreen(
 
     if (showBottomSheet) {
         ModalBottomSheet(
-            modifier = modifier,
             sheetState = sheetState,
             onDismissRequest = { showBottomSheet = false },
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-            containerColor = YdsTheme.colors.bgNormal,
-            scrimColor = YdsTheme.colors.dimNormal,
         ) {
-            Column(
-                Modifier
-                    .heightIn(
-                        min = 88.dp,
-                        max = LocalConfiguration.current.screenHeightDp.dp - 88.dp,
-                    )
-                    .fillMaxWidth()
-                    .padding(vertical = 20.dp),
-            ) {
+            Column {
                 ListItem(
-                    text = "원본으로 저장",
-                    onClick = {
-                        onCaptureFlagChanged(CaptureFlag.Original)
-                        captureController.capture() // capture 이벤트 요청
-                        coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-                            if (!sheetState.isVisible) showBottomSheet = false
-                        }
-                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onCaptureFlagChanged(CaptureFlag.Original)
+                            captureController.capture() // capture 이벤트 요청
+                            coroutineScope
+                                .launch { sheetState.hide() }
+                                .invokeOnCompletion {
+                                    if (!sheetState.isVisible) showBottomSheet = false
+                                }
+                        },
+                    headlineContent = { Text(text = "원본으로 저장") },
+                    colors = ListItemDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                    ),
                 )
                 ListItem(
-                    text = "강의정보 가리고 저장",
-                    onClick = {
-                        onCaptureFlagChanged(CaptureFlag.HidingInfo)
-                        captureController.capture() // capture 이벤트 요청
-                        coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-                            if (!sheetState.isVisible) showBottomSheet = false
-                        }
-                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onCaptureFlagChanged(CaptureFlag.HidingInfo)
+                            captureController.capture() // capture 이벤트 요청
+                            coroutineScope
+                                .launch { sheetState.hide() }
+                                .invokeOnCompletion {
+                                    if (!sheetState.isVisible) showBottomSheet = false
+                                }
+                        },
+                    headlineContent = { Text(text = "강의정보 가리고 저장") },
+                    colors = ListItemDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                    ),
                 )
             }
         }
@@ -269,7 +294,7 @@ private fun SemesterDetailScreenPreview() {
     var isRefreshing by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
-    YdsTheme {
+    SoomsilUSaintTheme {
         SemesterDetailScreen(
             isRefreshing = isRefreshing,
             onRefresh = {
