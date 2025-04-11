@@ -1,10 +1,13 @@
 package com.yourssu.soomsil.usaint.screen.semesterlist
 
+import android.content.res.Resources.Theme
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,6 +60,52 @@ import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+
+@Composable
+private fun SemesterReport(
+    semester: Semester,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isCurrentSemester: Boolean = false,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(
+                top = 16.dp,
+                bottom = 16.dp,
+                start = 24.dp,
+                end = 20.dp,
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(top = 4.dp),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = semester.type.fullName,
+                )
+            }
+            Text(
+                text = "${semester.earnedCredit.formatToString()}학점",
+            )
+        }
+        Text(
+            text = (if (isCurrentSemester) "(예상) " else "") + semester.gpa.formatToString(),
+            modifier = Modifier.padding(
+                horizontal = 8.dp,
+                vertical = 12.dp,
+            ),
+        )
+    }
+}
+
 
 @Composable
 fun SemesterListScreen(
@@ -205,6 +255,30 @@ fun SemesterListScreen(
                         checked = includeSeasonalSemester,
                         onCheckedChange = onSeasonalFlagChange,
                     )
+                }
+
+                if (semesters.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(20.dp)
+                        )
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                    ) {
+                        val size = semesters.size
+                        semesters.reversed().forEachIndexed { index, semester ->
+                            SemesterReport(
+                                semester = semester,
+                                onClick = { onGradeListClick(size - index - 1) },
+                                isCurrentSemester = semester.type == currentSemester,
+                            )
+                        }
+                    }
                 }
             }
         }
