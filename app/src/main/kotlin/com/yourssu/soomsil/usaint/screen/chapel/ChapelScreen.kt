@@ -24,7 +24,7 @@ private fun ChapelScreen(modifier: Modifier = Modifier) {
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(title = { Text(text = "성적") })
+            TopAppBar(title = { Text(text = "채플") })
         }
     ) { padding ->
         Column(
