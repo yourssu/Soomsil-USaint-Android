@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.screen
+package com.yourssu.soomsil.usaint.navigation
 
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
@@ -9,17 +9,19 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
+import com.yourssu.soomsil.usaint.screen.chapel.navigation.chapelScreen
 import com.yourssu.soomsil.usaint.screen.home.navigation.homeScreen
 import com.yourssu.soomsil.usaint.screen.home.navigation.navigateToHome
-import com.yourssu.soomsil.usaint.screen.login.navigation.Login
 import com.yourssu.soomsil.usaint.screen.login.navigation.loginScreen
 import com.yourssu.soomsil.usaint.screen.login.navigation.navigateToLogin
+import com.yourssu.soomsil.usaint.screen.reportcard.navigation.reportCardScreen
 import com.yourssu.soomsil.usaint.screen.semesterdetail.navigation.navigateToSemesterDetail
 import com.yourssu.soomsil.usaint.screen.semesterdetail.navigation.semesterDetailScreen
 import com.yourssu.soomsil.usaint.screen.semesterlist.navigation.navigateToSemesterList
 import com.yourssu.soomsil.usaint.screen.semesterlist.navigation.semesterListScreen
 import com.yourssu.soomsil.usaint.screen.setting.navigation.navigateToSetting
 import com.yourssu.soomsil.usaint.screen.setting.navigation.settingScreen
+
 
 @Composable
 fun USaintNavHost(
@@ -49,12 +51,6 @@ fun USaintNavHost(
             },
             navigateToBack = { navController.navigateUp() },
         )
-
-        homeScreen(
-            navigateToSetting = { navController.navigateToSetting() },
-            navigateToSemesterList = { navController.navigateToSemesterList() },
-        )
-
         settingScreen(
             navigateToBack = {
                 navController.navigateUp()
@@ -77,14 +73,18 @@ fun USaintNavHost(
                 )
             }
         )
-
         semesterListScreen(
             navigateToSemesterListDetail = { idx -> navController.navigateToSemesterDetail(idx) },
             navigateToBack = { navController.navigateUp() },
         )
-
         semesterDetailScreen(
             navigateToBack = { navController.navigateUp() },
         )
+        homeScreen(
+            navigateToSetting = { navController.navigateToSetting() },
+            navigateToSemesterList = { navController.navigateToSemesterList() },
+        )
+        reportCardScreen()
+        chapelScreen()
     }
 }
