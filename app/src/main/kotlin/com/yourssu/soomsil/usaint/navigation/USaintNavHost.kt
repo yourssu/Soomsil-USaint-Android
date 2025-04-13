@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.screen
+package com.yourssu.soomsil.usaint.navigation
 
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
