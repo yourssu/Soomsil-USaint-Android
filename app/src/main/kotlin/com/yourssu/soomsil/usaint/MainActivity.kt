@@ -8,10 +8,9 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.rememberNavController
-import com.yourssu.soomsil.usaint.screen.USaintNavHost
 import com.yourssu.soomsil.usaint.screen.home.navigation.Home
 import com.yourssu.soomsil.usaint.screen.login.navigation.Login
+import com.yourssu.soomsil.usaint.ui.USaintApp
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,8 +25,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SoomsilUSaintTheme {
                 viewModel.isLoggedIn?.let { isLoggedIn ->
-                    USaintNavHost(
-                        navController = rememberNavController(),
+                    USaintApp(
                         startDestination = if (isLoggedIn) Home else Login,
                         modifier = Modifier
                             .navigationBarsPadding()
