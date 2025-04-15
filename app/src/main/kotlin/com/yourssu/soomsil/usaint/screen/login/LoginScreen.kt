@@ -196,7 +196,10 @@ fun LoginScreen(
                     PasswordVisualTransformation()
                 },
                 trailingIcon = {
-                    IconButton(onClick = { showPassword = !showPassword }) {
+                    IconButton(
+                        onClick = { showPassword = !showPassword },
+                        enabled = !isLoading,
+                    ) {
                         Icon(
                             if (showPassword) {
                                 Icons.Filled.Visibility
