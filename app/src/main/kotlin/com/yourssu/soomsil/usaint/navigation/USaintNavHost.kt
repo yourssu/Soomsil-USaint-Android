@@ -5,7 +5,6 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
@@ -21,7 +20,6 @@ import com.yourssu.soomsil.usaint.screen.semesterlist.navigation.navigateToSemes
 import com.yourssu.soomsil.usaint.screen.semesterlist.navigation.semesterListScreen
 import com.yourssu.soomsil.usaint.screen.setting.navigation.navigateToSetting
 import com.yourssu.soomsil.usaint.screen.setting.navigation.settingScreen
-
 
 @Composable
 fun USaintNavHost(
@@ -40,7 +38,7 @@ fun USaintNavHost(
             navigateToHome = {
                 navController.navigateToHome(
                     navOptions = navOptions {
-                        popUpTo(navController.graph.findStartDestination().id) {
+                        popUpTo(navController.graph.id) {
                             saveState = false
                             inclusive = true
                         }
@@ -63,7 +61,7 @@ fun USaintNavHost(
             navigateToLogin = {
                 navController.navigateToLogin(
                     navOptions = navOptions {
-                        popUpTo(navController.graph.findStartDestination().id) {
+                        popUpTo(navController.graph.id) {
                             saveState = false
                             inclusive = true
                         }
