@@ -1,6 +1,5 @@
 package com.yourssu.soomsil.usaint.screen.semesterlist
 
-import android.content.res.Resources.Theme
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,14 +48,13 @@ import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
-import com.yourssu.soomsil.usaint.ui.component.chart.Chart
-import com.yourssu.soomsil.usaint.ui.component.chart.ChartData
-import com.yourssu.soomsil.usaint.ui.entities.Grade
-import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
-import com.yourssu.soomsil.usaint.ui.entities.Semester
-import com.yourssu.soomsil.usaint.ui.entities.toCredit
-import com.yourssu.soomsil.usaint.ui.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.component.Chart
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
+import com.yourssu.soomsil.usaint.ui.types.Grade
+import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
+import com.yourssu.soomsil.usaint.ui.types.Semester
+import com.yourssu.soomsil.usaint.ui.types.toCredit
+import com.yourssu.soomsil.usaint.ui.types.toGrade
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -241,7 +239,7 @@ fun SemesterListScreen(
                 }
                 if (chartSemesters.isNotEmpty()) {
                     Chart(
-                        chartData = ChartData(semesters = chartSemesters),
+                        semesters = chartSemesters,
                         modifier = Modifier.height(170.dp),
                     )
                 }

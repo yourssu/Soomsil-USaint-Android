@@ -3,8 +3,8 @@ package com.yourssu.soomsil.usaint.data.source.local.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import com.yourssu.soomsil.usaint.data.model.StudentInfoDto
-import com.yourssu.soomsil.usaint.domain.type.UserCredential
+import com.yourssu.soomsil.usaint.model.StudentInfoDto
+import com.yourssu.soomsil.usaint.model.UserCredential
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

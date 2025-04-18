@@ -2,7 +2,7 @@ package com.yourssu.soomsil.usaint.data.repository
 
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentInfoDataStore
 import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
-import com.yourssu.soomsil.usaint.domain.type.UserCredential
+import com.yourssu.soomsil.usaint.model.UserCredential
 import dev.eatsteak.rusaint.ffi.USaintSession
 import javax.inject.Inject
 

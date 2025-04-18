@@ -9,8 +9,8 @@ import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesDataStore
-import com.yourssu.soomsil.usaint.domain.type.UserCredential
 import com.yourssu.soomsil.usaint.domain.usecase.UpdateWorkerUseCase
+import com.yourssu.soomsil.usaint.model.UserCredential
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException

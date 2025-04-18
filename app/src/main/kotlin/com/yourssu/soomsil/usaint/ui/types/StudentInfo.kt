@@ -1,7 +1,7 @@
-package com.yourssu.soomsil.usaint.ui.entities
+package com.yourssu.soomsil.usaint.ui.types
 
 import androidx.compose.runtime.Immutable
-import com.yourssu.soomsil.usaint.data.model.StudentInfoDto
+import com.yourssu.soomsil.usaint.model.StudentInfoDto
 
 @Immutable
 data class StudentInfo(

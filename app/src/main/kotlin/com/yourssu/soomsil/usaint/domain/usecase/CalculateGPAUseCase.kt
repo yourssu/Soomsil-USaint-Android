@@ -1,8 +1,8 @@
 package com.yourssu.soomsil.usaint.domain.usecase
 
 import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
-import com.yourssu.soomsil.usaint.ui.entities.Grade
-import com.yourssu.soomsil.usaint.ui.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.types.Grade
+import com.yourssu.soomsil.usaint.ui.types.toGrade
 import javax.inject.Inject
 
 class CalculateGPAUseCase @Inject constructor() {

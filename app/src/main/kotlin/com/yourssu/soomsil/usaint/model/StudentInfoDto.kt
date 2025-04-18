@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.data.model
+package com.yourssu.soomsil.usaint.model
 
 data class StudentInfoDto(
     val name: String,       // 이름

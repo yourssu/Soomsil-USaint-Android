@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.domain.type
+package com.yourssu.soomsil.usaint.model
 
 data class UserCredential(
     val id: String,

@@ -1,5 +1,6 @@
-package com.yourssu.soomsil.usaint.ui.entities
+package com.yourssu.soomsil.usaint.ui.types
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Immutable
 
 @Immutable
@@ -11,6 +12,7 @@ value class Grade(val value: Float) : Comparable<Grade> {
         }
     }
 
+    @SuppressLint("DefaultLocale")
     fun formatToString(digit: Int = 2): String {
         return when (digit) {
             1 -> String.format("%.1f", value)

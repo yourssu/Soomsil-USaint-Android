@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.ui.entities
+package com.yourssu.soomsil.usaint.ui.types
 
 import androidx.compose.runtime.Immutable
 import com.yourssu.soomsil.usaint.data.source.local.entity.TotalReportCardVO

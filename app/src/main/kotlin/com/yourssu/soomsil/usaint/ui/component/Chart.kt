@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.ui.component.chart
+package com.yourssu.soomsil.usaint.ui.component
 
 import android.graphics.PointF
 import androidx.compose.animation.core.Animatable
@@ -45,10 +45,10 @@ import androidx.compose.ui.unit.toSize
 import androidx.core.graphics.component1
 import androidx.core.graphics.component2
 import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
-import com.yourssu.soomsil.usaint.ui.entities.Grade
-import com.yourssu.soomsil.usaint.ui.entities.Semester
-import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
+import com.yourssu.soomsil.usaint.ui.types.Grade
+import com.yourssu.soomsil.usaint.ui.types.Semester
+import com.yourssu.soomsil.usaint.ui.types.toGrade
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -57,7 +57,7 @@ import kotlin.math.sqrt
 // https://github.com/riggaroo/compose-playtime/blob/main/app/src/main/java/dev/riggaroo/composeplaytime/SmoothLineGraph.kt
 @Composable
 fun Chart(
-    chartData: ChartData,
+    semesters: List<Semester>,
     modifier: Modifier = Modifier,
     dotRadius: Dp = ChartDefaults.DotRadius,
     lineWidth: Dp = ChartDefaults.LineWidth,
@@ -72,7 +72,7 @@ fun Chart(
     axisTextStyle: TextStyle = MaterialTheme.typography.titleSmall,
     axisTextColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
-    require(chartData.semesters.isNotEmpty()) {
+    require(semesters.isNotEmpty()) {
         "chartData.semesters should not empty"
     }
 
@@ -80,11 +80,11 @@ fun Chart(
     val animationProgress = remember { Animatable(0f) }
     var highlightedIndex by remember { mutableStateOf<Int?>(null) }
 
-    val grades: List<Grade> = chartData.semesters.map { it.gpa }
+    val grades: List<Grade> = semesters.map { it.gpa }
     val yAxis: List<Grade> = ChartDefaults.generateYAxisLabel(grades)
     var graphOffsetX = 0f
 
-    LaunchedEffect(chartData, grades) {
+    LaunchedEffect(semesters, grades) {
         // 최댓값의 인덱스로 초기화
         highlightedIndex = grades.indices.maxBy { grades[it] }
         animationProgress.animateTo(
@@ -113,9 +113,9 @@ fun Chart(
                         } else {
                             val inputX = offset.x - graphOffset
                             val graphWidth = size.width - graphOffset
-                            (inputX / (graphWidth / (chartData.semesters.size - 1)))
+                            (inputX / (graphWidth / (semesters.size - 1)))
                                 .roundToInt()
-                                .coerceIn(0, chartData.semesters.size - 1)
+                                .coerceIn(0, semesters.size - 1)
                         }
                         highlightedIndex =
                             if (highlightedIndex == selected) null else selected
@@ -129,7 +129,7 @@ fun Chart(
                         style = axisTextStyle,
                     )
                 }
-                val xAxisTextLayoutResults = chartData.semesters.map { semester ->
+                val xAxisTextLayoutResults = semesters.map { semester ->
                     textMeasurer.measure(
                         text = semester.type.shortHandedName,
                         style = axisTextStyle,
@@ -161,7 +161,7 @@ fun Chart(
                     }
                     .any {
                         // 텍스트를 그리기 위한 최소한의 간격보다 각 포인트의 간격이 더 짧다면 flag = true
-                        it > (size.width - graphStartPaddingPx - graphEndPaddingPx) / chartData.semesters.size
+                        it > (size.width - graphStartPaddingPx - graphEndPaddingPx) / semesters.size
                     }
                 val graphBottomPaddingPx = if (xAxisTextRotateFlag) {
                     (maxXAxisTextWidth + maxXAxisTextHeight) / sqrt(2f)
@@ -407,13 +407,11 @@ private fun ChartPreview() {
                 .background(MaterialTheme.colorScheme.surface),
         ) {
             Chart(
-                chartData = ChartData(
-                    listOf(
-                        Semester(makeSemesterType(2022, "1"), 3.5.toGrade()),
-                        Semester(makeSemesterType(2022, "2"), 3.7.toGrade()),
-                        Semester(makeSemesterType(2023, "1"), 4.2.toGrade()),
-                        Semester(makeSemesterType(2023, "여름"), 4.5.toGrade()),
-                    ),
+                semesters = listOf(
+                    Semester(makeSemesterType(2022, "1"), 3.5.toGrade()),
+                    Semester(makeSemesterType(2022, "2"), 3.7.toGrade()),
+                    Semester(makeSemesterType(2023, "1"), 4.2.toGrade()),
+                    Semester(makeSemesterType(2023, "여름"), 4.5.toGrade()),
                 ),
             )
         }
@@ -430,9 +428,7 @@ private fun ChartPreview_single_data() {
                 .background(MaterialTheme.colorScheme.surface),
         ) {
             Chart(
-                chartData = ChartData(
-                    listOf(Semester(makeSemesterType(2022, "1"), 3.5.toGrade())),
-                ),
+                semesters = listOf(Semester(makeSemesterType(2022, "1"), 3.5.toGrade())),
             )
         }
     }
@@ -448,17 +444,15 @@ private fun ChartPreview_many_items() {
                 .background(MaterialTheme.colorScheme.surface),
         ) {
             Chart(
-                chartData = ChartData(
-                    listOf(
-                        Semester(makeSemesterType(2022, "1"), 3.5.toGrade()),
-                        Semester(makeSemesterType(2022, "2"), 3.7.toGrade()),
-                        Semester(makeSemesterType(2023, "1"), 4.2.toGrade()),
-                        Semester(makeSemesterType(2023, "여름"), 4.5.toGrade()),
-                        Semester(makeSemesterType(2023, "2"), 4.5.toGrade()),
-                        Semester(makeSemesterType(2023, "겨울"), 4.5.toGrade()),
-                        Semester(makeSemesterType(2024, "1"), 3.5.toGrade()),
-                        Semester(makeSemesterType(2024, "겨울"), 1.5.toGrade()),
-                    ),
+                semesters = listOf(
+                    Semester(makeSemesterType(2022, "1"), 3.5.toGrade()),
+                    Semester(makeSemesterType(2022, "2"), 3.7.toGrade()),
+                    Semester(makeSemesterType(2023, "1"), 4.2.toGrade()),
+                    Semester(makeSemesterType(2023, "여름"), 4.5.toGrade()),
+                    Semester(makeSemesterType(2023, "2"), 4.5.toGrade()),
+                    Semester(makeSemesterType(2023, "겨울"), 4.5.toGrade()),
+                    Semester(makeSemesterType(2024, "1"), 3.5.toGrade()),
+                    Semester(makeSemesterType(2024, "겨울"), 1.5.toGrade()),
                 ),
             )
         }

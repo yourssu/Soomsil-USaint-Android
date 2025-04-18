@@ -23,10 +23,10 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.screen.semesterdetail.CaptureFlag
-import com.yourssu.soomsil.usaint.ui.entities.Credit
-import com.yourssu.soomsil.usaint.ui.entities.Tier
-import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
+import com.yourssu.soomsil.usaint.ui.types.Credit
+import com.yourssu.soomsil.usaint.ui.types.Tier
+import com.yourssu.soomsil.usaint.ui.types.toCredit
 
 @Composable
 fun CourseGradeItem(

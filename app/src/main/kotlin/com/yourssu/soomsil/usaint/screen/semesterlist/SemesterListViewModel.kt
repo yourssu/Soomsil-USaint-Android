@@ -14,10 +14,10 @@ import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterTypeUseCase
 import com.yourssu.soomsil.usaint.domain.usecase.MakeSemesterFromLecturesUseCase
 import com.yourssu.soomsil.usaint.screen.UiEvent
-import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
-import com.yourssu.soomsil.usaint.ui.entities.Semester
-import com.yourssu.soomsil.usaint.ui.entities.toReportCardSummary
-import com.yourssu.soomsil.usaint.ui.entities.toSemester
+import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
+import com.yourssu.soomsil.usaint.ui.types.Semester
+import com.yourssu.soomsil.usaint.ui.types.toReportCardSummary
+import com.yourssu.soomsil.usaint.ui.types.toSemester
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
 import dev.eatsteak.rusaint.ffi.USaintSession
