@@ -6,4 +6,6 @@ plugins {
     alias(libs.plugins.google.ksp) apply false
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.kotlin.serialization) apply false
+    id("com.google.protobuf") version "0.9.4" apply false
 }
+

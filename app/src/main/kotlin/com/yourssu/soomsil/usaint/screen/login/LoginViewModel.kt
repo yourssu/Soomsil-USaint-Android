@@ -66,7 +66,7 @@ class LoginViewModel @Inject constructor(
             }
             // 성공 시 id/pw, 학생 정보 저장
             studentInfoRepo.storeUserCredential(userCredential).onFailure { e -> Timber.e(e) }
-            studentInfoRepo.storeStudentInfo(studentInfoVO).onFailure { e -> Timber.e(e) }
+//            studentInfoRepo.storeStudentInfo(studentInfoVO).onFailure { e -> Timber.e(e) }
             _uiEvent.emit(UiEvent.Success)
             isLoading = false
         }

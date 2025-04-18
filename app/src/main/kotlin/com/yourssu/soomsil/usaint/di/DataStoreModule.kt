@@ -15,6 +15,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 private const val STUDENT_INFO = "student_info"
+private const val STUDENT_INFO_DATA_STORE_FILE_NAME = "student_info.pb"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -29,4 +30,13 @@ object DataStoreModule {
             produceFile = { context.preferencesDataStoreFile(STUDENT_INFO) }
         )
     }
+
+//    @Singleton
+//    @Provides
+//    fun provideStudentInformationDataStore(@ApplicationContext context: Context): DataStore<StudentInformation> {
+//        return DataStoreFactory.create(
+//            serializer = StudentInformationSerializer,
+//            produceFile = { context.dataStoreFile(STUDENT_INFO_DATA_STORE_FILE_NAME) }
+//        )
+//    }
 }

@@ -14,7 +14,6 @@ import com.yourssu.soomsil.usaint.ui.types.StudentInfo
 import com.yourssu.soomsil.usaint.ui.types.toCredit
 import com.yourssu.soomsil.usaint.ui.types.toGrade
 import com.yourssu.soomsil.usaint.ui.types.toReportCardSummary
-import com.yourssu.soomsil.usaint.ui.types.toStudentInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
 import kotlinx.coroutines.Job
@@ -69,11 +68,11 @@ class HomeViewModel @Inject constructor(
 
     private fun initialize() {
         viewModelScope.launch {
-            studentInfoRepo.getLocalStudentInfo()
-                .onSuccess { stu ->
-                    studentInfo = stu.toStudentInfo()
-                }
-                .onFailure { e -> Timber.e(e) }
+//            studentInfoRepo.getLocalStudentInfo()
+//                .onSuccess { stu ->
+//                    studentInfo = stu.toStudentInfo()
+//                }
+//                .onFailure { e -> Timber.e(e) }
             totalReportCardRepo.getLocalReportCard()
                 .onSuccess { totalReportCard ->
                     reportCardSummary = totalReportCard.toReportCardSummary()
@@ -97,7 +96,7 @@ class HomeViewModel @Inject constructor(
                         department = stuDto.department,
                         grade = stuDto.grade.toInt(),
                     )
-                    studentInfoRepo.storeStudentInfo(stuDto)
+//                    studentInfoRepo.storeStudentInfo(stuDto)
                 }
                 .getOrElse { e ->
                     handleError(e)

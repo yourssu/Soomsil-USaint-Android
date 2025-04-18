@@ -16,17 +16,17 @@ class StudentInfoRepository @Inject constructor(
         return studentInfoDataStore.getUserCredential()
     }
 
-    suspend fun getLocalStudentInfo(): Result<StudentInfoDto> {
-        return studentInfoDataStore.getStudentInfo()
-    }
+//    suspend fun getLocalStudentInfo(): Result<StudentInfoDto> {
+//        return studentInfoDataStore.getStudentInfo()
+//    }
 
     suspend fun storeUserCredential(userCredential: UserCredential): Result<Unit> {
         return studentInfoDataStore.setUserCredential(userCredential)
     }
 
-    suspend fun storeStudentInfo(studentInfo: StudentInfoDto): Result<Unit> {
-        return studentInfoDataStore.setStudentInfo(studentInfo)
-    }
+//    suspend fun storeStudentInfo(studentInfo: StudentInfoDto): Result<Unit> {
+//        return studentInfoDataStore.setStudentInfo(studentInfo)
+//    }
 
     suspend fun getRemoteStudentInfo(session: USaintSession): Result<StudentInfoDto> {
         val graduationStudent = rusaintApi.getGraduationStudent(session).getOrElse { e ->
