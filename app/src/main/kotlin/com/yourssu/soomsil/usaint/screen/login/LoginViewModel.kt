@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
-import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesDataStore
+import com.yourssu.soomsil.usaint.data.repository.UserPreferencesRepository
 import com.yourssu.soomsil.usaint.domain.usecase.UpdateWorkerUseCase
 import com.yourssu.soomsil.usaint.model.UserCredential
 import com.yourssu.soomsil.usaint.screen.UiEvent
@@ -23,7 +23,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
     private val studentInfoRepo: StudentInfoRepository,
-    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val userPreferencesRepo: UserPreferencesRepository,
     private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
@@ -34,12 +34,14 @@ class LoginViewModel @Inject constructor(
     var studentId: String by mutableStateOf("")
     var studentPw: String by mutableStateOf("")
 
-    fun enableNotification() {
+    fun updateNotificationSetting(enable: Boolean) {
         viewModelScope.launch {
-            userPreferencesDataStore.setSettingNotification(true)
+            userPreferencesRepo.updateNotificationEnabled(enable)
         }
-        // WorkManager 등록
-        updateWorkerUseCase.enqueue()
+        if (enable) {
+            // WorkManager 등록
+            updateWorkerUseCase.enqueue()
+        }
     }
 
     fun login() {

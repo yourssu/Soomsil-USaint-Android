@@ -55,13 +55,13 @@ fun SettingScreen(
     viewModel: SettingViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     // 알림 권한 요청 런처
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        viewModel.updateNotificationState(isGranted)
+        viewModel.updateNotificationSetting(isGranted)
     }
 
     LaunchedEffect(Unit) {
@@ -95,21 +95,21 @@ fun SettingScreen(
             navigateToWebView(context.resources.getString(R.string.terms_of_privacy_info_url))
         },
         showDialog = state.showDialog,
-        notificationToggle = state.notificationToggle,
+        notificationToggle = state.notificationEnabled,
         onShowDialogChange = viewModel::updateDialogState,
         onNotificationToggleChange = a@{ isChecked ->
             if (!isChecked) {
-                viewModel.updateNotificationState(false)
+                viewModel.updateNotificationSetting(false)
                 return@a
             }
             // Android 13 미만은 권한 요청 불필요
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                viewModel.updateNotificationState(true)
+                viewModel.updateNotificationSetting(true)
                 return@a
             }
             when {
                 NotificationUtil.areNotificationEnabled(context) ->
-                    viewModel.updateNotificationState(true)
+                    viewModel.updateNotificationSetting(true)
 
                 // 알림 권한 요청을 한 번 거부한 경우
                 NotificationUtil.shouldShowRationale(context) -> {

@@ -72,7 +72,7 @@ fun LoginScreen(
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted) viewModel.enableNotification()
+        viewModel.updateNotificationSetting(isGranted)
         navigateToHome()
     }
 

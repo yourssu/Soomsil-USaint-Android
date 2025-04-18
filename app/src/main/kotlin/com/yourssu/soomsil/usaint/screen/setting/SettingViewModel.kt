@@ -6,13 +6,17 @@ import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
-import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesDataStore
+import com.yourssu.soomsil.usaint.data.repository.UserPreferences
+import com.yourssu.soomsil.usaint.data.repository.UserPreferencesRepository
 import com.yourssu.soomsil.usaint.domain.usecase.UpdateWorkerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -20,7 +24,7 @@ import javax.inject.Inject
 
 data class SettingState(
     val showDialog: Boolean = false,
-    val notificationToggle: Boolean = false,
+    val notificationEnabled: Boolean = false,
 )
 
 sealed class SettingEvent {
@@ -35,32 +39,33 @@ class SettingViewModel @Inject constructor(
     private val totalReportCardRepository: TotalReportCardRepository,
     private val semesterRepository: SemesterRepository,
     private val lectureRepository: LectureRepository,
-    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val userPreferencesRepo: UserPreferencesRepository,
     private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(SettingState())
-    val state = _state.asStateFlow()
+    private val _uiState = MutableStateFlow(SettingState())
+    val uiState: StateFlow<SettingState> = combine(
+        _uiState,
+        userPreferencesRepo.userPreferencesFlow,
+    ) { settingState: SettingState, userPreferences: UserPreferences ->
+        settingState.copy(notificationEnabled = userPreferences.notificationEnabled)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = SettingState(),
+    )
 
     private val _uiEvent = MutableSharedFlow<SettingEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
-    init {
-        viewModelScope.launch {
-            val noti = userPreferencesDataStore.getSettingNotification().getOrDefault(false)
-            _state.update { it.copy(notificationToggle = noti) }
-        }
-    }
-
     fun updateDialogState(showDialog: Boolean) {
-        _state.update { it.copy(showDialog = showDialog) }
+        _uiState.update { it.copy(showDialog = showDialog) }
     }
 
-    fun updateNotificationState(notificationToggle: Boolean) {
-        _state.update { it.copy(notificationToggle = notificationToggle) }
+    fun updateNotificationSetting(enable: Boolean) {
         viewModelScope.launch {
-            userPreferencesDataStore.setSettingNotification(notificationToggle)
-            if (notificationToggle) {
+            userPreferencesRepo.updateNotificationEnabled(enable)
+            if (enable) {
                 _uiEvent.emit(SettingEvent.ClickToggle("알림이 켜졌습니다."))
                 updateWorkerUseCase.enqueue()
             } else {
@@ -93,7 +98,7 @@ class SettingViewModel @Inject constructor(
                 _uiEvent.emit(SettingEvent.FailureLogout)
                 return@launch
             }
-            userPreferencesDataStore.deleteUserPreferences()
+            userPreferencesRepo.deleteAll()
             _uiEvent.emit(SettingEvent.SuccessLogout)
         }
     }
