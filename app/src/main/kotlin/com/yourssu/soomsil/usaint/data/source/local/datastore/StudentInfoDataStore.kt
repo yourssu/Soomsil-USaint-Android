@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+// TODO: 삭제하기
 class StudentInfoDataStore @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {

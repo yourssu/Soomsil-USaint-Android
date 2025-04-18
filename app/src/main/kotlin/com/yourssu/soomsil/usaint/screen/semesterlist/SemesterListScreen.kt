@@ -28,6 +28,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -156,13 +157,16 @@ fun SemesterListScreen(
         }
     }
 
+    // TODO 임시
+    val includeSeasonalSemester by viewModel.includeSeasonalSemester.collectAsState(false)
+
     SemesterListScreen(
         isRefreshing = viewModel.isRefreshing,
         onRefresh = viewModel::refresh,
         reportCardSummary = viewModel.reportCardSummary,
         semesters = viewModel.semesters,
-        includeSeasonalSemester = viewModel.includeSeasonalSemester,
-        onSeasonalFlagChange = viewModel::setChartFlag,
+        includeSeasonalSemester = includeSeasonalSemester,
+        onSeasonalFlagChange = viewModel::updateChartFlag,
         onBackClick = onBackClick,
         onGradeListClick = onGradeListClick,
         currentSemester = viewModel.currentSemester,

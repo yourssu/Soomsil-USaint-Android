@@ -9,7 +9,7 @@ import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
-import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesDataStore
+import com.yourssu.soomsil.usaint.data.repository.UserPreferencesRepository
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterTypeUseCase
 import com.yourssu.soomsil.usaint.domain.usecase.MakeSemesterFromLecturesUseCase
@@ -24,6 +24,7 @@ import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -32,6 +33,11 @@ import timber.log.Timber
 import javax.inject.Inject
 import kotlin.system.measureTimeMillis
 
+data class SemesterListUiModel(
+    val reportCardSummary: ReportCardSummary,
+    val semesters: List<Semester>
+)
+
 @HiltViewModel
 class SemesterListViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
@@ -39,15 +45,16 @@ class SemesterListViewModel @Inject constructor(
     private val semesterRepo: SemesterRepository,
     private val lectureRepo: LectureRepository,
     private val makeSemesterUseCase: MakeSemesterFromLecturesUseCase,
-    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val userPreferencesRepo: UserPreferencesRepository,
     getCurrentSemesterTypeUseCase: GetCurrentSemesterTypeUseCase,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
 
+    val includeSeasonalSemester =
+        userPreferencesRepo.userPreferencesFlow.map { pref -> pref.includeSeasonalSemester }
+
     var isRefreshing by mutableStateOf(false)
-        private set
-    var includeSeasonalSemester by mutableStateOf(false)
         private set
     var reportCardSummary: ReportCardSummary by mutableStateOf(ReportCardSummary())
         private set
@@ -80,18 +87,14 @@ class SemesterListViewModel @Inject constructor(
         refreshJob?.cancel()
     }
 
-    fun setChartFlag(value: Boolean) {
-        includeSeasonalSemester = value
+    fun updateChartFlag(enable: Boolean) {
         viewModelScope.launch {
-            userPreferencesDataStore.setChartIncludeSeasonal(value)
+            userPreferencesRepo.updateChartIncludeSeasonal(enable)
         }
     }
 
     private fun initialize() {
         viewModelScope.launch {
-            includeSeasonalSemester =
-                userPreferencesDataStore.getChartIncludeSeasonal().getOrDefault(false)
-
             totalReportCardRepo.getLocalReportCard()
                 .onSuccess { reportCard ->
                     reportCardSummary = reportCard.toReportCardSummary()
