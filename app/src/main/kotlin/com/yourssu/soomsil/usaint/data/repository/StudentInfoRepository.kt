@@ -29,19 +29,15 @@ class StudentInfoRepository @Inject constructor(
     }
 
     suspend fun getRemoteStudentInfo(session: USaintSession): Result<StudentInfoDto> {
-        val stuInfo = rusaintApi.getStudentInformation(session).getOrElse { e ->
+        val graduationStudent = rusaintApi.getGraduationStudent(session).getOrElse { e ->
             Timber.e(e)
             return Result.failure(e)
         }
-        return Result.success(
-            StudentInfoDto(
-                name = stuInfo.name,
-                department = stuInfo.department,
-                major = stuInfo.major,
-                grade = stuInfo.grade,
-                term = stuInfo.term,
-            )
-        )
+        val gradeSummary = rusaintApi.getCertificatedGradeSummary(session).getOrElse { e ->
+            Timber.e(e)
+            return Result.failure(e)
+        }
+        return Result.success(StudentInfoDto.from(graduationStudent, gradeSummary))
     }
 
     suspend fun deleteStudentInfo(): Result<Unit> {

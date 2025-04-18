@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
-import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesDataStore
 import com.yourssu.soomsil.usaint.domain.usecase.UpdateWorkerUseCase
@@ -24,7 +23,6 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
     private val studentInfoRepo: StudentInfoRepository,
-    private val totalReportCardRepo: TotalReportCardRepository,
     private val userPreferencesDataStore: UserPreferencesDataStore,
     private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
@@ -66,16 +64,9 @@ class LoginViewModel @Inject constructor(
                 isLoading = false
                 return@launch
             }
-            val totalReportCard = totalReportCardRepo.getRemoteReportCard(session).getOrElse { e ->
-                Timber.e(e)
-                _uiEvent.emit(UiEvent.Failure("증명 평점 정보를 가져오는 데 실패했습니다."))
-                isLoading = false
-                return@launch
-            }
             // 성공 시 id/pw, 학생 정보 저장
             studentInfoRepo.storeUserCredential(userCredential).onFailure { e -> Timber.e(e) }
             studentInfoRepo.storeStudentInfo(studentInfoVO).onFailure { e -> Timber.e(e) }
-            totalReportCardRepo.storeReportCard(totalReportCard).onFailure { e -> Timber.e(e) }
             _uiEvent.emit(UiEvent.Success)
             isLoading = false
         }

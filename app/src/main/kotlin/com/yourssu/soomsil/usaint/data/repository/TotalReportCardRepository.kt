@@ -41,7 +41,7 @@ class TotalReportCardRepository @Inject constructor(
         val gradeSummary = rusaintApi.getCertificatedGradeSummary(session).getOrElse { e ->
             return Result.failure(e)
         }
-        val graduationStudentInfo = rusaintApi.getGraduationStudentInfo(session).getOrElse { e ->
+        val graduationStudentInfo = rusaintApi.getGraduationStudent(session).getOrElse { e ->
             return Result.failure(e)
         }
 
