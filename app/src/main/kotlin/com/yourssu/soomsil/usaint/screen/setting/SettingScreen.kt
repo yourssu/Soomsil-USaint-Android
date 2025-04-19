@@ -55,7 +55,7 @@ fun SettingScreen(
     viewModel: SettingViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val settingUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // 알림 권한 요청 런처
     val requestPermissionLauncher = rememberLauncherForActivityResult(
@@ -67,26 +67,20 @@ fun SettingScreen(
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                // 로그아웃
-                is SettingEvent.SuccessLogout -> {
+                is SettingUiEvent.SuccessLogout -> {
                     Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
                     navigateToLogin()
                 }
 
-                is SettingEvent.FailureLogout -> {
+                is SettingUiEvent.FailureLogout ->
                     Toast.makeText(context, "로그아웃을 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-                }
-
-                // 알림 토글 클릭
-                is SettingEvent.ClickToggle -> {
-                    Toast.makeText(context, event.msg, Toast.LENGTH_SHORT).show()
-                }
             }
         }
     }
 
     SettingScreen(
         modifier = modifier,
+        settingUiState = settingUiState,
         onBackClick = onBackClick,
         onClickTermsOfService = {
             navigateToWebView(context.resources.getString(R.string.terms_of_service_url))
@@ -94,9 +88,8 @@ fun SettingScreen(
         onClickTermsOfPrivacy = {
             navigateToWebView(context.resources.getString(R.string.terms_of_privacy_info_url))
         },
-        showDialog = state.showDialog,
-        notificationToggle = state.notificationEnabled,
-        onShowDialogChange = viewModel::updateDialogState,
+        showDialog = viewModel.showDialog,
+        onShowDialogChange = { viewModel.showDialog = it },
         onNotificationToggleChange = a@{ isChecked ->
             if (!isChecked) {
                 viewModel.updateNotificationSetting(false)
@@ -135,9 +128,9 @@ fun SettingScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(
+    settingUiState: SettingUiState,
     showDialog: Boolean,
     onShowDialogChange: (Boolean) -> Unit,
-    notificationToggle: Boolean,
     onNotificationToggleChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
@@ -145,6 +138,11 @@ fun SettingScreen(
     onClickTermsOfService: () -> Unit = {},
     onClickTermsOfPrivacy: () -> Unit = {},
 ) {
+    val notificationEnabled = when (settingUiState) {
+        is SettingUiState.UserEditableSettings -> settingUiState.notificationEnabled
+        else -> false
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -193,7 +191,10 @@ fun SettingScreen(
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onNotificationToggleChange(!notificationToggle) },
+                    .clickable {
+                        if (settingUiState !is SettingUiState.Loading)
+                            onNotificationToggleChange(!notificationEnabled)
+                    },
                 headlineContent = {
                     Text(
                         text = stringResource(R.string.get_alarm),
@@ -201,8 +202,9 @@ fun SettingScreen(
                 },
                 trailingContent = {
                     Switch(
-                        checked = notificationToggle,
+                        checked = notificationEnabled,
                         onCheckedChange = onNotificationToggleChange,
+                        enabled = settingUiState !is SettingUiState.Loading,
                     )
                 }
             )
@@ -284,9 +286,9 @@ fun PreviewSettingScreen() {
     var notiToggle by remember { mutableStateOf(false) }
     SoomsilUSaintTheme {
         SettingScreen(
+            settingUiState = SettingUiState.UserEditableSettings(notiToggle),
             showDialog = showDialog,
             onShowDialogChange = { showDialog = it },
-            notificationToggle = notiToggle,
             onNotificationToggleChange = { notiToggle = it },
         )
     }
