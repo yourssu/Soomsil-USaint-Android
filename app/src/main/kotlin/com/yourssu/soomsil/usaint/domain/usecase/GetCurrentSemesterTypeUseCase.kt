@@ -4,6 +4,10 @@ import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import java.time.LocalDate
 import javax.inject.Inject
 
+/**
+ * TODO 삭제하기
+ * 학생의 현재 학적 상태를 알 수 있으므로 현재가 무슨 학기인지 판단하지 않아도 됨
+ */
 class GetCurrentSemesterTypeUseCase @Inject constructor() {
     operator fun invoke(): SemesterType? {
         val now = LocalDate.now()

@@ -46,7 +46,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.component.Chart
@@ -65,7 +64,6 @@ private fun SemesterReport(
     semester: Semester,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isCurrentSemester: Boolean = false,
 ) {
     Row(
         modifier = modifier
@@ -96,7 +94,7 @@ private fun SemesterReport(
             )
         }
         Text(
-            text = (if (isCurrentSemester) "(예상) " else "") + semester.gpa.formatToString(),
+            text = semester.gpa.formatToString(),
             modifier = Modifier.padding(
                 horizontal = 8.dp,
                 vertical = 12.dp,
@@ -169,7 +167,6 @@ fun SemesterListScreen(
         onSeasonalFlagChange = viewModel::updateChartFlag,
         onBackClick = onBackClick,
         onGradeListClick = onGradeListClick,
-        currentSemester = viewModel.currentSemester,
         modifier = modifier,
     )
 }
@@ -184,7 +181,6 @@ fun SemesterListScreen(
     onSeasonalFlagChange: (Boolean) -> Unit,
     reportCardSummary: ReportCardSummary,
     modifier: Modifier = Modifier,
-    currentSemester: SemesterType? = null,
     onBackClick: () -> Unit = {},
     onGradeListClick: (initialTabIndex: Int) -> Unit = {},
 ) {
@@ -277,7 +273,6 @@ fun SemesterListScreen(
                             SemesterReport(
                                 semester = semester,
                                 onClick = { onGradeListClick(size - index - 1) },
-                                isCurrentSemester = semester.type == currentSemester,
                             )
                         }
                     }

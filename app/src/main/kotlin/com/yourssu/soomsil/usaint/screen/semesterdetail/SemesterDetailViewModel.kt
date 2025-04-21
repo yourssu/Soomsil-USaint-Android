@@ -10,7 +10,6 @@ import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
-import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterTypeUseCase
 import com.yourssu.soomsil.usaint.domain.usecase.MakeSemesterFromLecturesUseCase
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.types.LectureInfo
@@ -35,7 +34,6 @@ class SemesterDetailViewModel @Inject constructor(
     private val semesterRepo: SemesterRepository,
     private val lectureRepo: LectureRepository,
     private val makeSemesterUseCase: MakeSemesterFromLecturesUseCase,
-    getCurrentSemesterTypeUseCase: GetCurrentSemesterTypeUseCase,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -46,8 +44,6 @@ class SemesterDetailViewModel @Inject constructor(
     var semesters: List<Semester> by mutableStateOf(emptyList())
         private set
     val semesterLecturesMap: MutableMap<SemesterType, List<LectureInfo>> = mutableStateMapOf()
-
-    private var currentSemester: SemesterType? = getCurrentSemesterTypeUseCase()
 
     init {
         initialize()
@@ -63,8 +59,7 @@ class SemesterDetailViewModel @Inject constructor(
     }
 
     fun initialRefresh(semester: SemesterType) {
-        // 현재 학기인 경우 항상 갱신
-        if (semester == currentSemester || semesterLecturesMap[semester].isNullOrEmpty()) {
+        if (semesterLecturesMap[semester].isNullOrEmpty()) {
             viewModelScope.launch {
                 refreshLectureInfos(semester)
             }
@@ -119,17 +114,17 @@ class SemesterDetailViewModel @Inject constructor(
                 // store
 
                 // 현재 학기는 학기 정보도 갱신시켜줘야 함
-                if (currentSemester != null && semester == currentSemester) {
-                    Timber.d("update semester")
-                    val newSemester = makeSemesterUseCase(currentSemester!!, lectureVOs)
-                    semesterRepo.storeSemesters(newSemester).onFailure { e ->
-                        Timber.e(e)
-                        _uiEvent.emit(UiEvent.Failure("학기 정보를 갱신하는 도중 문제가 발생했습니다."))
-                        return@onSuccess
-                    }
-
-                    semesters = semesters.dropLast(1) + listOf(newSemester.toSemester())
-                }
+//                if (currentSemester != null && semester == currentSemester) {
+//                    Timber.d("update semester")
+//                    val newSemester = makeSemesterUseCase(currentSemester!!, lectureVOs)
+//                    semesterRepo.storeSemesters(newSemester).onFailure { e ->
+//                        Timber.e(e)
+//                        _uiEvent.emit(UiEvent.Failure("학기 정보를 갱신하는 도중 문제가 발생했습니다."))
+//                        return@onSuccess
+//                    }
+//
+//                    semesters = semesters.dropLast(1) + listOf(newSemester.toSemester())
+//                }
 
                 lectureRepo.storeLectures(*lectureVOs.toTypedArray())
             }

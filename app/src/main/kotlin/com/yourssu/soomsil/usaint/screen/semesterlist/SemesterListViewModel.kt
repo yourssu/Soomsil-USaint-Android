@@ -5,14 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.data.repository.UserPreferencesRepository
-import com.yourssu.soomsil.usaint.domain.type.SemesterType
-import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterTypeUseCase
-import com.yourssu.soomsil.usaint.domain.usecase.MakeSemesterFromLecturesUseCase
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.types.Semester
@@ -23,8 +19,9 @@ import dev.eatsteak.rusaint.ffi.RusaintException
 import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -33,26 +30,23 @@ import timber.log.Timber
 import javax.inject.Inject
 import kotlin.system.measureTimeMillis
 
-data class SemesterListUiModel(
-    val reportCardSummary: ReportCardSummary,
-    val semesters: List<Semester>
-)
-
 @HiltViewModel
 class SemesterListViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
     private val totalReportCardRepo: TotalReportCardRepository,
     private val semesterRepo: SemesterRepository,
-    private val lectureRepo: LectureRepository,
-    private val makeSemesterUseCase: MakeSemesterFromLecturesUseCase,
     private val userPreferencesRepo: UserPreferencesRepository,
-    getCurrentSemesterTypeUseCase: GetCurrentSemesterTypeUseCase,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
 
     val includeSeasonalSemester =
-        userPreferencesRepo.userPreferencesFlow.map { pref -> pref.includeSeasonalSemester }
+        userPreferencesRepo.includeSeasonalSemesterFlow
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = false,
+            )
 
     var isRefreshing by mutableStateOf(false)
         private set
@@ -60,8 +54,6 @@ class SemesterListViewModel @Inject constructor(
         private set
     var semesters: List<Semester> by mutableStateOf(emptyList())
         private set
-
-    val currentSemester: SemesterType? = getCurrentSemesterTypeUseCase()
 
     // job 정의
     private var refreshJob: Job? = null
@@ -150,20 +142,20 @@ class SemesterListViewModel @Inject constructor(
             semesterRepo.storeSemesters(*semesterVOs.toTypedArray())
 
             // 최근 학기에 대한 상세 성적 정보 요청
-            if (currentSemester != null && semestersTemp.find { it.type == currentSemester } == null) {
-                val currentLectureVOs =
-                    lectureRepo.getRemoteLectures(session!!, currentSemester).getOrElse { e ->
-                        handleError(e, "최근 학기 성적 정보를 가져오지 못했습니다.")
-                        return@launch
-                    }
-                if (currentLectureVOs.isNotEmpty()) {
-                    val currentSemesterVO = makeSemesterUseCase(currentSemester, currentLectureVOs)
-                    semesterRepo.storeSemesters(currentSemesterVO)
-
-                    lectureRepo.storeLectures(*currentLectureVOs.toTypedArray())
-                    semestersTemp.add(currentSemesterVO.toSemester())
-                }
-            }
+//            if (currentSemester != null && semestersTemp.find { it.type == currentSemester } == null) {
+//                val currentLectureVOs =
+//                    lectureRepo.getRemoteLectures(session!!, currentSemester).getOrElse { e ->
+//                        handleError(e, "최근 학기 성적 정보를 가져오지 못했습니다.")
+//                        return@launch
+//                    }
+//                if (currentLectureVOs.isNotEmpty()) {
+//                    val currentSemesterVO = makeSemesterUseCase(currentSemester, currentLectureVOs)
+//                    semesterRepo.storeSemesters(currentSemesterVO)
+//
+//                    lectureRepo.storeLectures(*currentLectureVOs.toTypedArray())
+//                    semestersTemp.add(currentSemesterVO.toSemester())
+//                }
+//            }
 
             semesters = semestersTemp.sortedBy { it.type }
         }
@@ -180,4 +172,13 @@ class SemesterListViewModel @Inject constructor(
             else -> _uiEvent.emit(UiEvent.Failure(msg))
         }
     }
+}
+
+sealed interface SemesterListUiState {
+    data object Loading : SemesterListUiState
+
+    data class Success(
+        val reportCardSummary: ReportCardSummary,
+        val semesters: List<Semester>,
+    ) : SemesterListUiState
 }
