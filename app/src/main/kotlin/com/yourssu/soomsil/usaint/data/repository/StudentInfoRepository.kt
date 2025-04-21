@@ -40,7 +40,7 @@ class StudentInfoRepository @Inject constructor(
         return Result.success(StudentInfoDto.from(graduationStudent, gradeSummary))
     }
 
-    suspend fun deleteStudentInfo(): Result<Unit> {
-        return studentInfoDataStore.deleteStudentInfo()
-    }
+//    suspend fun deleteStudentInfo(): Result<Unit> {
+//        return studentInfoDataStore.deleteStudentInfo()
+//    }
 }

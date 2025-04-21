@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
-import com.yourssu.soomsil.usaint.data.repository.UserPreferencesRepository
+import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.types.Semester
@@ -18,9 +18,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
 import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -35,13 +37,13 @@ class SemesterListViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
     private val totalReportCardRepo: TotalReportCardRepository,
     private val semesterRepo: SemesterRepository,
-    private val userPreferencesRepo: UserPreferencesRepository,
+    private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
 
-    val includeSeasonalSemester =
-        userPreferencesRepo.includeSeasonalSemesterFlow
+    val includeSeasonalSemester: Flow<Boolean> =
+        userDataRepository.userData.map { it.includeSeasonalSemester }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
@@ -79,9 +81,9 @@ class SemesterListViewModel @Inject constructor(
         refreshJob?.cancel()
     }
 
-    fun updateChartFlag(enable: Boolean) {
+    fun updateIncludeSeasonalSemester(include: Boolean) {
         viewModelScope.launch {
-            userPreferencesRepo.updateChartIncludeSeasonal(enable)
+            userDataRepository.setIncludeSeasonalSemester(include)
         }
     }
 

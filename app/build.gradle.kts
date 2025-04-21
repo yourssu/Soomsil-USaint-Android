@@ -1,4 +1,4 @@
-import com.google.protobuf.gradle.id
+import com.google.protobuf.gradle.GenerateProtoTask
 
 plugins {
     alias(libs.plugins.android.application)
@@ -57,7 +57,7 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore)
-    implementation("com.google.protobuf:protobuf-javalite:3.19.4")
+    implementation("com.google.protobuf:protobuf-javalite:4.29.2")
 
     // webview
     implementation(libs.androidx.browser)
@@ -103,9 +103,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 }
 
+// Setup protobuf configuration, generating lite Java and Kotlin classes
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.19.4"
+        artifact = "com.google.protobuf:protoc:4.29.2"
     }
 
     // Generates the java Protobuf-lite code for the Protobufs in this project. See
@@ -114,9 +115,25 @@ protobuf {
     generateProtoTasks {
         all().forEach { task ->
             task.builtins {
-                id("java") {
+                create("java") {
                     option("lite")
                 }
+            }
+        }
+    }
+}
+
+// https://github.com/google/ksp/issues/1590#issuecomment-1826387452
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        afterEvaluate {
+            val protoTask =
+                project.tasks.getByName("generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto") as GenerateProtoTask
+            project.tasks.getByName("ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin") {
+                dependsOn(protoTask)
+                (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*>).setSource(
+                    protoTask.outputBaseDir
+                )
             }
         }
     }

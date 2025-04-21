@@ -3,6 +3,7 @@ package com.yourssu.soomsil.usaint.data.source.local.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.yourssu.soomsil.usaint.model.UserCredential
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -12,6 +13,11 @@ import javax.inject.Inject
 class StudentInfoDataStore @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
+    companion object PreferencesKeys {
+        val STUDENT_ID = stringPreferencesKey("student_id")
+        val STUDENT_PW = stringPreferencesKey("student_pw")
+    }
+
     suspend fun getUserCredential(): Result<UserCredential> {
         return kotlin.runCatching {
             dataStore.data.map { pref ->
@@ -62,17 +68,17 @@ class StudentInfoDataStore @Inject constructor(
 //        }
 //    }
 
-    suspend fun deleteStudentInfo(): Result<Unit> {
-        return kotlin.runCatching {
-            dataStore.edit { pref ->
-                pref.remove(PreferencesKeys.STUDENT_ID)
-                pref.remove(PreferencesKeys.STUDENT_PW)
-                pref.remove(PreferencesKeys.STUDENT_NAME)
-                pref.remove(PreferencesKeys.STUDENT_DEPARTMENT)
-                pref.remove(PreferencesKeys.STUDENT_MAJOR)
-                pref.remove(PreferencesKeys.STUDENT_GRADE)
-                pref.remove(PreferencesKeys.STUDENT_TERM)
-            }
-        }
-    }
+//    suspend fun deleteStudentInfo(): Result<Unit> {
+//        return kotlin.runCatching {
+//            dataStore.edit { pref ->
+//                pref.remove(PreferencesKeys.STUDENT_ID)
+//                pref.remove(PreferencesKeys.STUDENT_PW)
+//                pref.remove(PreferencesKeys.STUDENT_NAME)
+//                pref.remove(PreferencesKeys.STUDENT_DEPARTMENT)
+//                pref.remove(PreferencesKeys.STUDENT_MAJOR)
+//                pref.remove(PreferencesKeys.STUDENT_GRADE)
+//                pref.remove(PreferencesKeys.STUDENT_TERM)
+//            }
+//        }
+//    }
 }

@@ -1,7 +1,7 @@
 package com.yourssu.soomsil.usaint
 
 import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
-import com.yourssu.soomsil.usaint.domain.type.LectureDiff
+import com.yourssu.soomsil.usaint.domain.usecase.LectureDiff
 import com.yourssu.soomsil.usaint.domain.usecase.LecturesDiffUseCase
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -16,7 +16,8 @@ class LecturesDiffUseCaseTest {
             grade = "성적 미입력",
             score = "Empty",
             professorName = "",
-            semesterId = 0,
+            year = 2025,
+            semester = "1",
         ),
         LectureVO(
             title = "title2",
@@ -25,7 +26,8 @@ class LecturesDiffUseCaseTest {
             grade = "B+",
             score = "89",
             professorName = "",
-            semesterId = 0,
+            year = 2025,
+            semester = "1",
         )
     )
     val newList = listOf(
@@ -36,7 +38,8 @@ class LecturesDiffUseCaseTest {
             grade = "A+",
             score = "98",
             professorName = "",
-            semesterId = 0,
+            year = 2025,
+            semester = "1",
         ),
         LectureVO(
             title = "title2",
@@ -45,7 +48,8 @@ class LecturesDiffUseCaseTest {
             grade = "B+",
             score = "89",
             professorName = "",
-            semesterId = 0,
+            year = 2025,
+            semester = "1",
         )
     )
 
@@ -81,7 +85,8 @@ class LecturesDiffUseCaseTest {
                 grade = "A+",
                 score = "98",
                 professorName = "",
-                semesterId = 0,
+                year = 2025,
+                semester = "1",
             ),
             LectureVO(
                 title = "title3",
@@ -90,7 +95,8 @@ class LecturesDiffUseCaseTest {
                 grade = "A0",
                 score = "95",
                 professorName = "",
-                semesterId = 0,
+                year = 2025,
+                semester = "1",
             ),
             LectureVO(
                 title = "title2",
@@ -99,7 +105,8 @@ class LecturesDiffUseCaseTest {
                 grade = "성적 미입력",
                 score = "Empty",
                 professorName = "",
-                semesterId = 0,
+                year = 2025,
+                semester = "1",
             ),
             LectureVO(
                 title = "title5",
@@ -108,7 +115,8 @@ class LecturesDiffUseCaseTest {
                 grade = "성적 미입력",
                 score = "Empty",
                 professorName = "",
-                semesterId = 0,
+                year = 2025,
+                semester = "1",
             ),
             LectureVO(
                 title = "title4",
@@ -117,7 +125,8 @@ class LecturesDiffUseCaseTest {
                 grade = "B+",
                 score = "88",
                 professorName = "",
-                semesterId = 0,
+                year = 2025,
+                semester = "1",
             ),
         )
         val after = listOf(
@@ -128,7 +137,8 @@ class LecturesDiffUseCaseTest {
                 grade = "A+",
                 score = "98",
                 professorName = "",
-                semesterId = 0,
+                year = 2025,
+                semester = "1",
             ),
             LectureVO(
                 title = "title3",
@@ -137,7 +147,8 @@ class LecturesDiffUseCaseTest {
                 grade = "A0",
                 score = "95",
                 professorName = "",
-                semesterId = 0,
+                year = 2025,
+                semester = "1",
             ),
             LectureVO(
                 title = "title2",
@@ -146,7 +157,8 @@ class LecturesDiffUseCaseTest {
                 grade = "P",
                 score = "Pass",
                 professorName = "",
-                semesterId = 0,
+                year = 2025,
+                semester = "1",
             ),
             LectureVO(
                 title = "title5",
@@ -155,7 +167,8 @@ class LecturesDiffUseCaseTest {
                 grade = "A-",
                 score = "90",
                 professorName = "",
-                semesterId = 0,
+                year = 2025,
+                semester = "1",
             ),
             LectureVO(
                 title = "title4",
@@ -164,7 +177,8 @@ class LecturesDiffUseCaseTest {
                 grade = "A-",
                 score = "91",
                 professorName = "",
-                semesterId = 0,
+                year = 2025,
+                semester = "1",
             ),
         )
 

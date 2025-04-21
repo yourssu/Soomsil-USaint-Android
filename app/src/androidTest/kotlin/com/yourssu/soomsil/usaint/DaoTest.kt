@@ -1,7 +1,6 @@
 package com.yourssu.soomsil.usaint
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -77,9 +76,8 @@ class DaoTest {
 
         // Semester 삽입
         val semester1 = SemesterVO(
-            id = 0,
             year = 2024,
-            semester = "1학기",
+            semester = "1",
             semesterRank = 10,
             semesterStudentCount = 200,
             overallRank = 15,
@@ -126,9 +124,8 @@ class DaoTest {
 
         // Semester를 하나 생성 (2024-1학기)
         val semester = SemesterVO(
-            id = 0,
             year = 2024,
-            semester = "1학기",
+            semester = "1",
             semesterRank = 10,
             semesterStudentCount = 200,
             overallRank = 15,
@@ -151,7 +148,8 @@ class DaoTest {
             grade = "A+",
             score = "95",
             professorName = "Dr. Kim",
-            semesterId = insertedSemester.id
+            year = 2025,
+            semester = "1",
         )
         lectureDao.insertLecture(lecture1)
 
@@ -182,9 +180,8 @@ class DaoTest {
         // Semester 삽입
         val a = semesterDao.insertSemester(
             SemesterVO(
-                id = 0,
                 year = 2023,
-                semester = "1학기",
+                semester = "1",
                 semesterRank = 1,
                 semesterStudentCount = 100,
                 overallRank = 10,
@@ -202,7 +199,8 @@ class DaoTest {
             grade = "A+",
             score = "95",
             professorName = "Dr. Kim",
-            semesterId = a.toInt()
+            year = 2025,
+            semester = "1",
         )
         // Lecture 삽입
         val lecture2 = LectureVO(
@@ -212,7 +210,8 @@ class DaoTest {
             grade = "A",
             score = "92",
             professorName = "Dr. Lee",
-            semesterId = a.toInt()
+            year = 2025,
+            semester = "1",
         )
         lectureDao.insertLecture(lecture1)
         lectureDao.insertLecture(lecture2)

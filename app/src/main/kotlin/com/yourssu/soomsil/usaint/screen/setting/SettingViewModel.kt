@@ -9,7 +9,7 @@ import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
-import com.yourssu.soomsil.usaint.data.repository.UserPreferencesRepository
+import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
 import com.yourssu.soomsil.usaint.domain.usecase.UpdateWorkerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,14 +28,14 @@ class SettingViewModel @Inject constructor(
     private val totalReportCardRepository: TotalReportCardRepository,
     private val semesterRepository: SemesterRepository,
     private val lectureRepository: LectureRepository,
-    private val userPreferencesRepo: UserPreferencesRepository,
+    private val userDataRepository: UserDataRepository,
     private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<SettingUiState> =
-        userPreferencesRepo.notificationEnabledFlow
-            .map { notificationEnabled ->
+        userDataRepository.userData
+            .map {
                 SettingUiState.UserEditableSettings(
-                    notificationEnabled = notificationEnabled,
+                    notificationEnabled = it.notificationEnabled,
                 )
             }.stateIn(
                 scope = viewModelScope,
@@ -50,7 +50,7 @@ class SettingViewModel @Inject constructor(
 
     fun updateNotificationSetting(enable: Boolean) {
         viewModelScope.launch {
-            userPreferencesRepo.updateNotificationEnabled(enable)
+            userDataRepository.setNotificationEnabled(enable)
             if (enable) {
                 updateWorkerUseCase.enqueue()
             } else {
@@ -77,12 +77,12 @@ class SettingViewModel @Inject constructor(
                 _uiEvent.emit(SettingUiEvent.FailureLogout)
                 return@launch
             }
-            studentInfoRepository.deleteStudentInfo().onFailure { e ->
-                Timber.e(e)
-                _uiEvent.emit(SettingUiEvent.FailureLogout)
-                return@launch
-            }
-            userPreferencesRepo.deleteAll()
+//            studentInfoRepository.deleteStudentInfo().onFailure { e ->
+//                Timber.e(e)
+//                _uiEvent.emit(SettingUiEvent.FailureLogout)
+//                return@launch
+//            }
+//            userDataRepository.deleteAll()
             _uiEvent.emit(SettingUiEvent.SuccessLogout)
         }
     }
