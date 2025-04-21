@@ -9,7 +9,9 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentInformationSerializer
 import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesSerializer
+import com.yourssu.soomsil.usaint.proto.StudentInformation
 import com.yourssu.soomsil.usaint.proto.UserPreferences
 import dagger.Module
 import dagger.Provides
@@ -45,12 +47,12 @@ object DataStoreModule {
         )
     }
 
-//    @Singleton
-//    @Provides
-//    fun provideStudentInformationDataStore(@ApplicationContext context: Context): DataStore<StudentInformation> {
-//        return DataStoreFactory.create(
-//            serializer = StudentInformationSerializer,
-//            produceFile = { context.dataStoreFile(STUDENT_INFO_DATA_STORE_FILE_NAME) }
-//        )
-//    }
+    @Singleton
+    @Provides
+    fun provideStudentInformationDataStore(@ApplicationContext context: Context): DataStore<StudentInformation> {
+        return DataStoreFactory.create(
+            serializer = StudentInformationSerializer,
+            produceFile = { context.dataStoreFile("student_information.pb") }
+        )
+    }
 }

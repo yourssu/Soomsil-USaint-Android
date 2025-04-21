@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
-import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
+import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
 import com.yourssu.soomsil.usaint.domain.usecase.UpdateWorkerUseCase
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-    private val studentInfoRepository: StudentInfoRepository,
+    private val studentDataRepository: StudentDataRepository,
     private val totalReportCardRepository: TotalReportCardRepository,
     private val semesterRepository: SemesterRepository,
     private val lectureRepository: LectureRepository,

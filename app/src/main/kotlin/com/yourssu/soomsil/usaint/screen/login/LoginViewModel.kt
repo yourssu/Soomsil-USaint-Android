@@ -5,24 +5,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
+import com.yourssu.soomsil.usaint.core.model.StudentCredential
+import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
+import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
 import com.yourssu.soomsil.usaint.domain.usecase.UpdateWorkerUseCase
-import com.yourssu.soomsil.usaint.model.UserCredential
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.eatsteak.rusaint.ffi.RusaintException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
-    private val studentInfoRepo: StudentInfoRepository,
+    private val studentDataRepository: StudentDataRepository,
+    private val studentCredentialRepository: StudentCredentialRepository,
     private val userDataRepository: UserDataRepository,
     private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
@@ -45,30 +45,31 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login() {
-        val userCredential = UserCredential(id = studentId, pw = studentPw)
+        val studentCredential = StudentCredential(id = studentId, password = studentPw)
 
         viewModelScope.launch {
             isLoading = true
             // 로그인 시도
             // 실패 시 Error 이벤트 발생 후 종료
-            val session = uSaintSessionRepo.withPassword(userCredential).getOrElse { e ->
-                Timber.e(e)
-                when (e) {
-                    is RusaintException -> _uiEvent.emit(UiEvent.SessionFailure)
-                    else -> _uiEvent.emit(UiEvent.Failure())
-                }
-                isLoading = false
-                return@launch
-            }
-            val studentInfoVO = studentInfoRepo.getRemoteStudentInfo(session).getOrElse { e ->
-                Timber.e(e)
-                _uiEvent.emit(UiEvent.Failure("학생 정보를 가져오는 데 실패했습니다."))
-                isLoading = false
-                return@launch
-            }
+//            val session = uSaintSessionRepo.withPassword(userCredential).getOrElse { e ->
+//                Timber.e(e)
+//                when (e) {
+//                    is RusaintException -> _uiEvent.emit(UiEvent.SessionFailure)
+//                    else -> _uiEvent.emit(UiEvent.Failure())
+//                }
+//                isLoading = false
+//                return@launch
+//            }
+//            val studentInfoVO = studentInfoRepo.getRemoteStudentInfo(session).getOrElse { e ->
+//                Timber.e(e)
+//                _uiEvent.emit(UiEvent.Failure("학생 정보를 가져오는 데 실패했습니다."))
+//                isLoading = false
+//                return@launch
+//            }
             // 성공 시 id/pw, 학생 정보 저장
-            studentInfoRepo.storeUserCredential(userCredential).onFailure { e -> Timber.e(e) }
+//            studentDataRepository.storeUserCredential(userCredential).onFailure { e -> Timber.e(e) }
 //            studentInfoRepo.storeStudentInfo(studentInfoVO).onFailure { e -> Timber.e(e) }
+            studentCredentialRepository.setStudentCredential(studentCredential)
             _uiEvent.emit(UiEvent.Success)
             isLoading = false
         }

@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourssu.soomsil.usaint.data.repository.StudentInfoRepository
+import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
 import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.screen.UiEvent
@@ -28,7 +28,7 @@ import kotlin.system.measureTimeMillis
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
-    private val studentInfoRepo: StudentInfoRepository,
+    private val studentInfoRepo: StudentDataRepository,
     private val totalReportCardRepo: TotalReportCardRepository,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
@@ -89,19 +89,19 @@ class HomeViewModel @Inject constructor(
         }
 
         val job1 = viewModelScope.launch {
-            studentInfoRepo.getRemoteStudentInfo(session)
-                .onSuccess { stuDto ->
-                    studentInfo = StudentInfo(
-                        name = stuDto.name,
-                        department = stuDto.department,
-                        grade = stuDto.grade.toInt(),
-                    )
+//            studentInfoRepo.getRemoteStudentInfo(session)
+//                .onSuccess { stuDto ->
+//                    studentInfo = StudentInfo(
+//                        name = stuDto.name,
+//                        department = stuDto.department,
+//                        grade = stuDto.grade.toInt(),
+//                    )
 //                    studentInfoRepo.storeStudentInfo(stuDto)
-                }
-                .getOrElse { e ->
-                    handleError(e)
-                    return@launch
-                }
+//                }
+//                .getOrElse { e ->
+//                    handleError(e)
+//                    return@launch
+//                }
         }
 
         val job2 = viewModelScope.launch {

@@ -23,10 +23,9 @@ class UserPreferencesDataSource @Inject constructor(
     suspend fun setNotificationEnabled(enable: Boolean) {
         try {
             userPreferences.updateData {
-                UserPreferences.newBuilder()
-                    .setNotificationEnabled(enable)
-                    .setIncludeSeasonalSemester(it.includeSeasonalSemester)
-                    .build()
+                it.copy {
+                    setNotificationEnabled(enable)
+                }
             }
         } catch (e: IOException) {
             Timber.e("Failed to update user preferences", e)
@@ -36,13 +35,15 @@ class UserPreferencesDataSource @Inject constructor(
     suspend fun setIncludeSeasonalSemester(include: Boolean) {
         try {
             userPreferences.updateData {
-                UserPreferences.newBuilder()
-                    .setNotificationEnabled(it.notificationEnabled)
-                    .setIncludeSeasonalSemester(include)
-                    .build()
+                it.copy {
+                    setIncludeSeasonalSemester(include)
+                }
             }
         } catch (e: IOException) {
             Timber.e("Failed to update user preferences", e)
         }
     }
 }
+
+private fun UserPreferences.copy(builder: UserPreferences.Builder.() -> Unit) =
+    UserPreferences.newBuilder(this).apply(builder).build()
