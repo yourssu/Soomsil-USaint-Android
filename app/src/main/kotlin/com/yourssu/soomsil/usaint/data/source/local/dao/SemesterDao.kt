@@ -21,5 +21,5 @@ interface SemesterDao {
     suspend fun getSemesterWithLectures(year: Int, semesterName: String): SemesterWithLectures?
 
     @Query("DELETE FROM Semester")
-    suspend fun deleteAll()
+    suspend fun deleteAllSemesters()
 }

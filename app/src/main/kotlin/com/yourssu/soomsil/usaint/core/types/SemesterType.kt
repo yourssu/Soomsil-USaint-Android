@@ -1,6 +1,6 @@
 package com.yourssu.soomsil.usaint.core.types
 
-enum class SemesterTypes {
+enum class SemesterType {
     One,
     Summer,
     Two,

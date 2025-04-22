@@ -4,10 +4,14 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.yourssu.soomsil.usaint.data.source.local.entity.LectureEntity
 
 @Dao
 interface LectureDao {
+    @Upsert
+    suspend fun upsertLectures(lectures: List<LectureEntity>)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLecture(lecture: LectureEntity): Long
 
@@ -18,5 +22,5 @@ interface LectureDao {
     suspend fun getLecturesByYearAndSemester(year: Int, semester: String): List<LectureEntity>
 
     @Query("DELETE FROM Lecture")
-    suspend fun deleteAll()
+    suspend fun deleteLectures()
 }

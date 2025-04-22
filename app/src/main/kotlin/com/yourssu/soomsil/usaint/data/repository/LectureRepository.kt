@@ -3,7 +3,7 @@ package com.yourssu.soomsil.usaint.data.repository
 import com.yourssu.soomsil.usaint.data.source.local.dao.LectureDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
 import com.yourssu.soomsil.usaint.data.source.local.entity.LectureEntity
-import com.yourssu.soomsil.usaint.data.source.local.entity.toLectureVO
+import com.yourssu.soomsil.usaint.data.source.local.entity.toLectureEntity
 import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.type.toRusaintSemesterType
@@ -38,7 +38,7 @@ class LectureRepository @Inject constructor(
 
     suspend fun deleteAllLectures(): Result<Unit> {
         return kotlin.runCatching {
-            withContext(Dispatchers.IO) { lectureDao.deleteAll() }
+            withContext(Dispatchers.IO) { lectureDao.deleteLectures() }
         }
     }
 
@@ -57,6 +57,6 @@ class LectureRepository @Inject constructor(
         if (classGradeList.isEmpty())
             return Result.success(emptyList())
 
-        return Result.success(classGradeList.map { it.toLectureVO() })
+        return Result.success(classGradeList.map { it.toLectureEntity() })
     }
 }

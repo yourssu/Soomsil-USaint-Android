@@ -46,7 +46,7 @@ class SemesterRepository @Inject constructor(
 
     suspend fun deleteAllSemester(): Result<Unit> {
         return kotlin.runCatching {
-            withContext(Dispatchers.IO) { semesterDao.deleteAll() }
+            withContext(Dispatchers.IO) { semesterDao.deleteAllSemesters() }
         }
     }
 

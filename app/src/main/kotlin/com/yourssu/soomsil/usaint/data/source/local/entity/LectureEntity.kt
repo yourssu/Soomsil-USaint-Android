@@ -36,7 +36,7 @@ data class LectureEntity(
     }
 }
 
-fun ClassGrade.toLectureVO(): LectureEntity {
+fun ClassGrade.toLectureEntity(): LectureEntity {
     val scoreString = when (score) {
         is ClassScore.Score -> (score as ClassScore.Score).v1.toString()
         is ClassScore.Pass -> "Pass"
