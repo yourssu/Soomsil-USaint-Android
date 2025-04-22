@@ -6,13 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
-import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.types.Semester
-import com.yourssu.soomsil.usaint.ui.types.toReportCardSummary
 import com.yourssu.soomsil.usaint.ui.types.toSemester
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.eatsteak.rusaint.ffi.RusaintException
@@ -35,7 +33,6 @@ import kotlin.system.measureTimeMillis
 @HiltViewModel
 class SemesterListViewModel @Inject constructor(
     private val uSaintSessionRepo: USaintSessionRepository,
-    private val totalReportCardRepo: TotalReportCardRepository,
     private val semesterRepo: SemesterRepository,
     private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
@@ -89,12 +86,6 @@ class SemesterListViewModel @Inject constructor(
 
     private fun initialize() {
         viewModelScope.launch {
-            totalReportCardRepo.getLocalReportCard()
-                .onSuccess { reportCard ->
-                    reportCardSummary = reportCard.toReportCardSummary()
-                }
-                .onFailure { e -> Timber.e(e) }
-
             semesterRepo.getAllLocalSemesters()
                 .onSuccess { semesterList ->
                     if (semesterList.isEmpty()) {
@@ -126,15 +117,6 @@ class SemesterListViewModel @Inject constructor(
         }
 
         val job1 = viewModelScope.launch {
-            totalReportCardRepo.getRemoteReportCard(session!!)
-                .onSuccess { totalReportCard ->
-                    reportCardSummary = totalReportCard.toReportCardSummary()
-                    totalReportCardRepo.storeReportCard(totalReportCard)
-                }
-                .onFailure { e -> handleError(e) }
-        }
-
-        val job2 = viewModelScope.launch {
             val semestersTemp = ArrayList<Semester>()
             val semesterVOs = semesterRepo.getAllRemoteSemesters(session!!).getOrElse { e ->
                 handleError(e)
@@ -163,7 +145,7 @@ class SemesterListViewModel @Inject constructor(
         }
 
         // 모두 완료될 때까지 기다림
-        joinAll(job1, job2)
+        joinAll(job1)
         session = null
     }
 

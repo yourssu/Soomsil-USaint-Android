@@ -19,7 +19,8 @@ class SemesterRepository @Inject constructor(
     suspend fun getAllLocalSemesters(): Result<List<SemesterVO>> {
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
-                semesterDao.getSemestersByTotalReportCardId(totalReportCardId = 1)
+                // TODO
+                emptyList()
             }
         }
     }

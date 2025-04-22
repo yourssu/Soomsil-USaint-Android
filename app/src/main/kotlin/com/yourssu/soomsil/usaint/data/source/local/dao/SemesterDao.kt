@@ -16,9 +16,6 @@ interface SemesterDao {
     @Query("SELECT * FROM Semester WHERE year = :year AND semester = :semesterName LIMIT 1")
     suspend fun getSemesterByYearAndSemester(year: Int, semesterName: String): SemesterVO?
 
-    @Query("SELECT * FROM Semester WHERE totalReportCardId = :totalReportCardId")
-    suspend fun getSemestersByTotalReportCardId(totalReportCardId: Int): List<SemesterVO>
-
     @Transaction
     @Query("SELECT * FROM Semester WHERE year = :year AND semester = :semesterName LIMIT 1")
     suspend fun getSemesterWithLectures(year: Int, semesterName: String): SemesterWithLectures?

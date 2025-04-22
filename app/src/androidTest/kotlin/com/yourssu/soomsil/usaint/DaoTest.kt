@@ -7,10 +7,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.yourssu.soomsil.usaint.data.source.local.AppDatabase
 import com.yourssu.soomsil.usaint.data.source.local.dao.LectureDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
-import com.yourssu.soomsil.usaint.data.source.local.dao.TotalReportCardDao
 import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
 import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
-import com.yourssu.soomsil.usaint.data.source.local.entity.TotalReportCardVO
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
@@ -23,7 +21,6 @@ import org.junit.runner.RunWith
 class DaoTest {
 
     private lateinit var db: AppDatabase
-    private lateinit var totalReportCardDao: TotalReportCardDao
     private lateinit var semesterDao: SemesterDao
     private lateinit var lectureDao: LectureDao
 
@@ -35,7 +32,6 @@ class DaoTest {
             AppDatabase::class.java
         ).allowMainThreadQueries().build()
 
-        totalReportCardDao = db.totalReportCardDao()
         semesterDao = db.semesterDao()
         lectureDao = db.lectureDao()
     }
@@ -46,34 +42,7 @@ class DaoTest {
     }
 
     @Test
-    fun totalReportCardInsertAndFetchTest(): Unit = runBlocking {
-        // TotalReportCard 삽입
-        val totalReportCard = TotalReportCardVO(
-            id = 1,
-            earnedCredit = 120f,
-            gpa = 3.8f,
-            graduateCredit = 130f
-        )
-        totalReportCardDao.insertTotalReportCard(totalReportCard)
-
-        // TotalReportCard 조회
-        val fetched = totalReportCardDao.getTotalReportCard()
-
-        // TotalReportCard 비교
-        assertThat(fetched, equalTo(totalReportCard))
-    }
-
-    @Test
     fun semesterInsertAndReplaceTest(): Unit = runBlocking {
-        // TotalReportCard 삽입
-        val totalReportCard = TotalReportCardVO(
-            id = 1,
-            earnedCredit = 120f,
-            gpa = 3.8f,
-            graduateCredit = 130f
-        )
-        totalReportCardDao.insertTotalReportCard(totalReportCard)
-
         // Semester 삽입
         val semester1 = SemesterVO(
             year = 2024,
@@ -84,7 +53,6 @@ class DaoTest {
             overallStudentCount = 1000,
             earnedCredit = 18f,
             gpa = 3.9f,
-            totalReportCardId = 1
         )
         semesterDao.insertSemester(semester1)
 
@@ -113,15 +81,6 @@ class DaoTest {
 
     @Test
     fun lectureInsertAndUniqueReplaceTest(): Unit = runBlocking {
-        // TotalReportCard 삽입
-        val totalReportCard = TotalReportCardVO(
-            id = 1,
-            earnedCredit = 120f,
-            gpa = 3.8f,
-            graduateCredit = 130f
-        )
-        totalReportCardDao.insertTotalReportCard(totalReportCard)
-
         // Semester를 하나 생성 (2024-1학기)
         val semester = SemesterVO(
             year = 2024,
@@ -132,7 +91,6 @@ class DaoTest {
             overallStudentCount = 1000,
             earnedCredit = 18f,
             gpa = 3.9f,
-            totalReportCardId = 1
         )
         // Semester 삽입
         semesterDao.insertSemester(semester)
@@ -170,54 +128,5 @@ class DaoTest {
         assertThat(fetchedLecture2?.title, equalTo("Advanced Data Structures"))
         assertThat(fetchedLecture2?.credit, equalTo(4f))
         assertThat(fetchedLecture2?.grade, equalTo("A"))
-    }
-
-    @Test
-    fun totalReportCardWithSemestersTest(): Unit = runBlocking {
-        // TotalReportCard 삽입
-        totalReportCardDao.insertTotalReportCard(TotalReportCardVO(id = 1, 100f, 3.5f, 120f))
-
-        // Semester 삽입
-        val a = semesterDao.insertSemester(
-            SemesterVO(
-                year = 2023,
-                semester = "1",
-                semesterRank = 1,
-                semesterStudentCount = 100,
-                overallRank = 10,
-                overallStudentCount = 500,
-                earnedCredit = 20f,
-                gpa = 3.8f,
-                totalReportCardId = 1
-            )
-        )
-        // Lecture 삽입
-        val lecture1 = LectureVO(
-            title = "Data Structures",
-            code = "CS101",
-            credit = 3f,
-            grade = "A+",
-            score = "95",
-            professorName = "Dr. Kim",
-            year = 2025,
-            semester = "1",
-        )
-        // Lecture 삽입
-        val lecture2 = LectureVO(
-            title = "Advanced Data Structures",
-            code = "CS102",
-            credit = 4f,
-            grade = "A",
-            score = "92",
-            professorName = "Dr. Lee",
-            year = 2025,
-            semester = "1",
-        )
-        lectureDao.insertLecture(lecture1)
-        lectureDao.insertLecture(lecture2)
-
-        val result = totalReportCardDao.getTotalReportCardWithSemesters()
-        println(result?.semesters)
-        assertThat(result?.semesters?.size, equalTo(1))
     }
 }

@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
-import com.yourssu.soomsil.usaint.data.repository.TotalReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
 import com.yourssu.soomsil.usaint.domain.usecase.UpdateWorkerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +24,6 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val studentDataRepository: StudentDataRepository,
-    private val totalReportCardRepository: TotalReportCardRepository,
     private val semesterRepository: SemesterRepository,
     private val lectureRepository: LectureRepository,
     private val userDataRepository: UserDataRepository,
@@ -68,11 +66,6 @@ class SettingViewModel @Inject constructor(
                 return@launch
             }
             semesterRepository.deleteAllSemester().onFailure { e ->
-                Timber.e(e)
-                _uiEvent.emit(SettingUiEvent.FailureLogout)
-                return@launch
-            }
-            totalReportCardRepository.deleteTotalReportCard().onFailure { e ->
                 Timber.e(e)
                 _uiEvent.emit(SettingUiEvent.FailureLogout)
                 return@launch
