@@ -1,6 +1,5 @@
 package com.yourssu.soomsil.usaint.data.source.local.entity
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -11,7 +10,7 @@ import dev.eatsteak.rusaint.core.ClassScore
 @Entity(
     tableName = "Lecture",
     foreignKeys = [ForeignKey(
-        entity = SemesterVO::class,
+        entity = SemesterEntity::class,
         parentColumns = ["year", "semester"],
         childColumns = ["year", "semester"],
     )],
@@ -20,7 +19,7 @@ import dev.eatsteak.rusaint.core.ClassScore
         Index(value = ["year", "semester", "code"], unique = true) // code 컬럼에 고유 인덱스를 추가
     ]
 )
-data class LectureVO(
+data class LectureEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,          // 과목 이름
     val code: String,           // 과목 코드 (고유)
@@ -31,13 +30,13 @@ data class LectureVO(
     val year: Int,        // foreign key
     val semester: String,        // foreign key
 ) {
-    fun equalsIgnoreIds(other: LectureVO): Boolean {
+    fun equalsIgnoreIds(other: LectureEntity): Boolean {
         return title == other.title && code == other.code && credit == other.credit &&
                 grade == other.grade && score == other.score && professorName == other.professorName
     }
 }
 
-fun ClassGrade.toLectureVO(): LectureVO {
+fun ClassGrade.toLectureVO(): LectureEntity {
     val scoreString = when (score) {
         is ClassScore.Score -> (score as ClassScore.Score).v1.toString()
         is ClassScore.Pass -> "Pass"
@@ -45,7 +44,7 @@ fun ClassGrade.toLectureVO(): LectureVO {
         is ClassScore.Empty -> "Empty"
     }
 
-    return LectureVO(
+    return LectureEntity(
         title = className,
         code = code,
         credit = gradePoints,

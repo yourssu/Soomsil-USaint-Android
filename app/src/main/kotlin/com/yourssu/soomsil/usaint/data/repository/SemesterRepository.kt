@@ -1,7 +1,7 @@
 package com.yourssu.soomsil.usaint.data.repository
 
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
-import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
+import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterEntity
 import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
@@ -16,7 +16,7 @@ class SemesterRepository @Inject constructor(
     private val semesterDao: SemesterDao,
     private val rusaintApi: RusaintApi,
 ) {
-    suspend fun getAllLocalSemesters(): Result<List<SemesterVO>> {
+    suspend fun getAllLocalSemesters(): Result<List<SemesterEntity>> {
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
                 // TODO
@@ -25,7 +25,7 @@ class SemesterRepository @Inject constructor(
         }
     }
 
-    suspend fun getLocalSemester(semesterType: SemesterType): Result<SemesterVO> {
+    suspend fun getLocalSemester(semesterType: SemesterType): Result<SemesterEntity> {
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
                 semesterDao.getSemesterByYearAndSemester(
@@ -36,7 +36,7 @@ class SemesterRepository @Inject constructor(
         }
     }
 
-    suspend fun storeSemesters(vararg semesters: SemesterVO): Result<Unit> {
+    suspend fun storeSemesters(vararg semesters: SemesterEntity): Result<Unit> {
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
                 semesters.forEach { semesterDao.insertSemester(it) }
@@ -50,7 +50,7 @@ class SemesterRepository @Inject constructor(
         }
     }
 
-    suspend fun getAllRemoteSemesters(session: USaintSession): Result<List<SemesterVO>> {
+    suspend fun getAllRemoteSemesters(session: USaintSession): Result<List<SemesterEntity>> {
         val semesterGradeList = rusaintApi.getSemesterGradeList(session).getOrElse { e ->
             return Result.failure(e)
         }
@@ -58,7 +58,7 @@ class SemesterRepository @Inject constructor(
         return Result.success(semesterGradeList.map { semesterGrade ->
             val year = semesterGrade.year.toInt()
             val semester = makeSemesterType(year, semesterGrade.semester).storeFormat
-            SemesterVO(
+            SemesterEntity(
                 year = year,
                 semester = semester,
                 semesterRank = semesterGrade.semesterRank.first.toInt(),
@@ -72,7 +72,7 @@ class SemesterRepository @Inject constructor(
     }
 
     // Stale-While-Revalidate
-    fun getSemesters(session: USaintSession?): Flow<Result<List<SemesterVO>>> = flow {
+    fun getSemesters(session: USaintSession?): Flow<Result<List<SemesterEntity>>> = flow {
         // Try loading/emit local data first
         val localResult = getAllLocalSemesters()
         localResult.onSuccess { localData ->

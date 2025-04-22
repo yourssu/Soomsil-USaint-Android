@@ -7,8 +7,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.yourssu.soomsil.usaint.data.source.local.AppDatabase
 import com.yourssu.soomsil.usaint.data.source.local.dao.LectureDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
-import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
-import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
+import com.yourssu.soomsil.usaint.data.source.local.entity.LectureEntity
+import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterEntity
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
@@ -44,7 +44,7 @@ class DaoTest {
     @Test
     fun semesterInsertAndReplaceTest(): Unit = runBlocking {
         // Semester 삽입
-        val semester1 = SemesterVO(
+        val semester1 = SemesterEntity(
             year = 2024,
             semester = "1",
             semesterRank = 10,
@@ -82,7 +82,7 @@ class DaoTest {
     @Test
     fun lectureInsertAndUniqueReplaceTest(): Unit = runBlocking {
         // Semester를 하나 생성 (2024-1학기)
-        val semester = SemesterVO(
+        val semester = SemesterEntity(
             year = 2024,
             semester = "1",
             semesterRank = 10,
@@ -98,7 +98,7 @@ class DaoTest {
         val insertedSemester = semesterDao.getSemesterByYearAndSemester(2024, "1학기")!!
 
         // Lecture 삽입
-        val lecture1 = LectureVO(
+        val lecture1 = LectureEntity(
             id = 0,
             title = "Data Structures",
             code = "CS101",

@@ -1,7 +1,7 @@
 package com.yourssu.soomsil.usaint.ui.types
 
 import androidx.compose.runtime.Immutable
-import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
+import com.yourssu.soomsil.usaint.data.source.local.entity.LectureEntity
 
 @Immutable
 data class LectureInfo(
@@ -17,7 +17,7 @@ fun List<LectureInfo>.sortByGrade(): List<LectureInfo> {
     }.reversed()
 }
 
-fun LectureVO.toLectureInfo() = LectureInfo(
+fun LectureEntity.toLectureInfo() = LectureInfo(
     tier = Tier(grade),
     name = title,
     credit = credit.toCredit(),

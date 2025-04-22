@@ -10,7 +10,7 @@ import androidx.room.Index
         Index(value = ["year", "semester"], unique = true) // (year, semester) 쌍에 유니크 인덱스
     ],
 )
-data class SemesterVO(
+data class SemesterEntity(
     val year: Int,                  // ex: 2024
     val semester: String,           // ex: “1”, “여름”
     val semesterRank: Int,          // 학기 석차

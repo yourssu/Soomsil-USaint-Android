@@ -5,16 +5,16 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
+import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterEntity
 import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterWithLectures
 
 @Dao
 interface SemesterDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSemester(semester: SemesterVO): Long
+    suspend fun insertSemester(semester: SemesterEntity): Long
 
     @Query("SELECT * FROM Semester WHERE year = :year AND semester = :semesterName LIMIT 1")
-    suspend fun getSemesterByYearAndSemester(year: Int, semesterName: String): SemesterVO?
+    suspend fun getSemesterByYearAndSemester(year: Int, semesterName: String): SemesterEntity?
 
     @Transaction
     @Query("SELECT * FROM Semester WHERE year = :year AND semester = :semesterName LIMIT 1")

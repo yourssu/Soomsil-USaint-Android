@@ -4,11 +4,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.yourssu.soomsil.usaint.data.source.local.dao.LectureDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
-import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
-import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
+import com.yourssu.soomsil.usaint.data.source.local.entity.LectureEntity
+import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterEntity
 
 @Database(
-    entities = [SemesterVO::class, LectureVO::class],
+    entities = [SemesterEntity::class, LectureEntity::class],
     version = 4,
     exportSchema = false
 )

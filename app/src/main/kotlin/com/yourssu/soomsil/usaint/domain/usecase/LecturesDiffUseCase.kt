@@ -1,6 +1,6 @@
 package com.yourssu.soomsil.usaint.domain.usecase
 
-import com.yourssu.soomsil.usaint.data.source.local.entity.LectureVO
+import com.yourssu.soomsil.usaint.data.source.local.entity.LectureEntity
 import javax.inject.Inject
 
 // Pair<before, after>
@@ -12,7 +12,7 @@ data class LectureDiff(
     val score: Pair<String, String>?,
 )
 
-fun LectureVO.diff(other: LectureVO) = LectureDiff(
+fun LectureEntity.diff(other: LectureEntity) = LectureDiff(
     title = title,
     code = code,
     credit = if (credit == other.credit) null else (credit to other.credit),
@@ -21,7 +21,7 @@ fun LectureVO.diff(other: LectureVO) = LectureDiff(
 )
 
 class LecturesDiffUseCase @Inject constructor() {
-    operator fun invoke(old: List<LectureVO>, new: List<LectureVO>): List<LectureDiff> {
+    operator fun invoke(old: List<LectureEntity>, new: List<LectureEntity>): List<LectureDiff> {
         val oldSorted = old.sortedBy { it.code }
         val newSorted = new.sortedBy { it.code }
         val diff = ArrayList<LectureDiff>()

@@ -1,7 +1,7 @@
 package com.yourssu.soomsil.usaint.ui.types
 
 import androidx.compose.runtime.Immutable
-import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterVO
+import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterEntity
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 
@@ -18,7 +18,7 @@ data class Semester(
 //    val passFailCredit: Credit = Credit.Zero,   // P/F 학점
 )
 
-fun SemesterVO.toSemester() = Semester(
+fun SemesterEntity.toSemester() = Semester(
     type = makeSemesterType(year, semester),
     gpa = gpa.toGrade(),
     earnedCredit = earnedCredit.toCredit(),
