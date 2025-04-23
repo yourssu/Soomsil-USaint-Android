@@ -14,7 +14,7 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterEntity
 //    autoMigrations = [
 //        AutoMigration(from = 4, to = 5),
 //    ],
-    exportSchema = false
+    exportSchema = true,
 )
 @TypeConverters(MapTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {

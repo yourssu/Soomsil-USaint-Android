@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.androidx.room)
     id("com.google.protobuf") version "0.9.4"
 }
 
@@ -42,6 +43,9 @@ android {
     }
     buildFeatures {
         buildConfig = true
+    }
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 }
 

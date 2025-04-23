@@ -17,7 +17,7 @@ class LectureDaoTest : DatabaseTest() {
         val semesterWithLectures1 = semesterDao.getSemesterWithLectures().first()
         assertEquals(
             listOf(2.0f, 3.0f, 4.0f),
-            semesterWithLectures1.map { it.semester.gpa }
+            semesterWithLectures1.keys.map { it.gpa }
         )
         assertEquals(
             listOf(
@@ -25,8 +25,8 @@ class LectureDaoTest : DatabaseTest() {
                 listOf("Lecture 2024-1"),
                 listOf("Lecture 2024-Summer")
             ),
-            semesterWithLectures1.map {
-                it.lectures.map(LectureEntity::title)
+            semesterWithLectures1.values.map {
+                it.map(LectureEntity::title)
             }
         )
         assertEquals(
@@ -35,8 +35,8 @@ class LectureDaoTest : DatabaseTest() {
                 listOf(emptyMap()),
                 listOf(emptyMap()),
             ),
-            semesterWithLectures1.map {
-                it.lectures.map(LectureEntity::detail)
+            semesterWithLectures1.values.map {
+                it.map(LectureEntity::detail)
             }
         )
 
@@ -49,8 +49,8 @@ class LectureDaoTest : DatabaseTest() {
                 listOf("Lecture 2024-1 updated"),
                 listOf("Lecture 2024-Summer", "Lecture 2024-Summer added")
             ),
-            semesterWithLectures2.map {
-                it.lectures.map(LectureEntity::title)
+            semesterWithLectures2.values.map {
+                it.map(LectureEntity::title)
             }
         )
     }
