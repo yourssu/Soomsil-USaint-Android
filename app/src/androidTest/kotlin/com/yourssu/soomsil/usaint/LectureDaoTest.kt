@@ -31,9 +31,9 @@ class LectureDaoTest : DatabaseTest() {
         )
         assertEquals(
             listOf(
-                listOf(mapOf("중간고사" to "90", "기말고사" to "80"), emptyMap()),
-                listOf(emptyMap()),
-                listOf(emptyMap()),
+                listOf(mapOf("중간고사" to "90", "기말고사" to "80"), null),
+                listOf(null),
+                listOf(null),
             ),
             semesterWithLectures1.values.map {
                 it.map(LectureEntity::detail)

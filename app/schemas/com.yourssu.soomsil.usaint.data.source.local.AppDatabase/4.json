@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "b082e24b3186786194dacb74a93c3617",
+    "identityHash": "2056534157d8564c09232a83d8a3922e",
     "entities": [
       {
         "tableName": "Semester",
@@ -79,8 +79,22 @@
       },
       {
         "tableName": "Lecture",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `code` TEXT NOT NULL, `credit` REAL NOT NULL, `grade` TEXT NOT NULL, `score` TEXT NOT NULL, `professorName` TEXT NOT NULL, `year` INTEGER NOT NULL, `semester` TEXT NOT NULL, `detail` TEXT NOT NULL, PRIMARY KEY(`year`, `semester`, `code`), FOREIGN KEY(`year`, `semester`) REFERENCES `Semester`(`year`, `semester`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`year` INTEGER NOT NULL DEFAULT 0, `semester` TEXT NOT NULL DEFAULT 'One', `title` TEXT NOT NULL, `code` TEXT NOT NULL, `credit` REAL NOT NULL, `grade` TEXT NOT NULL, `score` TEXT NOT NULL, `professorName` TEXT NOT NULL, `detail` TEXT, PRIMARY KEY(`year`, `semester`, `code`), FOREIGN KEY(`year`, `semester`) REFERENCES `Semester`(`year`, `semester`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
+          {
+            "fieldPath": "year",
+            "columnName": "year",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "semester",
+            "columnName": "semester",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'One'"
+          },
           {
             "fieldPath": "title",
             "columnName": "title",
@@ -118,22 +132,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "year",
-            "columnName": "year",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "semester",
-            "columnName": "semester",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
             "fieldPath": "detail",
             "columnName": "detail",
-            "affinity": "TEXT",
-            "notNull": true
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -176,7 +177,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b082e24b3186786194dacb74a93c3617')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2056534157d8564c09232a83d8a3922e')"
     ]
   }
 }

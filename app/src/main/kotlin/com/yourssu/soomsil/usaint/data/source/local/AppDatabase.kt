@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.data.source.local
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -11,9 +12,9 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterEntity
 @Database(
     entities = [SemesterEntity::class, LectureEntity::class],
     version = 4,
-//    autoMigrations = [
-//        AutoMigration(from = 4, to = 5),
-//    ],
+    autoMigrations = [
+        AutoMigration(from = 3, to = 4, spec = DatabaseMigrations.Schema3to4::class),
+    ],
     exportSchema = true,
 )
 @TypeConverters(MapTypeConverter::class)
