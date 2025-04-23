@@ -28,6 +28,7 @@ data class LectureEntity(
     val professorName: String,  // 교수님 성함
     val year: Int,              // foreign key
     val semester: String,       // foreign key
+    val detail: Map<String, String>, // 성적 상세 정보
 ) {
     fun equalsIgnoreIds(other: LectureEntity): Boolean {
         return title == other.title && code == other.code && credit == other.credit &&
@@ -52,5 +53,6 @@ fun ClassGrade.toLectureEntity(): LectureEntity {
         professorName = professor,
         year = year.toIntOrNull() ?: -1,
         semester = semester.replace("학기", ""), // "1학기"를 "1"로 만들기 위함
+        detail = emptyMap(),
     )
 }

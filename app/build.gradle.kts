@@ -53,11 +53,12 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.gson)
 
     // DataStore
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore)
-    implementation("com.google.protobuf:protobuf-javalite:4.29.2")
+    implementation(libs.protobuf.javalite)
 
     // webview
     implementation(libs.androidx.browser)

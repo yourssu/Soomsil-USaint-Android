@@ -54,6 +54,7 @@ fun testLectureEntity(
     semester: String,
     title: String,
     code: String,
+    detail: Map<String, String> = emptyMap(),
 ) = LectureEntity(
     year = year,
     semester = semester,
@@ -63,4 +64,5 @@ fun testLectureEntity(
     grade = "",
     score = "",
     professorName = "",
+    detail = detail,
 )

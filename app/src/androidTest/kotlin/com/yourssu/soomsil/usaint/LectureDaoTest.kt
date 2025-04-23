@@ -29,6 +29,16 @@ class LectureDaoTest : DatabaseTest() {
                 it.lectures.map(LectureEntity::title)
             }
         )
+        assertEquals(
+            listOf(
+                listOf(mapOf("중간고사" to "90", "기말고사" to "80"), emptyMap()),
+                listOf(emptyMap()),
+                listOf(emptyMap()),
+            ),
+            semesterWithLectures1.map {
+                it.lectures.map(LectureEntity::detail)
+            }
+        )
 
         updateLectures()
 
@@ -70,7 +80,13 @@ class LectureDaoTest : DatabaseTest() {
 
     private suspend fun insertLectures() {
         val lectureEntities = listOf(
-            testLectureEntity(2023, SemesterType.Two.name, "Lecture 2023-2-1", code = "1"),
+            testLectureEntity(
+                2023,
+                SemesterType.Two.name,
+                "Lecture 2023-2-1",
+                code = "1",
+                detail = mapOf("중간고사" to "90", "기말고사" to "80")
+            ),
             testLectureEntity(2023, SemesterType.Two.name, "Lecture 2023-2-2", code = "2"),
             testLectureEntity(2024, SemesterType.One.name, "Lecture 2024-1", code = "3"),
             testLectureEntity(2024, SemesterType.Summer.name, "Lecture 2024-Summer", code = "4"),
