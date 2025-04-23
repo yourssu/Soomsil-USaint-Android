@@ -1,6 +1,5 @@
 package com.yourssu.soomsil.usaint.data.source.remote.rusaint
 
-import com.yourssu.soomsil.usaint.domain.type.RusaintSemesterType
 import dev.eatsteak.rusaint.core.ClassGrade
 import dev.eatsteak.rusaint.core.CourseType
 import dev.eatsteak.rusaint.core.GradeSummary
@@ -42,7 +41,7 @@ class RusaintApi @Inject constructor() {
 
     // 졸업사정표 - 학생 정보
     // https://docs.rs/rusaint/latest/rusaint/application/graduation_requirements/struct.GraduationRequirementsApplication.html#method.student_info
-    suspend fun getGraduationStudentInfo(session: USaintSession): Result<GraduationStudent> {
+    suspend fun getGraduationStudent(session: USaintSession): Result<GraduationStudent> {
         return kotlin.runCatching {
             GraduationRequirementsApplicationBuilder().build(session).studentInfo()
         }

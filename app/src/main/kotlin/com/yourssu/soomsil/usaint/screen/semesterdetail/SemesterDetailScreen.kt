@@ -50,11 +50,11 @@ import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.screen.semesterdetail.components.SemesterDetailItem
-import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
-import com.yourssu.soomsil.usaint.ui.entities.Semester
-import com.yourssu.soomsil.usaint.ui.entities.Tier
-import com.yourssu.soomsil.usaint.ui.entities.toCredit
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
+import com.yourssu.soomsil.usaint.ui.types.LectureInfo
+import com.yourssu.soomsil.usaint.ui.types.Semester
+import com.yourssu.soomsil.usaint.ui.types.Tier
+import com.yourssu.soomsil.usaint.ui.types.toCredit
 import com.yourssu.soomsil.usaint.util.Capturable
 import com.yourssu.soomsil.usaint.util.CaptureController
 import com.yourssu.soomsil.usaint.util.rememberCaptureController

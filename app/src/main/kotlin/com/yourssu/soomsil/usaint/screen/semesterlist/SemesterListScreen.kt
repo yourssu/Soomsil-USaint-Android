@@ -1,6 +1,5 @@
 package com.yourssu.soomsil.usaint.screen.semesterlist
 
-import android.content.res.Resources.Theme
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +28,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,17 +46,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 import com.yourssu.soomsil.usaint.screen.UiEvent
-import com.yourssu.soomsil.usaint.ui.component.chart.Chart
-import com.yourssu.soomsil.usaint.ui.component.chart.ChartData
-import com.yourssu.soomsil.usaint.ui.entities.Grade
-import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
-import com.yourssu.soomsil.usaint.ui.entities.Semester
-import com.yourssu.soomsil.usaint.ui.entities.toCredit
-import com.yourssu.soomsil.usaint.ui.entities.toGrade
+import com.yourssu.soomsil.usaint.ui.component.Chart
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
+import com.yourssu.soomsil.usaint.ui.types.Grade
+import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
+import com.yourssu.soomsil.usaint.ui.types.Semester
+import com.yourssu.soomsil.usaint.ui.types.toCredit
+import com.yourssu.soomsil.usaint.ui.types.toGrade
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -66,7 +64,6 @@ private fun SemesterReport(
     semester: Semester,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isCurrentSemester: Boolean = false,
 ) {
     Row(
         modifier = modifier
@@ -97,7 +94,7 @@ private fun SemesterReport(
             )
         }
         Text(
-            text = (if (isCurrentSemester) "(예상) " else "") + semester.gpa.formatToString(),
+            text = semester.gpa.formatToString(),
             modifier = Modifier.padding(
                 horizontal = 8.dp,
                 vertical = 12.dp,
@@ -158,16 +155,18 @@ fun SemesterListScreen(
         }
     }
 
+    // TODO 임시
+    val includeSeasonalSemester by viewModel.includeSeasonalSemester.collectAsState(false)
+
     SemesterListScreen(
         isRefreshing = viewModel.isRefreshing,
         onRefresh = viewModel::refresh,
         reportCardSummary = viewModel.reportCardSummary,
         semesters = viewModel.semesters,
-        includeSeasonalSemester = viewModel.includeSeasonalSemester,
-        onSeasonalFlagChange = viewModel::setChartFlag,
+        includeSeasonalSemester = includeSeasonalSemester,
+        onSeasonalFlagChange = viewModel::updateIncludeSeasonalSemester,
         onBackClick = onBackClick,
         onGradeListClick = onGradeListClick,
-        currentSemester = viewModel.currentSemester,
         modifier = modifier,
     )
 }
@@ -182,7 +181,6 @@ fun SemesterListScreen(
     onSeasonalFlagChange: (Boolean) -> Unit,
     reportCardSummary: ReportCardSummary,
     modifier: Modifier = Modifier,
-    currentSemester: SemesterType? = null,
     onBackClick: () -> Unit = {},
     onGradeListClick: (initialTabIndex: Int) -> Unit = {},
 ) {
@@ -241,7 +239,7 @@ fun SemesterListScreen(
                 }
                 if (chartSemesters.isNotEmpty()) {
                     Chart(
-                        chartData = ChartData(semesters = chartSemesters),
+                        semesters = chartSemesters,
                         modifier = Modifier.height(170.dp),
                     )
                 }
@@ -275,7 +273,6 @@ fun SemesterListScreen(
                             SemesterReport(
                                 semester = semester,
                                 onClick = { onGradeListClick(size - index - 1) },
-                                isCurrentSemester = semester.type == currentSemester,
                             )
                         }
                     }

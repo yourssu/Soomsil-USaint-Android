@@ -6,7 +6,6 @@ import com.yourssu.soomsil.usaint.BuildConfig
 import com.yourssu.soomsil.usaint.data.source.local.AppDatabase
 import com.yourssu.soomsil.usaint.data.source.local.dao.LectureDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
-import com.yourssu.soomsil.usaint.data.source.local.dao.TotalReportCardDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,11 +28,6 @@ object DataBaseModule {
             // 디버그 모드에서만 사용해야 함
             if (BuildConfig.DEBUG) fallbackToDestructiveMigration()
         }.build()
-    }
-
-    @Provides
-    fun provideTotalReportCardDao(db: AppDatabase): TotalReportCardDao {
-        return db.totalReportCardDao()
     }
 
     @Provides

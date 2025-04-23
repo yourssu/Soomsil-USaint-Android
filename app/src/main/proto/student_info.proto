@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_package = "com.yourssu.soomsil.usaint.proto";
+option java_multiple_files = true;
+
+message StudentInformation {
+  string password = 1;          // 유세인트 비밀번호
+
+  /**
+   * [dev.eatsteak.rusaint.core.GraduationStudent]
+   */
+  string id = 2;                // 학번
+  string name = 3;              // 이름
+  int32 grade = 4;              // 학년
+  int32 semester = 5;           // 이수학기 (ex: 7)
+  string status = 6;            // 학적 상태 (재학 or 휴학)
+  int32 apply_year = 7;         // 입학년도
+  string apply_type = 8;        // 입학유형 (ex: 신입학)
+  string department = 9;        // 소속 (ex: IT대학)
+  repeated string majors = 10;  // 제1전공 ~ 제4전공
+  float graduation_points = 11; // 졸업학점
+  float completed_points = 12;  // 인정학점
+}

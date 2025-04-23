@@ -27,8 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
+import com.yourssu.soomsil.usaint.ui.types.StudentInfo
 
 @Composable
 fun StudentInfoItem(

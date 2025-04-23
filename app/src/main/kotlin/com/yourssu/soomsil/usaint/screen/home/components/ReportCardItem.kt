@@ -17,11 +17,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.ui.entities.Grade
-import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
-import com.yourssu.soomsil.usaint.ui.entities.toCredit
-import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
+import com.yourssu.soomsil.usaint.ui.types.Grade
+import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
+import com.yourssu.soomsil.usaint.ui.types.toCredit
+import com.yourssu.soomsil.usaint.ui.types.toGrade
 
 @Composable
 fun ReportCardItem(
