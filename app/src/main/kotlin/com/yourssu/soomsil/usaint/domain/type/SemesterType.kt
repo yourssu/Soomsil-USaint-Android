@@ -1,7 +1,5 @@
 package com.yourssu.soomsil.usaint.domain.type
 
-typealias RusaintSemesterType = dev.eatsteak.rusaint.core.SemesterType
-
 sealed class SemesterType(
     val storeFormat: String,
     val isSeasonal: Boolean,
@@ -41,20 +39,20 @@ fun makeSemesterType(year: Int, semester: String): SemesterType {
     }
 }
 
-fun SemesterType.toRusaintSemesterType(): RusaintSemesterType {
+fun SemesterType.toRusaintSemesterType(): dev.eatsteak.rusaint.core.SemesterType {
     return when (this) {
-        is SemesterType.One -> RusaintSemesterType.ONE
-        is SemesterType.Summer -> RusaintSemesterType.SUMMER
-        is SemesterType.Two -> RusaintSemesterType.TWO
-        is SemesterType.Winter -> RusaintSemesterType.WINTER
+        is SemesterType.One -> dev.eatsteak.rusaint.core.SemesterType.ONE
+        is SemesterType.Summer -> dev.eatsteak.rusaint.core.SemesterType.SUMMER
+        is SemesterType.Two -> dev.eatsteak.rusaint.core.SemesterType.TWO
+        is SemesterType.Winter -> dev.eatsteak.rusaint.core.SemesterType.WINTER
     }
 }
 
-fun RusaintSemesterType.toSemesterType(year: Int): SemesterType {
+fun dev.eatsteak.rusaint.core.SemesterType.toSemesterType(year: Int): SemesterType {
     return when (this) {
-        RusaintSemesterType.ONE -> SemesterType.One(year)
-        RusaintSemesterType.SUMMER -> SemesterType.Summer(year)
-        RusaintSemesterType.TWO -> SemesterType.Two(year)
-        RusaintSemesterType.WINTER -> SemesterType.Winter(year)
+        dev.eatsteak.rusaint.core.SemesterType.ONE -> SemesterType.One(year)
+        dev.eatsteak.rusaint.core.SemesterType.SUMMER -> SemesterType.Summer(year)
+        dev.eatsteak.rusaint.core.SemesterType.TWO -> SemesterType.Two(year)
+        dev.eatsteak.rusaint.core.SemesterType.WINTER -> SemesterType.Winter(year)
     }
 }

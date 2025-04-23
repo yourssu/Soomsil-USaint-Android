@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.ui.entities.ChapelInfo
+import com.yourssu.soomsil.usaint.ui.types.ChapelInfo
 import kotlin.math.ceil
 
 @Composable
@@ -30,7 +30,7 @@ fun ChapelCardItem(
         modifier = modifier,
         onClick = onChapelCardClick,
     ) {
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -88,7 +88,8 @@ fun ChapelCardItem(
 
             LinearProgressIndicator(
                 progress = { chapelInfo.currentAttendance.toFloat() / chapelInfo.totalAttendance.toFloat() },
-                modifier.fillMaxWidth()
+                modifier
+                    .fillMaxWidth()
                     .padding(
                         bottom = 4.dp,
                         start = 16.dp,
@@ -98,7 +99,10 @@ fun ChapelCardItem(
 
             Row {
                 Text(
-                    text = stringResource(id = R.string.saint_chapel_count, chapelInfo.currentAttendance),
+                    text = stringResource(
+                        id = R.string.saint_chapel_count,
+                        chapelInfo.currentAttendance
+                    ),
                     modifier = Modifier
                         .weight(1f)
                         .padding(
@@ -113,7 +117,10 @@ fun ChapelCardItem(
                 )
 
                 Text(
-                    text = stringResource(id = R.string.saint_chapel_count, chapelInfo.totalAttendance),
+                    text = stringResource(
+                        id = R.string.saint_chapel_count,
+                        chapelInfo.totalAttendance
+                    ),
                     modifier = Modifier
                         .padding(
                             bottom = 4.dp,

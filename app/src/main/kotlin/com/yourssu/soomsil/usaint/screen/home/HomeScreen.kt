@@ -33,12 +33,12 @@ import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.screen.home.components.ChapelCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.StudentInfoItem
-import com.yourssu.soomsil.usaint.ui.entities.ChapelInfo
-import com.yourssu.soomsil.usaint.ui.entities.ReportCardSummary
-import com.yourssu.soomsil.usaint.ui.entities.StudentInfo
-import com.yourssu.soomsil.usaint.ui.entities.toCredit
-import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
+import com.yourssu.soomsil.usaint.ui.types.ChapelInfo
+import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
+import com.yourssu.soomsil.usaint.ui.types.StudentInfo
+import com.yourssu.soomsil.usaint.ui.types.toCredit
+import com.yourssu.soomsil.usaint.ui.types.toGrade
 import timber.log.Timber
 
 @Composable

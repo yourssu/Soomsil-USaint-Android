@@ -18,12 +18,12 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 import com.yourssu.soomsil.usaint.screen.semesterdetail.CaptureFlag
-import com.yourssu.soomsil.usaint.ui.entities.LectureInfo
-import com.yourssu.soomsil.usaint.ui.entities.Semester
-import com.yourssu.soomsil.usaint.ui.entities.Tier
-import com.yourssu.soomsil.usaint.ui.entities.toCredit
-import com.yourssu.soomsil.usaint.ui.entities.toGrade
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
+import com.yourssu.soomsil.usaint.ui.types.LectureInfo
+import com.yourssu.soomsil.usaint.ui.types.Semester
+import com.yourssu.soomsil.usaint.ui.types.Tier
+import com.yourssu.soomsil.usaint.ui.types.toCredit
+import com.yourssu.soomsil.usaint.ui.types.toGrade
 
 @Composable
 fun SemesterDetailItem(
