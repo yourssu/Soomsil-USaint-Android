@@ -20,10 +20,11 @@ class LectureRepository @Inject constructor(
     suspend fun getLocalLectures(semester: SemesterType): Result<List<LectureEntity>> {
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
-                semesterDao.getSemesterWithLectures(
-                    year = semester.year,
-                    semesterName = semester.storeFormat
-                )?.lectures ?: throw Exception("semester(${semester})'s lectures not found")
+                emptyList()
+//                semesterDao.getSemesterWithLectures(
+//                    year = semester.year,
+//                    semesterName = semester.storeFormat
+//                )?.lectures ?: throw Exception("semester(${semester})'s lectures not found")
             }
         }
     }
@@ -31,14 +32,14 @@ class LectureRepository @Inject constructor(
     suspend fun storeLectures(vararg lectures: LectureEntity): Result<Unit> {
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
-                lectures.forEach { lectureDao.insertLecture(it) }
+//                lectures.forEach { lectureDao.insertLecture(it) }
             }
         }
     }
 
     suspend fun deleteAllLectures(): Result<Unit> {
         return kotlin.runCatching {
-            withContext(Dispatchers.IO) { lectureDao.deleteLectures() }
+//            withContext(Dispatchers.IO) { lectureDao.deleteAllLectures() }
         }
     }
 

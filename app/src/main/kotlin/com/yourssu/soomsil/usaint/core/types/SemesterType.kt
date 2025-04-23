@@ -4,5 +4,5 @@ enum class SemesterType {
     One,
     Summer,
     Two,
-    Winter,
+    Winter;
 }

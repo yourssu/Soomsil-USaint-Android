@@ -12,7 +12,6 @@ import org.junit.After
 import org.junit.Before
 
 abstract class DatabaseTest {
-
     private lateinit var db: AppDatabase
     lateinit var semesterDao: SemesterDao
     lateinit var lectureDao: LectureDao
@@ -33,35 +32,35 @@ abstract class DatabaseTest {
     fun teardown() {
         db.close()
     }
-
-    protected fun testSemesterEntity(
-        year: Int,
-        semester: String,
-        gpa: Float,
-    ) = SemesterEntity(
-        year = year,
-        semester = semester,
-        semesterRank = 0,
-        semesterStudentCount = 0,
-        overallRank = 0,
-        overallStudentCount = 0,
-        earnedCredit = 0f,
-        gpa = gpa,
-    )
-
-    protected fun testLectureEntity(
-        year: Int,
-        semester: String,
-        title: String,
-        code: String,
-    ) = LectureEntity(
-        year = year,
-        semester = semester,
-        title = title,
-        code = code,
-        credit = 0f,
-        grade = "",
-        score = "",
-        professorName = "",
-    )
 }
+
+fun testSemesterEntity(
+    year: Int,
+    semester: String,
+    gpa: Float,
+) = SemesterEntity(
+    year = year,
+    semester = semester,
+    semesterRank = 0,
+    semesterStudentCount = 0,
+    overallRank = 0,
+    overallStudentCount = 0,
+    earnedCredit = 0f,
+    gpa = gpa,
+)
+
+fun testLectureEntity(
+    year: Int,
+    semester: String,
+    title: String,
+    code: String,
+) = LectureEntity(
+    year = year,
+    semester = semester,
+    title = title,
+    code = code,
+    credit = 0f,
+    grade = "",
+    score = "",
+    professorName = "",
+)

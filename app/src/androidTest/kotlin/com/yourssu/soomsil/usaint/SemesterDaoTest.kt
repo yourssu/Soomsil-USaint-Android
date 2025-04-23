@@ -14,7 +14,7 @@ class SemesterDaoTest : DatabaseTest() {
         insertSemesters()
 
         val semesterEntity = semesterDao.getSemesterEntity(2024, SemesterType.One.name).first()
-        assertEquals(semesterEntity.gpa, 3.8f)
+        assertEquals(semesterEntity.gpa, 3.0f)
     }
 
     @Test
@@ -23,7 +23,7 @@ class SemesterDaoTest : DatabaseTest() {
 
         val semesterEntities = semesterDao.getSemesterEntities().first()
         assertEquals(
-            listOf(4.0f, 3.8f, 4.5f),
+            listOf(2.0f, 3.0f, 4.0f),
             semesterEntities.map { it.gpa }
         )
     }
@@ -34,7 +34,7 @@ class SemesterDaoTest : DatabaseTest() {
 
         val semesterEntities = semesterDao.getOneOffSemesterEntities()
         assertEquals(
-            listOf(4.0f, 3.8f, 4.5f),
+            listOf(2.0f, 3.0f, 4.0f),
             semesterEntities.map { it.gpa }
         )
     }
@@ -45,7 +45,7 @@ class SemesterDaoTest : DatabaseTest() {
 
         val semesterEntities = semesterDao.getOneOffSemesterEntities()
         assertEquals(
-            listOf(4.0f, 3.8f, 4.5f),
+            listOf(2.0f, 3.0f, 4.0f),
             semesterEntities.map { it.gpa }
         )
 
@@ -53,7 +53,7 @@ class SemesterDaoTest : DatabaseTest() {
 
         val replacedSemesterEntities = semesterDao.getOneOffSemesterEntities()
         assertEquals(
-            listOf(2.0f, 3.0f, 4.0f),
+            listOf(1.0f, 2.0f, 3.0f),
             replacedSemesterEntities.map { it.gpa }
         )
     }
@@ -65,47 +65,57 @@ class SemesterDaoTest : DatabaseTest() {
 
         val semesterWithLectures = semesterDao.getSemesterWithLectures().first()
         assertEquals(
-            listOf(4.0f, 3.8f, 4.5f),
+            listOf(2.0f, 3.0f, 4.0f),
             semesterWithLectures.map { it.semester.gpa }
         )
         assertEquals(
-            listOf(
-                listOf("Lecture 2023-2-1", "Lecture 2023-2-2"),
-                listOf("Lecture 2024-1"),
-                listOf("Lecture 2024-Summer")
-            ),
-            semesterWithLectures.map {
-                it.lectures.map(LectureEntity::title)
-            }
+            listOf(listOf("1", "2"), listOf("3"), listOf("4")),
+            semesterWithLectures.map { it.lectures.map(LectureEntity::code) }
         )
+    }
+
+    @Test
+    fun deleteSemester() = runTest {
+        insertSemesters()
+        insertLectures()
+
+        val lectureEntities1 = lectureDao.getOneOffLectureEntities()
+        assertEquals(listOf("1", "2", "3", "4"), lectureEntities1.map(LectureEntity::code))
+
+        semesterDao.deleteAllSemesters()
+
+        val semesterEntities = semesterDao.getOneOffSemesterEntities()
+        assert(semesterEntities.isEmpty())
+
+        val lectureEntities2 = lectureDao.getOneOffLectureEntities()
+        assert(lectureEntities2.isEmpty())
     }
 
     private suspend fun insertSemesters() {
         val semesterEntities = listOf(
-            testSemesterEntity(2023, SemesterType.Two.name, 4.0f),
-            testSemesterEntity(2024, SemesterType.One.name, 3.8f),
-            testSemesterEntity(2024, SemesterType.Summer.name, 4.5f),
+            testSemesterEntity(2023, SemesterType.Two.name, 2.0f),
+            testSemesterEntity(2024, SemesterType.One.name, 3.0f),
+            testSemesterEntity(2024, SemesterType.Summer.name, 4.0f),
         )
         semesterDao.insertOrIgnoreSemesters(semesterEntities)
     }
 
     private suspend fun updateSemesters() {
         val semesterEntities = listOf(
-            testSemesterEntity(2023, SemesterType.Two.name, 2.0f),
-            testSemesterEntity(2024, SemesterType.One.name, 3.0f),
-            testSemesterEntity(2024, SemesterType.Summer.name, 4.0f),
+            testSemesterEntity(2023, SemesterType.Two.name, 1.0f),
+            testSemesterEntity(2024, SemesterType.One.name, 2.0f),
+            testSemesterEntity(2024, SemesterType.Summer.name, 3.0f),
         )
         semesterDao.upsertSemesters(semesterEntities)
     }
 
     private suspend fun insertLectures() {
         val lectureEntities = listOf(
-            testLectureEntity(2023, SemesterType.Two.name, "Lecture 2023-2-1", code = "1"),
-            testLectureEntity(2023, SemesterType.Two.name, "Lecture 2023-2-2", code = "2"),
-            testLectureEntity(2024, SemesterType.One.name, "Lecture 2024-1", code = "3"),
-            testLectureEntity(2024, SemesterType.Summer.name, "Lecture 2024-Summer", code = "4"),
+            testLectureEntity(2023, SemesterType.Two.name, "", code = "1"),
+            testLectureEntity(2023, SemesterType.Two.name, "", code = "2"),
+            testLectureEntity(2024, SemesterType.One.name, "", code = "3"),
+            testLectureEntity(2024, SemesterType.Summer.name, "", code = "4"),
         )
         lectureDao.insertOrIgnoreLectures(lectureEntities)
     }
 }
-

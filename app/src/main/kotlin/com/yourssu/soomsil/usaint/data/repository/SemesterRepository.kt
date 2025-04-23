@@ -3,7 +3,6 @@ package com.yourssu.soomsil.usaint.data.repository
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
 import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterEntity
 import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
-import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.Dispatchers
@@ -25,21 +24,10 @@ class SemesterRepository @Inject constructor(
         }
     }
 
-    suspend fun getLocalSemester(semesterType: SemesterType): Result<SemesterEntity> {
-        return kotlin.runCatching {
-            withContext(Dispatchers.IO) {
-                semesterDao.getSemesterByYearAndSemester(
-                    semesterType.year,
-                    semesterType.storeFormat
-                ) ?: throw Exception("semester $semesterType not found")
-            }
-        }
-    }
-
     suspend fun storeSemesters(vararg semesters: SemesterEntity): Result<Unit> {
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
-                semesters.forEach { semesterDao.insertSemester(it) }
+//                semesters.forEach { semesterDao.insertSemester(it) }
             }
         }
     }
