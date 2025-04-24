@@ -2,14 +2,14 @@ package com.yourssu.soomsil.usaint.data.repository
 
 import com.yourssu.soomsil.usaint.core.model.StudentCredential
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentCredentialDataSource
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class StudentCredentialRepository @Inject constructor(
-    private val studentInformation: StudentCredentialDataSource,
+    private val studentCredential: StudentCredentialDataSource,
 ) {
-    val studentCredential: Flow<StudentCredential> = studentInformation.studentCredential
+    suspend fun getStudentCredential(): StudentCredential =
+        studentCredential.getStudentCredential()
 
     suspend fun setStudentCredential(credential: StudentCredential) =
-        studentInformation.setStudentCredential(credential)
+        studentCredential.setStudentCredential(credential)
 }

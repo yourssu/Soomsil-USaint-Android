@@ -53,7 +53,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import com.yourssu.soomsil.usaint.util.NotificationUtil
 import kotlinx.coroutines.delay
@@ -80,8 +79,7 @@ fun LoginScreen(
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.uiEvent.collect { uiEvent ->
                 when (uiEvent) {
-                    is UiEvent.Success -> {
-                        Toast.makeText(context, "로그인 되었습니다.", Toast.LENGTH_SHORT).show()
+                    is LoginUiEvent.Success -> {
                         // 로그인 시 알림 권한 요청
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                             !NotificationUtil.areNotificationEnabled(context)
@@ -92,20 +90,14 @@ fun LoginScreen(
                         }
                     }
 
-                    is UiEvent.Failure -> {
+                    is LoginUiEvent.Failure -> {
+                        // TODO snackbar
                         Toast.makeText(
                             context,
-                            uiEvent.msg ?: context.resources.getString(R.string.error_unknown),
+                            uiEvent.message ?: context.resources.getString(R.string.error_unknown),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-
-                    is UiEvent.SessionFailure -> {
-                        Toast.makeText(context, R.string.error_session_failure, Toast.LENGTH_SHORT)
-                            .show()
-                    }
-
-                    else -> {}
                 }
             }
         }

@@ -4,29 +4,29 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    studentCredentialRepository: StudentCredentialRepository
+    studentCredentialRepository: StudentCredentialRepository,
 ) : ViewModel() {
-    val mainUiState: StateFlow<MainUiState> = studentCredentialRepository.studentCredential
-        .map {
-            if (it.id.isNotEmpty() && it.password.isNotEmpty()) {
-                MainUiState.Success
-            } else {
-                MainUiState.InvalidOrNoCredential
+    private val _mainUiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
+    val mainUiState = _mainUiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            studentCredentialRepository.getStudentCredential().let { (id, password) ->
+                _mainUiState.value = if (id.isNotEmpty() && password.isNotEmpty()) {
+                    MainUiState.Success
+                } else {
+                    MainUiState.InvalidOrNoCredential
+                }
             }
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = MainUiState.Loading,
-        )
+    }
 }
 
 sealed interface MainUiState {
