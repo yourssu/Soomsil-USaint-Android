@@ -9,8 +9,10 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentCredentialSerializer
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentInformationSerializer
 import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesSerializer
+import com.yourssu.soomsil.usaint.proto.StudentCredentialProto
 import com.yourssu.soomsil.usaint.proto.StudentInformation
 import com.yourssu.soomsil.usaint.proto.UserPreferences
 import dagger.Module
@@ -53,6 +55,15 @@ object DataStoreModule {
         return DataStoreFactory.create(
             serializer = StudentInformationSerializer,
             produceFile = { context.dataStoreFile("student_information.pb") }
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideStudentCredentialDataStore(@ApplicationContext context: Context): DataStore<StudentCredentialProto> {
+        return DataStoreFactory.create(
+            serializer = StudentCredentialSerializer,
+            produceFile = { context.dataStoreFile("student_credential.pb") }
         )
     }
 }

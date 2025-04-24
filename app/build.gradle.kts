@@ -47,6 +47,11 @@ android {
     room {
         schemaDirectory("$projectDir/schemas")
     }
+    defaultConfig {
+        ndk {
+            abiFilters += setOf("x86_64")
+        }
+    }
 }
 
 dependencies {

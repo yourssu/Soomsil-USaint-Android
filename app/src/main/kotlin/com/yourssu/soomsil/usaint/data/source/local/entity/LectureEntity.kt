@@ -31,7 +31,7 @@ data class LectureEntity(
     val grade: String,          // 등급 (ex: "A+", "P", "F")
     val score: String,          // 성적 (ex: "90", "P", "F")
     val professorName: String,  // 교수님 성함
-    val detail: Map<String, String>?, // 성적 상세 정보
+    val detail: Map<String, String>? = null, // 성적 상세 정보
 ) {
     fun equalsIgnoreIds(other: LectureEntity): Boolean {
         return title == other.title && code == other.code && credit == other.credit &&

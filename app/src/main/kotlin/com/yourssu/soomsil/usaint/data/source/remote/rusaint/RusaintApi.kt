@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.data.source.remote.rusaint
 
+import com.yourssu.soomsil.usaint.core.model.StudentCredential
 import dev.eatsteak.rusaint.core.ClassGrade
 import dev.eatsteak.rusaint.core.CourseType
 import dev.eatsteak.rusaint.core.GradeSummary
@@ -11,15 +12,22 @@ import dev.eatsteak.rusaint.ffi.GraduationRequirementsApplicationBuilder
 import dev.eatsteak.rusaint.ffi.StudentInformationApplicationBuilder
 import dev.eatsteak.rusaint.ffi.USaintSession
 import dev.eatsteak.rusaint.ffi.USaintSessionBuilder
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 class RusaintApi @Inject constructor() {
 
+    @Volatile
+    private var SESSION: USaintSession? = null
+    private val mutex = Mutex()
+
     // 학번과 비밀번호로 인증된 세션
     // https://docs.rs/rusaint/latest/rusaint/struct.USaintSession.html#method.with_password
-    suspend fun getUSaintSession(id: String, pw: String): Result<USaintSession> {
-        return kotlin.runCatching {
-            USaintSessionBuilder().withPassword(id, pw)
+    internal suspend fun getUSaintSession(credential: StudentCredential): USaintSession {
+        return mutex.withLock {
+            SESSION ?: USaintSessionBuilder().withPassword(credential.id, credential.password)
+                .also { SESSION = it }
         }
     }
 

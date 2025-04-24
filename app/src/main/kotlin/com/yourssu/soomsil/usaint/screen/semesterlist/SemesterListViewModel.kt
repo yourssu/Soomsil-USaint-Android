@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
-import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
@@ -32,7 +31,7 @@ import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class SemesterListViewModel @Inject constructor(
-    private val uSaintSessionRepo: USaintSessionRepository,
+//    private val uSaintSessionRepo: USaintSessionRepository,
     private val semesterRepo: SemesterRepository,
     private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
@@ -108,11 +107,11 @@ class SemesterListViewModel @Inject constructor(
         // 동시에 로그인 여러 번 하지 않도록
         mutex.withLock {
             if (session == null) {
-                session = uSaintSessionRepo.getSession().getOrElse { e ->
-                    Timber.e(e)
-                    _uiEvent.emit(UiEvent.SessionFailure)
-                    return
-                }
+//                session = uSaintSessionRepo.getSession().getOrElse { e ->
+//                    Timber.e(e)
+//                    _uiEvent.emit(UiEvent.SessionFailure)
+//                    return
+//                }
             }
         }
 

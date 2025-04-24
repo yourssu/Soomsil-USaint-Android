@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
-import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.types.StudentInfo
@@ -23,7 +22,7 @@ import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val uSaintSessionRepo: USaintSessionRepository,
+//    private val uSaintSessionRepo: USaintSessionRepository,
     private val studentInfoRepo: StudentDataRepository,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
@@ -72,11 +71,11 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun refreshHome() {
-        val session = uSaintSessionRepo.getSession().getOrElse { e ->
-            Timber.e(e)
-            _uiEvent.emit(UiEvent.SessionFailure)
-            return
-        }
+//        val session = uSaintSessionRepo.getSession().getOrElse { e ->
+//            Timber.e(e)
+//            _uiEvent.emit(UiEvent.SessionFailure)
+//            return
+//        }
 
         val job1 = viewModelScope.launch {
 //            studentInfoRepo.getRemoteStudentInfo(session)

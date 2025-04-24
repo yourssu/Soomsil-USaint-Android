@@ -51,6 +51,7 @@ class LoginViewModel @Inject constructor(
             isLoading = true
             // 로그인 시도
             // 실패 시 Error 이벤트 발생 후 종료
+            uSaintSessionRepo.getSession(studentCredential)
 //            val session = uSaintSessionRepo.withPassword(userCredential).getOrElse { e ->
 //                Timber.e(e)
 //                when (e) {
@@ -69,7 +70,7 @@ class LoginViewModel @Inject constructor(
             // 성공 시 id/pw, 학생 정보 저장
 //            studentDataRepository.storeUserCredential(userCredential).onFailure { e -> Timber.e(e) }
 //            studentInfoRepo.storeStudentInfo(studentInfoVO).onFailure { e -> Timber.e(e) }
-            studentCredentialRepository.setStudentCredential(studentCredential)
+//            studentCredentialRepository.setStudentCredential(studentCredential)
             _uiEvent.emit(UiEvent.Success)
             isLoading = false
         }
