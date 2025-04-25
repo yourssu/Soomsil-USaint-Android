@@ -2,7 +2,6 @@ package com.yourssu.soomsil.usaint.screen.login
 
 import android.Manifest
 import android.os.Build
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -30,6 +29,9 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,6 +68,7 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     // 알림 권한 요청 런처
     val requestPermissionLauncher = rememberLauncherForActivityResult(
@@ -90,14 +93,10 @@ fun LoginScreen(
                         }
                     }
 
-                    is LoginUiEvent.Failure -> {
-                        // TODO snackbar
-                        Toast.makeText(
-                            context,
-                            uiEvent.message ?: context.resources.getString(R.string.error_unknown),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    is LoginUiEvent.Failure -> snackbarHostState.showSnackbar(
+                        message = uiEvent.message ?: "로그인 실패: 다시 시도해주세요.",
+                        duration = SnackbarDuration.Short,
+                    )
                 }
             }
         }
@@ -111,6 +110,7 @@ fun LoginScreen(
         onPasswordChange = { viewModel.studentPw = it },
         onLoginClick = viewModel::login,
         modifier = modifier,
+        snackbarHostState = snackbarHostState,
     )
 }
 
@@ -124,11 +124,13 @@ fun LoginScreen(
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     var showPassword by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Box {
                 CenterAlignedTopAppBar(
