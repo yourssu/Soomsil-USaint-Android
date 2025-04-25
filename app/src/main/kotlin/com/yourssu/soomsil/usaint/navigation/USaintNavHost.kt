@@ -16,7 +16,6 @@ import com.yourssu.soomsil.usaint.screen.login.navigation.navigateToLogin
 import com.yourssu.soomsil.usaint.screen.reportcard.navigation.reportCardScreen
 import com.yourssu.soomsil.usaint.screen.semesterdetail.navigation.navigateToSemesterDetail
 import com.yourssu.soomsil.usaint.screen.semesterdetail.navigation.semesterDetailScreen
-import com.yourssu.soomsil.usaint.screen.semesterlist.navigation.navigateToSemesterList
 import com.yourssu.soomsil.usaint.screen.semesterlist.navigation.semesterListScreen
 import com.yourssu.soomsil.usaint.screen.setting.navigation.navigateToSetting
 import com.yourssu.soomsil.usaint.screen.setting.navigation.settingScreen
@@ -80,7 +79,11 @@ fun USaintNavHost(
         )
         homeScreen(
             navigateToSetting = { navController.navigateToSetting() },
-            navigateToSemesterList = { navController.navigateToSemesterList() },
+            navigateToSemesterList = {
+                navController.navigateToTopLevelDestination(
+                    TopLevelDestination.REPORT_CARD
+                )
+            },
         )
         reportCardScreen()
         chapelScreen()

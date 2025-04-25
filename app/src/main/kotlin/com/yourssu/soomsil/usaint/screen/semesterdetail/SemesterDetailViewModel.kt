@@ -10,7 +10,6 @@ import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.usecase.MakeSemesterFromLecturesUseCase
-import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.types.LectureInfo
 import com.yourssu.soomsil.usaint.ui.types.Semester
 import com.yourssu.soomsil.usaint.ui.types.sortByGrade
@@ -34,8 +33,8 @@ class SemesterDetailViewModel @Inject constructor(
     private val lectureRepo: LectureRepository,
     private val makeSemesterUseCase: MakeSemesterFromLecturesUseCase,
 ) : ViewModel() {
-    private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
-    val uiEvent = _uiEvent.asSharedFlow()
+//    private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
+//    val uiEvent = _uiEvent.asSharedFlow()
 
     var isRefreshing by mutableStateOf(false)
         private set
@@ -129,7 +128,7 @@ class SemesterDetailViewModel @Inject constructor(
             }
             .onFailure { e ->
                 Timber.e(e)
-                _uiEvent.emit(UiEvent.RefreshFailure)
+//                _uiEvent.emit(UiEvent.RefreshFailure)
             }
         session = null
     }

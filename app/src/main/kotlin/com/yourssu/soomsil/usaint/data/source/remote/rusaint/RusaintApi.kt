@@ -1,6 +1,6 @@
 package com.yourssu.soomsil.usaint.data.source.remote.rusaint
 
-import com.yourssu.soomsil.usaint.core.model.ReportCardData
+import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentCredential
 import com.yourssu.soomsil.usaint.core.model.StudentData
 import dev.eatsteak.rusaint.core.ClassGrade
@@ -43,7 +43,7 @@ class RusaintApi @Inject constructor() {
 
     // 전체 학기의 증명 평점 정보
     // https://docs.rs/rusaint/latest/rusaint/application/course_grades/struct.CourseGradesApplication.html#method.certificated_summary
-    suspend fun getCertificatedGradeSummary(credential: StudentCredential): Result<ReportCardData> {
+    suspend fun getCertificatedGradeSummary(credential: StudentCredential): Result<ReportCardSummaryData> {
         return runCatching {
             val session = getUSaintSession(credential).getOrThrow()
             CourseGradesApplicationBuilder().build(session).certificatedSummary(CourseType.BACHELOR)

@@ -47,7 +47,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
-import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.component.Chart
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import com.yourssu.soomsil.usaint.ui.types.Grade
@@ -114,39 +113,39 @@ fun SemesterListScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(lifecycleOwner.lifecycle) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.uiEvent.collect { uiEvent ->
-                when (uiEvent) {
-                    is UiEvent.Failure -> {
-                        Toast.makeText(
-                            context,
-                            uiEvent.msg ?: context.resources.getString(R.string.error_unknown),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    is UiEvent.SessionFailure -> {
-                        Toast.makeText(
-                            context,
-                            R.string.error_session_failure,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    is UiEvent.RefreshFailure -> {
-                        Toast.makeText(
-                            context,
-                            R.string.error_refresh_failure,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    else -> {}
-                }
-            }
-        }
-    }
+//    LaunchedEffect(lifecycleOwner.lifecycle) {
+//        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//            viewModel.uiEvent.collect { uiEvent ->
+//                when (uiEvent) {
+//                    is UiEvent.Failure -> {
+//                        Toast.makeText(
+//                            context,
+//                            uiEvent.msg ?: context.resources.getString(R.string.error_unknown),
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//
+//                    is UiEvent.SessionFailure -> {
+//                        Toast.makeText(
+//                            context,
+//                            R.string.error_session_failure,
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//
+//                    is UiEvent.RefreshFailure -> {
+//                        Toast.makeText(
+//                            context,
+//                            R.string.error_refresh_failure,
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//
+//                    else -> {}
+//                }
+//            }
+//        }
+//    }
 
     DisposableEffect(Unit) {
         onDispose {

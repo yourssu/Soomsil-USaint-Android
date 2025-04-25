@@ -43,12 +43,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
-import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.screen.semesterdetail.components.SemesterDetailItem
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import com.yourssu.soomsil.usaint.ui.types.LectureInfo
@@ -74,26 +71,26 @@ fun SemesterDetailScreen(
     var captureFlag: CaptureFlag by remember { mutableStateOf(CaptureFlag.None) }
     val captureController = rememberCaptureController()
 
-    LaunchedEffect(lifecycleOwner.lifecycle) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.uiEvent.collect { uiEvent ->
-                when (uiEvent) {
-                    is UiEvent.Failure -> {
-                        Toast.makeText(
-                            context,
-                            uiEvent.msg ?: context.resources.getString(R.string.error_unknown),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    is UiEvent.SessionFailure -> {
-                        Toast.makeText(context, R.string.error_session_failure, Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                }
-            }
-        }
-    }
+//    LaunchedEffect(lifecycleOwner.lifecycle) {
+//        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//            viewModel.uiEvent.collect { uiEvent ->
+//                when (uiEvent) {
+//                    is UiEvent.Failure -> {
+//                        Toast.makeText(
+//                            context,
+//                            uiEvent.msg ?: context.resources.getString(R.string.error_unknown),
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//
+//                    is UiEvent.SessionFailure -> {
+//                        Toast.makeText(context, R.string.error_session_failure, Toast.LENGTH_SHORT)
+//                            .show()
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     SemesterDetailScreen(
         isRefreshing = viewModel.isRefreshing,

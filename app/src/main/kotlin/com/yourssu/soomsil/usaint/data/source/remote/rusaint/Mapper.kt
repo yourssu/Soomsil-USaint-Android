@@ -1,6 +1,6 @@
 package com.yourssu.soomsil.usaint.data.source.remote.rusaint
 
-import com.yourssu.soomsil.usaint.core.model.ReportCardData
+import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentData
 import dev.eatsteak.rusaint.core.GradeSummary
 import dev.eatsteak.rusaint.core.GraduationStudent
@@ -19,7 +19,7 @@ internal fun GraduationStudent.asExternalModel() = StudentData(
     completedPoints = completedPoints,
 )
 
-internal fun GradeSummary.asExternalModel() = ReportCardData(
+internal fun GradeSummary.asExternalModel() = ReportCardSummaryData(
     attemptedCredits = attemptedCredits,
     earnedCredits = earnedCredits,
     gradePointsSum = gradePointsSum,

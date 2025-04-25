@@ -27,12 +27,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
-import com.yourssu.soomsil.usaint.ui.types.StudentInfo
 
 @Composable
-fun StudentInfoItem(
-    studentInfo: StudentInfo?,
+fun StudentDataItem(
+    studentData: StudentData?,
     modifier: Modifier = Modifier,
     onProfileClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
@@ -62,7 +62,7 @@ fun StudentInfoItem(
                 modifier = Modifier.weight(1f),
             ) {
                 Text(
-                    text = studentInfo?.name ?: "-",
+                    text = studentData?.name ?: "-",
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight(600),
                     ),
@@ -70,8 +70,8 @@ fun StudentInfoItem(
                 Text(
                     text = stringResource(
                         R.string.student_department_and_grade_format,
-                        studentInfo?.department ?: "-",
-                        studentInfo?.grade ?: 0,
+                        studentData?.department ?: "-",
+                        studentData?.grade ?: 0,
                     ),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -98,12 +98,8 @@ fun StudentInfoItem(
 private fun StudentInfoPreview() {
     SoomsilUSaintTheme {
         Surface {
-            StudentInfoItem(
-                studentInfo = StudentInfo(
-                    name = "홍길동",
-                    department = "학부이름",
-                    grade = 3,
-                )
+            StudentDataItem(
+                studentData = StudentData.previewData,
             )
         }
     }

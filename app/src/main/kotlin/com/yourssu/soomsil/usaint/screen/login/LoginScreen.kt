@@ -116,7 +116,7 @@ fun LoginScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
+private fun LoginScreen(
     isLoading: Boolean,
     studentId: String,
     password: String,

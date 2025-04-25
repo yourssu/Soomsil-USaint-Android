@@ -17,15 +17,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
+import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import com.yourssu.soomsil.usaint.ui.types.Grade
-import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
-import com.yourssu.soomsil.usaint.ui.types.toCredit
-import com.yourssu.soomsil.usaint.ui.types.toGrade
 
 @Composable
-fun ReportCardItem(
-    reportCardSummary: ReportCardSummary,
+fun ReportCardSummaryItem(
+    studentData: StudentData?,
+    reportCardSummary: ReportCardSummaryData?,
     modifier: Modifier = Modifier,
     onReportCardClick: () -> Unit = {},
 ) {
@@ -47,9 +47,8 @@ fun ReportCardItem(
                         start = 16.dp,
                         end = 16.dp,
                     ),
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold
-                ),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             ActionTitle(
@@ -57,6 +56,7 @@ fun ReportCardItem(
                 subTitle = stringResource(id = R.string.saint_grade_subtitle),
             )
             ReportCardSummary(
+                graduationPoints = studentData?.graduationPoints ?: 0f,
                 reportCardSummary = reportCardSummary,
                 onReportCardClick = onReportCardClick
             )
@@ -66,14 +66,15 @@ fun ReportCardItem(
 
 @Composable
 private fun ReportCardSummary(
-    reportCardSummary: ReportCardSummary,
+    graduationPoints: Float,
+    reportCardSummary: ReportCardSummaryData?,
     modifier: Modifier = Modifier,
     onReportCardClick: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
         ReportOutline(
             title = stringResource(R.string.saint_grade_detail_average_grade),
-            actualValue = reportCardSummary.gpa.formatToString(),
+            actualValue = reportCardSummary?.gradePointsAverage.toString(),
             maxValue = Grade.Max.formatToString(),
         )
         HorizontalDivider(
@@ -81,43 +82,9 @@ private fun ReportCardSummary(
         )
         ReportOutline(
             title = stringResource(R.string.saint_grade_detail_creadit),
-            actualValue = reportCardSummary.earnedCredit.formatToString(),
-            maxValue = reportCardSummary.graduateCredit.formatToString(),
+            actualValue = reportCardSummary?.earnedCredits.toString(),
+            maxValue = graduationPoints.toString(),
         )
-
-        // 전체성적 보기 버튼
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(
-//                    start = 16.dp,
-//                    end = 16.dp,
-//                    top = 10.dp,
-//                )
-//                .clip(RoundedCornerShape(8.dp))
-//                .height(40.dp)
-//                .background(color = MaterialTheme.colorScheme.surface)
-//                .clickable(onClick = onReportCardClick),
-//            horizontalArrangement = Arrangement.Center,
-//            verticalAlignment = Alignment.CenterVertically,
-//        ) {
-//            Text(
-//                text = stringResource(R.string.saint_grade_see_all)
-//            )
-//        }
-//        BoxButton(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(
-//                    start = 16.dp,
-//                    end = 16.dp,
-//                    top = 10.dp,
-//                ),
-//            onClick = onReportCardClick,
-//            text = stringResource(R.string.saint_grade_see_all),
-//            sizeType = BoxButtonSize.Medium,
-//            buttonType = BoxButtonType.Filled,
-//        )
     }
 }
 
@@ -171,12 +138,9 @@ private fun ReportOutline(
 @Composable
 private fun ReportCardItemPreview() {
     SoomsilUSaintTheme {
-        ReportCardItem(
-            reportCardSummary = ReportCardSummary(
-                gpa = 4.22.toGrade(),
-                earnedCredit = 97.toCredit(),
-                graduateCredit = 133.toCredit(),
-            ),
+        ReportCardSummaryItem(
+            studentData = StudentData.previewData,
+            reportCardSummary = ReportCardSummaryData.previewData,
         )
     }
 }
@@ -187,11 +151,8 @@ private fun ReportCardSummaryPreview() {
     SoomsilUSaintTheme {
         Surface {
             ReportCardSummary(
-                reportCardSummary = ReportCardSummary(
-                    gpa = 4.22.toGrade(),
-                    earnedCredit = 97.toCredit(),
-                    graduateCredit = 133.toCredit(),
-                )
+                graduationPoints = 133f,
+                reportCardSummary = ReportCardSummaryData.previewData,
             )
         }
     }
