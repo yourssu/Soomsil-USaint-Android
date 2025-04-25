@@ -113,7 +113,7 @@ fun SemesterDetailScreen(
                     captureFlag = CaptureFlag.None
                 },
                 onError = {
-                    Toast.makeText(context, R.string.error_capture_fail, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "캡처 도중 문제가 발생했습니다.", Toast.LENGTH_SHORT).show()
                     captureFlag = CaptureFlag.None
                 },
             )
@@ -164,7 +164,7 @@ fun SemesterDetailScreen(
             Column {
                 CenterAlignedTopAppBar(
                     title = {
-                        Text(text = stringResource(R.string.gradelist_title))
+                        Text(text = "상세성적")
                     },
                     navigationIcon = {
                         IconButton(onClick = onBackClick) {

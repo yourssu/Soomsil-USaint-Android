@@ -67,12 +67,11 @@ fun StudentDataItem(
                         fontWeight = FontWeight(600),
                     ),
                 )
+
                 Text(
-                    text = stringResource(
-                        R.string.student_department_and_grade_format,
-                        studentData?.department ?: "-",
-                        studentData?.grade ?: 0,
-                    ),
+                    text = studentData?.run {
+                        "$department ${majors.firstOrNull() ?: ""} ${grade}학년"
+                    } ?: "-",
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

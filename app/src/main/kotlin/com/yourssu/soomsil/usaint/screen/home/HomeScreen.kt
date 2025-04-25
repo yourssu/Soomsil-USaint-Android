@@ -50,7 +50,7 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+private fun HomeScreen(
     homeUiState: HomeUiState,
     modifier: Modifier = Modifier,
     onProfileClick: () -> Unit = {},
@@ -63,7 +63,7 @@ fun HomeScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.saint_title),
+                        text = "유세인트",
                         style = MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.Bold
                         ),
@@ -99,16 +99,6 @@ fun HomeScreen(
                 reportCardSummary = reportCardSummaryData,
                 onReportCardClick = onReportCardClick,
             )
-//            Spacer(Modifier.height(12.dp))
-//            ChapelCardItem(
-//                onChapelCardClick = {},
-//                chapelInfo = ChapelInfo(
-//                    "D-11-4",
-//                    "(월) 13:30~14:20",
-//                    12,
-//                    6
-//                )
-//            )
         }
     }
 }

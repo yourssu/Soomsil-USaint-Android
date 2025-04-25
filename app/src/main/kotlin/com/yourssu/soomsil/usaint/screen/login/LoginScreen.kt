@@ -134,7 +134,7 @@ private fun LoginScreen(
         topBar = {
             Box {
                 CenterAlignedTopAppBar(
-                    title = { Text(text = stringResource(R.string.login)) }
+                    title = { Text(text = "로그인") }
                 )
                 if (isLoading) {
                     LinearProgressIndicator(
@@ -164,7 +164,7 @@ private fun LoginScreen(
                     imeAction = ImeAction.Next,
                 ),
                 enabled = !isLoading,
-                label = { Text(text = stringResource(R.string.student_id)) },
+                label = { Text(text = "학번") },
                 singleLine = true,
             )
 
@@ -182,7 +182,7 @@ private fun LoginScreen(
                     onDone = { onLoginClick() }
                 ),
                 enabled = !isLoading,
-                label = { Text(text = stringResource(R.string.password)) },
+                label = { Text(text = "유세인트 비밀번호") },
                 singleLine = true,
                 visualTransformation = if (showPassword) {
                     VisualTransformation.None
@@ -216,7 +216,7 @@ private fun LoginScreen(
                 onClick = onLoginClick,
                 enabled = !isLoading,
             ) {
-                Text(text = stringResource(R.string.login))
+                Text(text = "로그인")
             }
 
             Spacer(Modifier.height(8.dp))
@@ -231,7 +231,7 @@ private fun LoginScreen(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = stringResource(id = R.string.saint_login_announce),
+                    text = stringResource(R.string.saint_login_announce),
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.labelSmall,
                 )

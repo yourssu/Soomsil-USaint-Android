@@ -147,7 +147,7 @@ fun SettingScreen(
         modifier = modifier,
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = stringResource(id = R.string.setting)) },
+                title = { Text(text = "설정") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -166,7 +166,7 @@ fun SettingScreen(
             Spacer(Modifier.height(16.dp))
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                text = stringResource(R.string.manage_account),
+                text = "계정관리",
                 style = MaterialTheme.typography.titleSmall,
             )
             Spacer(Modifier.height(8.dp))
@@ -175,16 +175,14 @@ fun SettingScreen(
                     .fillMaxWidth()
                     .clickable { onShowDialogChange(true) },
                 headlineContent = {
-                    Text(
-                        text = stringResource(R.string.setting_logout),
-                    )
+                    Text(text = "로그아웃")
                 }
             )
 
             Spacer(Modifier.height(16.dp))
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                text = stringResource(R.string.alarm),
+                text = "알림",
                 style = MaterialTheme.typography.titleSmall,
             )
             Spacer(Modifier.height(8.dp))
@@ -196,9 +194,7 @@ fun SettingScreen(
                             onNotificationToggleChange(!notificationEnabled)
                     },
                 headlineContent = {
-                    Text(
-                        text = stringResource(R.string.get_alarm),
-                    )
+                    Text(text = "알림 받기")
                 },
                 trailingContent = {
                     Switch(
@@ -257,21 +253,21 @@ fun SettingScreen(
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { onShowDialogChange(false) },
-                title = { Text(text = stringResource(R.string.logout)) },
-                text = { Text(text = stringResource(R.string.logout_title)) },
+                title = { Text(text = "로그아웃") },
+                text = { Text(text = "로그아웃 하시겠습니까? 모든 데이터가 삭제됩니다.") },
                 confirmButton = {
                     TextButton(onClick = {
                         onLogout()
                         onShowDialogChange(false)
                     }) {
-                        Text(text = stringResource(R.string.logout))
+                        Text(text = "로그아웃")
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = {
                         onShowDialogChange(false)
                     }) {
-                        Text(text = stringResource(R.string.cancel))
+                        Text(text = "취소")
                     }
                 },
             )

@@ -194,7 +194,7 @@ fun SemesterListScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.reportcard_title))
+                    Text(text = "내 성적")
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
@@ -224,13 +224,13 @@ fun SemesterListScreen(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     ScoreDetail(
-                        title = stringResource(id = R.string.reportcard_average_grade),
+                        title = "평점 평균",
                         actualValue = reportCardSummary.gpa.formatToString(),
                         maxValue = Grade.Max.formatToString(),
                         modifier = Modifier.weight(1f),
                     )
                     ScoreDetail(
-                        title = stringResource(id = R.string.reportcard_credit),
+                        title = "취득 학점",
                         actualValue = reportCardSummary.earnedCredit.formatToString(),
                         maxValue = reportCardSummary.graduateCredit.formatToString(),
                         modifier = Modifier.weight(1f),
@@ -247,7 +247,7 @@ fun SemesterListScreen(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = stringResource(R.string.reportcard_include_seasonal_semester))
+                    Text(text = "계절학기 포함")
                     Checkbox(
                         checked = includeSeasonalSemester,
                         onCheckedChange = onSeasonalFlagChange,
@@ -306,7 +306,7 @@ private fun ScoreDetail(
             )
             Spacer(Modifier.width(4.dp))
             Text(
-                text = stringResource(R.string.grade_delimiter),
+                text = "/",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

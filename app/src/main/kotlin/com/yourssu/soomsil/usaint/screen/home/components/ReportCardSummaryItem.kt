@@ -39,7 +39,7 @@ fun ReportCardSummaryItem(
                 .padding(bottom = 10.dp),
         ) {
             Text(
-                text = stringResource(id = R.string.saint_grade),
+                text = "내 성적",
                 modifier = Modifier
                     .padding(
                         top = 20.dp,
@@ -52,8 +52,8 @@ fun ReportCardSummaryItem(
                 color = MaterialTheme.colorScheme.onSurface,
             )
             ActionTitle(
-                title = stringResource(id = R.string.saint_grade_title),
-                subTitle = stringResource(id = R.string.saint_grade_subtitle),
+                title = "성적 확인하기",
+                subTitle = "지난학기",
             )
             ReportCardSummary(
                 graduationPoints = studentData?.graduationPoints ?: 0f,
@@ -73,7 +73,7 @@ private fun ReportCardSummary(
 ) {
     Column(modifier = modifier) {
         ReportOutline(
-            title = stringResource(R.string.saint_grade_detail_average_grade),
+            title = "평균학점",
             actualValue = reportCardSummary?.gradePointsAverage.toString(),
             maxValue = Grade.Max.formatToString(),
         )
@@ -81,7 +81,7 @@ private fun ReportCardSummary(
             modifier = Modifier.padding(horizontal = 14.dp),
         )
         ReportOutline(
-            title = stringResource(R.string.saint_grade_detail_creadit),
+            title = "취득학점",
             actualValue = reportCardSummary?.earnedCredits.toString(),
             maxValue = graduationPoints.toString(),
         )
