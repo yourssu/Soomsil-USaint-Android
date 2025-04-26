@@ -18,12 +18,10 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            studentCredentialRepository.getStudentCredential().let { (id, password) ->
-                _mainUiState.value = if (id.isNotEmpty() && password.isNotEmpty()) {
-                    MainUiState.Success
-                } else {
-                    MainUiState.InvalidOrNoCredential
-                }
+            _mainUiState.value = if (studentCredentialRepository.isLoggedIn()) {
+                MainUiState.Success
+            } else {
+                MainUiState.InvalidOrNoCredential
             }
         }
     }

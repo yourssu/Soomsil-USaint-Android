@@ -7,8 +7,10 @@ import javax.inject.Inject
 class StudentCredentialRepository @Inject constructor(
     private val studentCredential: StudentCredentialDataSource,
 ) {
-    suspend fun getStudentCredential(): StudentCredential =
-        studentCredential.getStudentCredential()
+    suspend fun isLoggedIn(): Boolean = studentCredential.getLoggedIn()
+
+    suspend fun setLoggedIn(login: Boolean) =
+        studentCredential.setLoggedIn(login)
 
     suspend fun setStudentCredential(credential: StudentCredential) =
         studentCredential.setStudentCredential(credential)

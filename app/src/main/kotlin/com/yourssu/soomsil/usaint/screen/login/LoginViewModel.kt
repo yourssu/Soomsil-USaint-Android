@@ -46,14 +46,15 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
             isLoading = true
-            // 로그인 시도
-            // 실패 시 Error 이벤트 발생 후 종료
+            // id/pw 저장
             studentCredentialRepository.setStudentCredential(credential)
+            // 저장된 id/pw로 학생 데이터 가져오기 시도
             studentDataRepository.fetchStudentData().onFailure { e ->
                 isLoading = false
                 _uiEvent.emit(LoginUiEvent.Failure(e.message))
                 return@launch
             }
+            studentCredentialRepository.setLoggedIn(true)
             _uiEvent.emit(LoginUiEvent.Success)
             isLoading = false
         }
