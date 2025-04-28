@@ -1,9 +1,10 @@
 package com.yourssu.soomsil.usaint.data.source.remote.rusaint
 
+import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
+import com.yourssu.soomsil.usaint.core.model.StudentCredential
+import com.yourssu.soomsil.usaint.core.model.StudentData
 import dev.eatsteak.rusaint.core.ClassGrade
 import dev.eatsteak.rusaint.core.CourseType
-import dev.eatsteak.rusaint.core.GradeSummary
-import dev.eatsteak.rusaint.core.GraduationStudent
 import dev.eatsteak.rusaint.core.SemesterGrade
 import dev.eatsteak.rusaint.core.StudentInformation
 import dev.eatsteak.rusaint.ffi.CourseGradesApplicationBuilder
@@ -11,15 +12,24 @@ import dev.eatsteak.rusaint.ffi.GraduationRequirementsApplicationBuilder
 import dev.eatsteak.rusaint.ffi.StudentInformationApplicationBuilder
 import dev.eatsteak.rusaint.ffi.USaintSession
 import dev.eatsteak.rusaint.ffi.USaintSessionBuilder
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 class RusaintApi @Inject constructor() {
 
+    @Volatile
+    private var SESSION: USaintSession? = null
+    private val mutex = Mutex()
+
     // 학번과 비밀번호로 인증된 세션
     // https://docs.rs/rusaint/latest/rusaint/struct.USaintSession.html#method.with_password
-    suspend fun getUSaintSession(id: String, pw: String): Result<USaintSession> {
-        return kotlin.runCatching {
-            USaintSessionBuilder().withPassword(id, pw)
+    internal suspend fun getUSaintSession(credential: StudentCredential): Result<USaintSession> {
+        return runCatching {
+            mutex.withLock {
+                SESSION ?: USaintSessionBuilder().withPassword(credential.id, credential.password)
+                    .also { SESSION = it }
+            }
         }
     }
 
@@ -33,17 +43,21 @@ class RusaintApi @Inject constructor() {
 
     // 전체 학기의 증명 평점 정보
     // https://docs.rs/rusaint/latest/rusaint/application/course_grades/struct.CourseGradesApplication.html#method.certificated_summary
-    suspend fun getCertificatedGradeSummary(session: USaintSession): Result<GradeSummary> {
-        return kotlin.runCatching {
+    suspend fun getCertificatedGradeSummary(credential: StudentCredential): Result<ReportCardSummaryData> {
+        return runCatching {
+            val session = getUSaintSession(credential).getOrThrow()
             CourseGradesApplicationBuilder().build(session).certificatedSummary(CourseType.BACHELOR)
+                .asExternalModel()
         }
     }
 
     // 졸업사정표 - 학생 정보
     // https://docs.rs/rusaint/latest/rusaint/application/graduation_requirements/struct.GraduationRequirementsApplication.html#method.student_info
-    suspend fun getGraduationStudent(session: USaintSession): Result<GraduationStudent> {
-        return kotlin.runCatching {
+    suspend fun getGraduationStudent(credential: StudentCredential): Result<StudentData> {
+        return runCatching {
+            val session = getUSaintSession(credential).getOrThrow()
             GraduationRequirementsApplicationBuilder().build(session).studentInfo()
+                .asExternalModel()
         }
     }
 

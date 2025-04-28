@@ -6,20 +6,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
-import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
-import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
 import com.yourssu.soomsil.usaint.ui.types.Semester
 import com.yourssu.soomsil.usaint.ui.types.toSemester
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.eatsteak.rusaint.ffi.RusaintException
 import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.joinAll
@@ -32,12 +27,12 @@ import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class SemesterListViewModel @Inject constructor(
-    private val uSaintSessionRepo: USaintSessionRepository,
+//    private val uSaintSessionRepo: USaintSessionRepository,
     private val semesterRepo: SemesterRepository,
     private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
-    private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
-    val uiEvent = _uiEvent.asSharedFlow()
+//    private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
+//    val uiEvent = _uiEvent.asSharedFlow()
 
     val includeSeasonalSemester: Flow<Boolean> =
         userDataRepository.userData.map { it.includeSeasonalSemester }
@@ -108,11 +103,11 @@ class SemesterListViewModel @Inject constructor(
         // 동시에 로그인 여러 번 하지 않도록
         mutex.withLock {
             if (session == null) {
-                session = uSaintSessionRepo.getSession().getOrElse { e ->
-                    Timber.e(e)
-                    _uiEvent.emit(UiEvent.SessionFailure)
-                    return
-                }
+//                session = uSaintSessionRepo.getSession().getOrElse { e ->
+//                    Timber.e(e)
+//                    _uiEvent.emit(UiEvent.SessionFailure)
+//                    return
+//                }
             }
         }
 
@@ -151,10 +146,10 @@ class SemesterListViewModel @Inject constructor(
 
     private suspend fun handleError(e: Throwable, msg: String? = null) {
         Timber.e(e)
-        when {
-            e is RusaintException && msg == null -> _uiEvent.emit(UiEvent.RefreshFailure)
-            else -> _uiEvent.emit(UiEvent.Failure(msg))
-        }
+//        when {
+//            e is RusaintException && msg == null -> _uiEvent.emit(UiEvent.RefreshFailure)
+//            else -> _uiEvent.emit(UiEvent.Failure(msg))
+//        }
     }
 }
 

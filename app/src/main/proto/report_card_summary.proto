@@ -3,7 +3,7 @@ syntax = "proto3";
 option java_package = "com.yourssu.soomsil.usaint.proto";
 option java_multiple_files = true;
 
-message ReportSummary {
+message ReportCardSummaryProto {
   /**
    * [dev.eatsteak.rusaint.core.GradeSummary]
    *

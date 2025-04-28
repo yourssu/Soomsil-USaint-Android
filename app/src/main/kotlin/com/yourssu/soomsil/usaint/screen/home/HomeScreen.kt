@@ -1,6 +1,5 @@
 package com.yourssu.soomsil.usaint.screen.home
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,32 +13,20 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
-import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.screen.UiEvent
-import com.yourssu.soomsil.usaint.screen.home.components.ChapelCardItem
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
+import com.yourssu.soomsil.usaint.core.model.StudentData
+import com.yourssu.soomsil.usaint.screen.home.components.ActionTitleItem
 import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItem
-import com.yourssu.soomsil.usaint.screen.home.components.StudentInfoItem
+import com.yourssu.soomsil.usaint.screen.home.components.StudentDataItem
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
-import com.yourssu.soomsil.usaint.ui.types.ChapelInfo
-import com.yourssu.soomsil.usaint.ui.types.ReportCardSummary
-import com.yourssu.soomsil.usaint.ui.types.StudentInfo
-import com.yourssu.soomsil.usaint.ui.types.toCredit
-import com.yourssu.soomsil.usaint.ui.types.toGrade
-import timber.log.Timber
 
 @Composable
 fun HomeScreen(
@@ -49,55 +36,10 @@ fun HomeScreen(
     onReportCardClick: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    LaunchedEffect(lifecycleOwner.lifecycle) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.uiEvent.collect { uiEvent ->
-                when (uiEvent) {
-                    is UiEvent.Failure -> {
-                        Toast.makeText(
-                            context,
-                            uiEvent.msg ?: context.resources.getString(R.string.error_unknown),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    is UiEvent.SessionFailure -> {
-                        Toast.makeText(
-                            context,
-                            R.string.error_session_failure,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    is UiEvent.RefreshFailure -> {
-                        Toast.makeText(
-                            context,
-                            R.string.error_refresh_failure,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    else -> {}
-                }
-            }
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            Timber.d("HomeScreen DisposableEffect ::: cancelJob")
-            viewModel.cancelJob()
-        }
-    }
+    val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
 
     HomeScreen(
-        isRefreshing = viewModel.isRefreshing,
-        onRefresh = viewModel::refresh,
-        studentInfo = viewModel.studentInfo,
-        reportCardSummary = viewModel.reportCardSummary,
+        homeUiState = homeUiState,
         onProfileClick = onProfileClick,
         onSettingClick = onSettingClick,
         onReportCardClick = onReportCardClick,
@@ -107,11 +49,8 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
-    isRefreshing: Boolean,
-    onRefresh: () -> Unit,
-    studentInfo: StudentInfo?,
-    reportCardSummary: ReportCardSummary,
+private fun HomeScreen(
+    homeUiState: HomeUiState,
     modifier: Modifier = Modifier,
     onProfileClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
@@ -123,73 +62,86 @@ fun HomeScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.saint_title),
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
+                        text = "유세인트",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             )
         }
     ) { padding ->
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            modifier = Modifier.padding(padding)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .background(MaterialTheme.colorScheme.background)
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 12.dp,
+                ),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp,
-                    ),
-            ) {
-                StudentInfoItem(
-                    studentInfo = studentInfo,
-                    onProfileClick = onProfileClick,
-                    onSettingClick = {
-                        onSettingClick()
-                    },
-                )
-                Spacer(Modifier.height(12.dp))
-                ReportCardItem(
-                    reportCardSummary = reportCardSummary,
-                    onReportCardClick = onReportCardClick,
-                )
-                Spacer(Modifier.height(12.dp))
-                ChapelCardItem(
-                    onChapelCardClick = {},
-                    chapelInfo = ChapelInfo(
-                        "D-11-4",
-                        "(월) 13:30~14:20",
-                        12,
-                        6
-                    )
+            val studentData =
+                if (homeUiState is HomeUiState.Home) homeUiState.studentData else null
+            val reportCardSummaryData =
+                if (homeUiState is HomeUiState.Home) homeUiState.reportCardSummaryData else null
+
+            StudentDataItem(
+                studentData = studentData,
+                onProfileClick = onProfileClick,
+                onSettingClick = onSettingClick,
+            )
+
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "내 성적",
+                modifier = Modifier.padding(vertical = 4.dp),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            if (studentData?.status == "재학") {
+                Spacer(Modifier.height(8.dp))
+                ActionTitleItem(
+                    title = "이번 학기 성적 확인",
+                    onClick = { /* TODO */ },
                 )
             }
+
+            Spacer(Modifier.height(8.dp))
+            ReportCardItem(
+                studentData = studentData,
+                reportCardSummary = reportCardSummaryData,
+                onReportCardClick = onReportCardClick,
+            )
         }
     }
 }
 
 @PreviewLightDark
 @Composable
-private fun HomePreview() {
+private fun HomePreview_being() {
+    // 재학 상태
     SoomsilUSaintTheme {
         HomeScreen(
-            isRefreshing = false,
-            onRefresh = {},
-            studentInfo = StudentInfo(
-                name = "홍길동",
-                department = "컴퓨터학부",
-                grade = 2,
+            homeUiState = HomeUiState.Home(
+                studentData = StudentData.previewData,
+                reportCardSummaryData = ReportCardSummaryData.previewData,
             ),
-            reportCardSummary = ReportCardSummary(
-                gpa = 4.22.toGrade(),
-                earnedCredit = 97.toCredit(),
-                graduateCredit = 133.toCredit(),
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun HomePreview_leave() {
+    // 휴학 상태
+    SoomsilUSaintTheme {
+        HomeScreen(
+            homeUiState = HomeUiState.Home(
+                studentData = StudentData.previewData.copy(status = "휴학"),
+                reportCardSummaryData = ReportCardSummaryData.previewData,
             ),
         )
     }

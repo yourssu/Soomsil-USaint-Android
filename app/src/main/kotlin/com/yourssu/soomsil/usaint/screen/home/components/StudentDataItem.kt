@@ -1,15 +1,20 @@
 package com.yourssu.soomsil.usaint.screen.home.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -18,70 +23,79 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 
 @Composable
-fun ActionTitle(
-    title: String,
-    subTitle: String,
+fun StudentDataItem(
+    studentData: StudentData?,
     modifier: Modifier = Modifier,
+    onProfileClick: () -> Unit = {},
+    onSettingClick: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(
                 horizontal = 16.dp,
-                vertical = 12.dp,
+                vertical = 20.dp,
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
             modifier = Modifier
                 .size(48.dp)
-                .clip(CircleShape),
+                .clip(CircleShape)
+                .clickable(onClick = onProfileClick),
             painter = painterResource(R.drawable.ic_default_profile_image),
             contentDescription = null,
         )
+        Spacer(Modifier.width(12.dp))
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 12.dp),
+            modifier = Modifier.weight(1f),
         ) {
             Text(
-                text = subTitle,
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight(600),
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = title,
+                text = studentData?.name ?: "-",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight(600),
                 ),
-                color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            Text(
+                text = studentData?.run {
+                    "$department ${majors.firstOrNull() ?: ""} ${grade}학년"
+                } ?: "-",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Icon(
-            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface,
-        )
+        Spacer(Modifier.width(12.dp))
+        IconButton(
+            onClick = onSettingClick,
+        ) {
+            Icon(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .size(24.dp),
+                imageVector = Icons.Outlined.Settings,
+                contentDescription = "settings",
+            )
+        }
     }
 }
 
 @PreviewLightDark
 @Composable
-private fun ActionTitlePreview() {
+private fun StudentInfoPreview() {
     SoomsilUSaintTheme {
         Surface {
-            ActionTitle(
-                title = "전체학기",
-                subTitle = "성적 확인하기",
+            StudentDataItem(
+                studentData = StudentData.previewData,
             )
         }
     }

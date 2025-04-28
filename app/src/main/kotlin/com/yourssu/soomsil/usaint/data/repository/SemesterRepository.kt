@@ -27,6 +27,7 @@ class SemesterRepository @Inject constructor(
     suspend fun storeSemesters(vararg semesters: SemesterEntity): Result<Unit> {
         return kotlin.runCatching {
             withContext(Dispatchers.IO) {
+
 //                semesters.forEach { semesterDao.insertSemester(it) }
             }
         }
