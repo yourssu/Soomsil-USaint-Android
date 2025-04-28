@@ -1,7 +1,6 @@
 package com.yourssu.soomsil.usaint.data.source.local.datastore
 
 import androidx.datastore.core.DataStore
-import com.yourssu.soomsil.usaint.core.model.StudentCredential
 import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.proto.StudentInformation
 import kotlinx.coroutines.flow.Flow
@@ -30,14 +29,6 @@ class StudentInformationDataSource @Inject constructor(
             )
         }
 
-    val studentCredential: Flow<StudentCredential> = studentInformation.data
-        .map {
-            StudentCredential(
-                id = it.id,
-                password = it.password,
-            )
-        }
-
     suspend fun setStudentData(studentData: StudentData) {
         try {
             studentInformation.updateData {
@@ -58,19 +49,6 @@ class StudentInformationDataSource @Inject constructor(
             }
         } catch (e: IOException) {
             Timber.e("Failed to update student data", e)
-        }
-    }
-
-    suspend fun setStudentCredential(credential: StudentCredential) {
-        try {
-            studentInformation.updateData {
-                it.copy {
-                    setId(credential.id)
-                    setPassword(credential.password)
-                }
-            }
-        } catch (e: IOException) {
-            Timber.e("Failed to update student credential", e)
         }
     }
 }

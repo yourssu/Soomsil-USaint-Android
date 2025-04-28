@@ -12,4 +12,20 @@ data class StudentData(
     val majors: List<String>,   // 제1전공 ~ 제4전공
     val graduationPoints: Float,// 졸업학점
     val completedPoints: Float, // 인정학점
-)
+) {
+    companion object {
+        val previewData = StudentData(
+            id = "20221234",
+            name = "홍길동",
+            grade = 4,
+            semester = 7,
+            status = "재학",
+            applyYear = 2022,
+            applyType = "신입학",
+            department = "IT대학",
+            majors = listOf("컴퓨터학부"),
+            graduationPoints = 133f,
+            completedPoints = 12f,
+        )
+    }
+}

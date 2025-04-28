@@ -2,7 +2,6 @@ package com.yourssu.soomsil.usaint.screen.login
 
 import android.Manifest
 import android.os.Build
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -30,6 +29,9 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,7 +55,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.soomsil.usaint.R
-import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import com.yourssu.soomsil.usaint.util.NotificationUtil
 import kotlinx.coroutines.delay
@@ -67,6 +68,7 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     // 알림 권한 요청 런처
     val requestPermissionLauncher = rememberLauncherForActivityResult(
@@ -80,8 +82,7 @@ fun LoginScreen(
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.uiEvent.collect { uiEvent ->
                 when (uiEvent) {
-                    is UiEvent.Success -> {
-                        Toast.makeText(context, "로그인 되었습니다.", Toast.LENGTH_SHORT).show()
+                    is LoginUiEvent.Success -> {
                         // 로그인 시 알림 권한 요청
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                             !NotificationUtil.areNotificationEnabled(context)
@@ -92,20 +93,10 @@ fun LoginScreen(
                         }
                     }
 
-                    is UiEvent.Failure -> {
-                        Toast.makeText(
-                            context,
-                            uiEvent.msg ?: context.resources.getString(R.string.error_unknown),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    is UiEvent.SessionFailure -> {
-                        Toast.makeText(context, R.string.error_session_failure, Toast.LENGTH_SHORT)
-                            .show()
-                    }
-
-                    else -> {}
+                    is LoginUiEvent.Failure -> snackbarHostState.showSnackbar(
+                        message = uiEvent.message ?: "로그인 실패: 다시 시도해주세요.",
+                        duration = SnackbarDuration.Short,
+                    )
                 }
             }
         }
@@ -119,12 +110,13 @@ fun LoginScreen(
         onPasswordChange = { viewModel.studentPw = it },
         onLoginClick = viewModel::login,
         modifier = modifier,
+        snackbarHostState = snackbarHostState,
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
+private fun LoginScreen(
     isLoading: Boolean,
     studentId: String,
     password: String,
@@ -132,15 +124,17 @@ fun LoginScreen(
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     var showPassword by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Box {
                 CenterAlignedTopAppBar(
-                    title = { Text(text = stringResource(R.string.login)) }
+                    title = { Text(text = "로그인") }
                 )
                 if (isLoading) {
                     LinearProgressIndicator(
@@ -170,7 +164,7 @@ fun LoginScreen(
                     imeAction = ImeAction.Next,
                 ),
                 enabled = !isLoading,
-                label = { Text(text = stringResource(R.string.student_id)) },
+                label = { Text(text = "학번") },
                 singleLine = true,
             )
 
@@ -188,7 +182,7 @@ fun LoginScreen(
                     onDone = { onLoginClick() }
                 ),
                 enabled = !isLoading,
-                label = { Text(text = stringResource(R.string.password)) },
+                label = { Text(text = "유세인트 비밀번호") },
                 singleLine = true,
                 visualTransformation = if (showPassword) {
                     VisualTransformation.None
@@ -222,7 +216,7 @@ fun LoginScreen(
                 onClick = onLoginClick,
                 enabled = !isLoading,
             ) {
-                Text(text = stringResource(R.string.login))
+                Text(text = "로그인")
             }
 
             Spacer(Modifier.height(8.dp))
@@ -237,7 +231,7 @@ fun LoginScreen(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = stringResource(id = R.string.saint_login_announce),
+                    text = stringResource(R.string.saint_login_announce),
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.labelSmall,
                 )

@@ -67,7 +67,7 @@ fun GradeSummary(
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    text = stringResource(R.string.grade_delimiter),
+                    text = "/",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -80,18 +80,18 @@ fun GradeSummary(
             }
         }
         SummaryList(
-            title = stringResource(id = R.string.gradelist_summary_credit),
+            title = "취득학점",
             actualValue = earnedCredit.value,
             modifier = Modifier.fillMaxWidth(),
         )
         SummaryList(
-            title = stringResource(id = R.string.gradelist_summary_rank),
+            title = "학기별 석차",
             actualValue = semesterRank.toFloat(),
             maxValue = semesterMaxRank,
             modifier = Modifier.fillMaxWidth(),
         )
         SummaryList(
-            title = stringResource(id = R.string.gradelist_summary_overall_rank),
+            title = "전체 석차",
             actualValue = overallRank.toFloat(),
             maxValue = overallMaxRank,
             modifier = Modifier.fillMaxWidth(),
@@ -128,7 +128,7 @@ private fun SummaryList(
         maxValue?.let {
             Spacer(Modifier.width(2.dp))
             Text(
-                text = stringResource(R.string.grade_delimiter) + it.toString(),
+                text = "/$it",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

@@ -10,13 +10,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.ui.types.ChapelInfo
 import kotlin.math.ceil
 
@@ -38,41 +36,29 @@ fun ChapelCardItem(
                 ),
         ) {
             Text(
-                text = stringResource(id = R.string.saint_chapel),
+                text = "채플",
                 modifier = Modifier
                     .padding(
                         bottom = 4.dp,
                         start = 16.dp,
                         end = 16.dp,
                     ),
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold
-                ),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
 
             Text(
                 text = buildAnnotatedString {
-                    append(
-                        stringResource(
-                            id = R.string.saint_chapel_pass_until
-                        ).plus(" ")
-                    )
+                    append("Pass까지 ")
                     withStyle(
                         SpanStyle(color = MaterialTheme.colorScheme.primary)
                     ) {
                         append(
-                            stringResource(
-                                id = R.string.saint_chapel_count,
-                                ceil(chapelInfo.totalAttendance * (2F / 3F)).toInt() - chapelInfo.currentAttendance
-                            ).plus(" ")
+                            "${ceil(chapelInfo.totalAttendance * (2F / 3F)).toInt() - chapelInfo.currentAttendance}회 "
                         )
                     }
-                    append(
-                        stringResource(
-                            id = R.string.saint_chapel_pass_left
-                        )
-                    )
+                    append("남았어요")
                 },
                 modifier = Modifier
                     .padding(
@@ -99,10 +85,7 @@ fun ChapelCardItem(
 
             Row {
                 Text(
-                    text = stringResource(
-                        id = R.string.saint_chapel_count,
-                        chapelInfo.currentAttendance
-                    ),
+                    text = "${chapelInfo.currentAttendance}회",
                     modifier = Modifier
                         .weight(1f)
                         .padding(
@@ -117,10 +100,7 @@ fun ChapelCardItem(
                 )
 
                 Text(
-                    text = stringResource(
-                        id = R.string.saint_chapel_count,
-                        chapelInfo.totalAttendance
-                    ),
+                    text = "${chapelInfo.totalAttendance}회",
                     modifier = Modifier
                         .padding(
                             bottom = 4.dp,
@@ -142,7 +122,7 @@ fun ChapelCardItem(
             ) {
                 Row {
                     Text(
-                        text = stringResource(id = R.string.saint_chapel_time),
+                        text = "시간표",
                         modifier = Modifier
                             .padding(
                                 bottom = 4.dp,
@@ -171,7 +151,7 @@ fun ChapelCardItem(
                 }
                 Row {
                     Text(
-                        text = stringResource(id = R.string.saint_chapel_seat_position),
+                        text = "좌석",
                         modifier = Modifier
                             .padding(
                                 bottom = 4.dp,

@@ -8,10 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.data.repository.LectureRepository
 import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
-import com.yourssu.soomsil.usaint.data.repository.USaintSessionRepository
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
 import com.yourssu.soomsil.usaint.domain.usecase.MakeSemesterFromLecturesUseCase
-import com.yourssu.soomsil.usaint.screen.UiEvent
 import com.yourssu.soomsil.usaint.ui.types.LectureInfo
 import com.yourssu.soomsil.usaint.ui.types.Semester
 import com.yourssu.soomsil.usaint.ui.types.sortByGrade
@@ -30,13 +28,13 @@ import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class SemesterDetailViewModel @Inject constructor(
-    private val uSaintSessionRepo: USaintSessionRepository,
+//    private val uSaintSessionRepo: USaintSessionRepository,
     private val semesterRepo: SemesterRepository,
     private val lectureRepo: LectureRepository,
     private val makeSemesterUseCase: MakeSemesterFromLecturesUseCase,
 ) : ViewModel() {
-    private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
-    val uiEvent = _uiEvent.asSharedFlow()
+//    private val _uiEvent: MutableSharedFlow<UiEvent> = MutableSharedFlow()
+//    val uiEvent = _uiEvent.asSharedFlow()
 
     var isRefreshing by mutableStateOf(false)
         private set
@@ -97,11 +95,11 @@ class SemesterDetailViewModel @Inject constructor(
         // 동시에 로그인 여러 번 하지 않도록
         mutex.withLock {
             if (session == null) {
-                session = uSaintSessionRepo.getSession().getOrElse { e ->
-                    Timber.e(e)
-                    _uiEvent.emit(UiEvent.SessionFailure)
-                    return
-                }
+//                session = uSaintSessionRepo.getSession().getOrElse { e ->
+//                    Timber.e(e)
+//                    _uiEvent.emit(UiEvent.SessionFailure)
+//                    return
+//                }
             }
         }
         lectureRepo.getRemoteLectures(session!!, semester)
@@ -130,7 +128,7 @@ class SemesterDetailViewModel @Inject constructor(
             }
             .onFailure { e ->
                 Timber.e(e)
-                _uiEvent.emit(UiEvent.RefreshFailure)
+//                _uiEvent.emit(UiEvent.RefreshFailure)
             }
         session = null
     }
