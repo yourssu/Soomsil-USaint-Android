@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
-import com.yourssu.soomsil.usaint.screen.chapel.navigation.chapelScreen
 import com.yourssu.soomsil.usaint.screen.home.navigation.homeScreen
 import com.yourssu.soomsil.usaint.screen.home.navigation.navigateToHome
 import com.yourssu.soomsil.usaint.screen.login.navigation.loginScreen
@@ -86,6 +85,6 @@ fun USaintNavHost(
             },
         )
         reportCardScreen()
-        chapelScreen()
+//        chapelScreen()
     }
 }
