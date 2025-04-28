@@ -16,16 +16,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentData
-import com.yourssu.soomsil.usaint.screen.home.components.ReportCardSummaryItem
+import com.yourssu.soomsil.usaint.screen.home.components.ActionTitleItem
+import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.StudentDataItem
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 
@@ -64,9 +63,8 @@ private fun HomeScreen(
                 title = {
                     Text(
                         text = "유세인트",
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             )
@@ -93,8 +91,26 @@ private fun HomeScreen(
                 onProfileClick = onProfileClick,
                 onSettingClick = onSettingClick,
             )
-            Spacer(Modifier.height(12.dp))
-            ReportCardSummaryItem(
+
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "내 성적",
+                modifier = Modifier.padding(vertical = 4.dp),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            if (studentData?.status == "재학") {
+                Spacer(Modifier.height(8.dp))
+                ActionTitleItem(
+                    title = "이번 학기 성적 확인",
+                    onClick = { /* TODO */ },
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+            ReportCardItem(
                 studentData = studentData,
                 reportCardSummary = reportCardSummaryData,
                 onReportCardClick = onReportCardClick,
@@ -105,11 +121,26 @@ private fun HomeScreen(
 
 @PreviewLightDark
 @Composable
-private fun HomePreview() {
+private fun HomePreview_being() {
+    // 재학 상태
     SoomsilUSaintTheme {
         HomeScreen(
             homeUiState = HomeUiState.Home(
                 studentData = StudentData.previewData,
+                reportCardSummaryData = ReportCardSummaryData.previewData,
+            ),
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun HomePreview_leave() {
+    // 휴학 상태
+    SoomsilUSaintTheme {
+        HomeScreen(
+            homeUiState = HomeUiState.Home(
+                studentData = StudentData.previewData.copy(status = "휴학"),
                 reportCardSummaryData = ReportCardSummaryData.previewData,
             ),
         )

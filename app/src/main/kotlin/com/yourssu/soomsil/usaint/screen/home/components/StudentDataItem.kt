@@ -1,6 +1,7 @@
 package com.yourssu.soomsil.usaint.screen.home.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,57 +38,53 @@ fun StudentDataItem(
     onProfileClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
 ) {
-    ElevatedCard(
-        modifier = modifier,
-        onClick = onProfileClick,
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 16.dp,
+                vertical = 20.dp,
+            ),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
+        Image(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 20.dp,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
+                .size(48.dp)
+                .clip(CircleShape)
+                .clickable(onClick = onProfileClick),
+            painter = painterResource(R.drawable.ic_default_profile_image),
+            contentDescription = null,
+        )
+        Spacer(Modifier.width(12.dp))
+        Column(
+            modifier = Modifier.weight(1f),
         ) {
-            Image(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape),
-                painter = painterResource(R.drawable.ic_default_profile_image),
-                contentDescription = null,
+            Text(
+                text = studentData?.name ?: "-",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight(600),
+                ),
             )
-            Spacer(Modifier.width(12.dp))
-            Column(
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(
-                    text = studentData?.name ?: "-",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight(600),
-                    ),
-                )
 
-                Text(
-                    text = studentData?.run {
-                        "$department ${majors.firstOrNull() ?: ""} ${grade}학년"
-                    } ?: "-",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Spacer(Modifier.width(12.dp))
-            IconButton(
-                onClick = onSettingClick,
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .size(24.dp),
-                    imageVector = Icons.Outlined.Settings,
-                    contentDescription = "settings",
-                )
-            }
+            Text(
+                text = studentData?.run {
+                    "$department ${majors.firstOrNull() ?: ""} ${grade}학년"
+                } ?: "-",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Spacer(Modifier.width(12.dp))
+        IconButton(
+            onClick = onSettingClick,
+        ) {
+            Icon(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .size(24.dp),
+                imageVector = Icons.Outlined.Settings,
+                contentDescription = "settings",
+            )
         }
     }
 }
