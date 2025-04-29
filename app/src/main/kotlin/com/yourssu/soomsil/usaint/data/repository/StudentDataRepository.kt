@@ -23,10 +23,10 @@ class StudentDataRepository @Inject constructor(
         return runCatching {
             val credential = studentCredential.getStudentCredential()
             // TODO pass custom error
-            val studentData = rusaintApi.getGraduationStudent(credential).getOrThrow()
-            studentInformation.setStudentData(studentData)
-            val reportCardData = rusaintApi.getCertificatedGradeSummary(credential).getOrThrow()
-            reportCardSummary.setReportCardData(reportCardData)
+//            val studentData = rusaintApi.getGraduationStudent(credential).getOrThrow()
+//            studentInformation.setStudentData(studentData)
+//            val reportCardData = rusaintApi.getCertificatedGradeSummary(credential).getOrThrow()
+//            reportCardSummary.setReportCardData(reportCardData)
         }
     }
 }

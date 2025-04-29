@@ -15,13 +15,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
-import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
-import com.yourssu.soomsil.usaint.ui.types.Grade
 
 @Composable
 fun ReportCardItem(
-    studentData: StudentData?,
     reportCardSummary: ReportCardSummaryData?,
     modifier: Modifier = Modifier,
     onReportCardClick: () -> Unit = {},
@@ -36,19 +33,20 @@ fun ReportCardItem(
             ReportOutline(
                 title = "평균학점",
                 actualValue = reportCardSummary?.gradePointsAverage.toString(),
-                maxValue = Grade.Max.formatToString(),
+                maxValue = 4.5f.toString(),
             )
             ReportOutline(
                 title = "취득학점",
                 actualValue = reportCardSummary?.earnedCredits.toString(),
-                maxValue = studentData?.graduationPoints.toString(),
+                maxValue = reportCardSummary?.graduationPoints.toString(),
             )
         }
     }
 }
 
+// TODO 따로 분리하기
 @Composable
-private fun ReportOutline(
+fun ReportOutline(
     title: String,
     actualValue: String,
     maxValue: String,
@@ -97,7 +95,6 @@ private fun ReportOutline(
 private fun ReportCardItemPreview() {
     SoomsilUSaintTheme {
         ReportCardItem(
-            studentData = StudentData.previewData,
             reportCardSummary = ReportCardSummaryData.previewData,
         )
     }

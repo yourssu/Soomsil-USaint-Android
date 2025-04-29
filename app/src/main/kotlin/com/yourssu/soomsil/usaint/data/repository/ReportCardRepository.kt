@@ -19,12 +19,11 @@ class ReportCardRepository @Inject constructor(
     val reportCardSummaryData: Flow<ReportCardSummaryData> =
         reportCardSummaryDataSource.reportCardSummaryData
 
-    val semesterWithLectures: Flow<SortedMap<SemesterData, List<LectureData>>> =
+    val semesterWithLectures: Flow<Map<SemesterData, List<LectureData>>> =
         semesterDao.getSemesterWithLectures().map { semesterEntityListMap ->
             semesterEntityListMap
                 .mapKeys { (semesterEntity, _) -> semesterEntity.asExternalModel() }
                 .mapValues { (_, lectureEntity) -> lectureEntity.map(LectureEntity::asExternalModel) }
-                .toSortedMap(compareBy<SemesterData>({ it.semester }, { it.year }))
         }
 
     suspend fun setReportCardData(reportCardSummaryData: ReportCardSummaryData) =

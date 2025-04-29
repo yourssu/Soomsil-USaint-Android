@@ -24,8 +24,6 @@ class StudentInformationDataSource @Inject constructor(
                 applyType = it.applyType,
                 department = it.department,
                 majors = it.majorsList.toList(),
-                graduationPoints = it.graduationPoints,
-                completedPoints = it.completedPoints,
             )
         }
 
@@ -43,8 +41,6 @@ class StudentInformationDataSource @Inject constructor(
                     setDepartment(studentData.department)
                     clearMajors()
                     addAllMajors(studentData.majors)
-                    setGraduationPoints(studentData.graduationPoints)
-                    setCompletedPoints(studentData.completedPoints)
                 }
             }
         } catch (e: IOException) {

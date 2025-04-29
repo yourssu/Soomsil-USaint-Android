@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import java.util.SortedMap
+import java.util.TreeMap
 import javax.inject.Inject
 
 sealed interface ReportCardUiState {
@@ -19,7 +20,7 @@ sealed interface ReportCardUiState {
 
     data class ReportCard(
         val summary: ReportCardSummaryData,
-        val semesters: SortedMap<SemesterData, List<LectureData>>,
+        val semesterWithLectures: Map<SemesterData, List<LectureData>>,
     ) : ReportCardUiState
 }
 

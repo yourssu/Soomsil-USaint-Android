@@ -1,10 +1,10 @@
 package com.yourssu.soomsil.usaint.core.types
 
-enum class SemesterType {
-    One,
-    Summer,
-    Two,
-    Winter;
+enum class SemesterType(val kor: String) {
+    One("1"),
+    Summer("여름"),
+    Two("2"),
+    Winter("겨울");
 
     companion object {
         fun from(str: String): SemesterType {

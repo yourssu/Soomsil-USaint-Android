@@ -111,7 +111,6 @@ private fun HomeScreen(
 
             Spacer(Modifier.height(8.dp))
             ReportCardItem(
-                studentData = studentData,
                 reportCardSummary = reportCardSummaryData,
                 onReportCardClick = onReportCardClick,
             )

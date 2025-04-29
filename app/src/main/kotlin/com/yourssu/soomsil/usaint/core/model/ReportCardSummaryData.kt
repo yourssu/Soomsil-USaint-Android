@@ -7,6 +7,8 @@ data class ReportCardSummaryData(
     val gradePointsAverage: Float,
     val arithmeticMean: Float,
     val pfEarnedCredits: Float,
+    val graduationPoints: Float,// 졸업학점
+    val completedPoints: Float, // 인정학점
 ) {
     companion object {
         val previewData = ReportCardSummaryData(
@@ -16,6 +18,8 @@ data class ReportCardSummaryData(
             gradePointsAverage = 4.22f,
             arithmeticMean = 100f,
             pfEarnedCredits = 5f,
+            graduationPoints = 133f,
+            completedPoints = 97f,
         )
     }
 }

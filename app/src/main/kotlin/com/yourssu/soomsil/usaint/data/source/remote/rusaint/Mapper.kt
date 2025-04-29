@@ -15,15 +15,18 @@ internal fun GraduationStudent.asExternalModel() = StudentData(
     applyType = applyType,
     department = department,
     majors = majors,
-    graduationPoints = graduationPoints,
-    completedPoints = completedPoints,
 )
 
-internal fun GradeSummary.asExternalModel() = ReportCardSummaryData(
+internal fun GradeSummary.asExternalModel(
+    graduationPoints: Float,
+    completedPoints: Float,
+) = ReportCardSummaryData(
     attemptedCredits = attemptedCredits,
     earnedCredits = earnedCredits,
     gradePointsSum = gradePointsSum,
     gradePointsAverage = gradePointsAvarage,
     arithmeticMean = arithmeticMean,
     pfEarnedCredits = pfEarnedCredits,
+    graduationPoints = graduationPoints,
+    completedPoints = completedPoints,
 )

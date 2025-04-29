@@ -237,10 +237,10 @@ fun SemesterListScreen(
                     )
                 }
                 if (chartSemesters.isNotEmpty()) {
-                    Chart(
-                        semesters = chartSemesters,
-                        modifier = Modifier.height(170.dp),
-                    )
+//                    Chart(
+//                        semesters = chartSemesters,
+//                        modifier = Modifier.height(170.dp),
+//                    )
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
