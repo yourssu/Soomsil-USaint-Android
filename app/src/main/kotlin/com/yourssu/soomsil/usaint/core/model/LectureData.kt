@@ -11,17 +11,30 @@ data class LectureData(
     val code: String,
     val title: String,
     val credit: Float,
-    val rank: LectureRank,
-    val score: LectureScore,
+    val lectureGrade: LectureGrade,
+    val lectureScore: LectureScore,
     val professor: String,
-    val detail: Map<String, Float> = emptyMap(),
+    val detail: Map<String, String> = emptyMap(),
 )
 
-sealed interface LectureRank {
+sealed interface LectureGrade {
     @JvmInline
-    value class Rank(val rank: String) : LectureRank {
-        companion object {
-            val a = Rank("A+")
+    value class Grade(val rank: String) : LectureGrade
+
+    companion object {
+        fun from(str: String): LectureGrade {
+            return when (str) {
+                "A+", "A0", "A-", "B+", "B0", "B-",
+                "C+", "C0", "C-", "D+", "D0", "D-" -> Grade(str)
+
+                else -> if (str.uppercase().contains("P")) {
+                    Pass
+                } else if (str.uppercase().contains("F")) {
+                    Fail
+                } else {
+                    Unknown
+                }
+            }
         }
     }
 }
@@ -29,7 +42,18 @@ sealed interface LectureRank {
 sealed interface LectureScore {
     @JvmInline
     value class Score(val score: Int) : LectureScore
+
+    companion object {
+        fun from(str: String): LectureScore {
+            return when {
+                str.uppercase().contains("P") -> Pass
+                str.uppercase().contains("F") -> Fail
+                else -> str.toIntOrNull()?.let { Score(it) } ?: Unknown
+            }
+        }
+    }
 }
 
-data object Pass : LectureRank, LectureScore
-data object Fail : LectureRank, LectureScore
+data object Pass : LectureGrade, LectureScore
+data object Fail : LectureGrade, LectureScore
+data object Unknown : LectureGrade, LectureScore

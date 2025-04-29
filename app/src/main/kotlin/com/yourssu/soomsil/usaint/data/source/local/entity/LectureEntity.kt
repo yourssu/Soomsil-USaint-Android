@@ -4,6 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import com.yourssu.soomsil.usaint.core.model.LectureData
+import com.yourssu.soomsil.usaint.core.model.LectureGrade
+import com.yourssu.soomsil.usaint.core.model.LectureScore
+import com.yourssu.soomsil.usaint.core.types.SemesterType
 import dev.eatsteak.rusaint.core.ClassGrade
 import dev.eatsteak.rusaint.core.ClassScore
 
@@ -59,3 +63,15 @@ fun ClassGrade.toLectureEntity(): LectureEntity {
         detail = emptyMap(),
     )
 }
+
+fun LectureEntity.asExternalModel() = LectureData(
+    year = year,
+    semester = SemesterType.from(semester),
+    code = code,
+    title = title,
+    credit = credit,
+    lectureGrade = LectureGrade.from(grade),
+    lectureScore = LectureScore.from(score),
+    professor = professorName,
+    detail = detail ?: emptyMap(),
+)
