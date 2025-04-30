@@ -50,4 +50,4 @@ class StudentCredentialDataSource @Inject constructor(
 }
 
 private fun StudentCredentialProto.copy(builder: StudentCredentialProto.Builder.() -> Unit) =
-    StudentCredentialProto.newBuilder().apply(builder).build()
+    StudentCredentialProto.newBuilder(this).apply(builder).build()
