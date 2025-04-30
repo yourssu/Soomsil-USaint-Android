@@ -1,5 +1,8 @@
 package com.yourssu.soomsil.usaint.screen.reportcard
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.model.LectureData
@@ -12,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -33,14 +37,23 @@ class ReportCardViewModel @Inject constructor(
         reportCardRepository.semesterWithLectures,
         transform = ReportCardUiState::ReportCard,
     )
-        .onStart {
-            // TODO 에러처리
-            reportCardRepository.fetchSemesterWithLectures().onFailure { e -> Timber.e(e) }
-            reportCardRepository.fetchReportCardSummary().onFailure { e -> Timber.e(e) }
-        }
+        .onStart { fetchData() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ReportCardUiState.Loading,
         )
+
+    var isFetching by mutableStateOf(false)
+        private set
+
+    fun fetchData() {
+        viewModelScope.launch {
+            isFetching = true
+            // TODO 에러처리
+            reportCardRepository.fetchSemesterWithLectures().onFailure { e -> Timber.e(e) }
+            reportCardRepository.fetchReportCardSummary().onFailure { e -> Timber.e(e) }
+            isFetching = false
+        }
+    }
 }

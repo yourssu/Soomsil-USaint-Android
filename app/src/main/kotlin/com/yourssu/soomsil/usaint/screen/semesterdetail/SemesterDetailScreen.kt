@@ -40,13 +40,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.domain.type.SemesterType
-import com.yourssu.soomsil.usaint.screen.semesterdetail.components.SemesterDetailItem
+import com.yourssu.soomsil.usaint.screen.reportcard.components.SemesterDetailItem
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import com.yourssu.soomsil.usaint.ui.types.LectureInfo
 import com.yourssu.soomsil.usaint.ui.types.Semester
@@ -227,12 +225,12 @@ fun SemesterDetailScreen(
                             .verticalScroll(rememberScrollState())
                             .wrapContentHeight(unbounded = true), // 기기 밖의 화면도 캡처하기 위해 필요함
                     ) {
-                        SemesterDetailItem(
-                            semester = semester,
-                            lectureInfos = courses,
-                            modifier = Modifier.fillMaxSize(),
-                            captureFlag = captureFlag,
-                        )
+//                        SemesterDetailItem(
+//                            semester = semester,
+//                            lectureInfos = courses,
+//                            modifier = Modifier.fillMaxSize(),
+//                            captureFlag = captureFlag,
+//                        )
                     }
                 }
             }

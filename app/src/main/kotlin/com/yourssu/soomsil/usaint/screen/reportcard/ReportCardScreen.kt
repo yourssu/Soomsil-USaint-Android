@@ -1,18 +1,31 @@
 package com.yourssu.soomsil.usaint.screen.reportcard
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -25,6 +38,7 @@ import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.core.types.SemesterType
 import com.yourssu.soomsil.usaint.screen.home.components.ReportOutline
+import com.yourssu.soomsil.usaint.screen.reportcard.components.SemesterDetailItem
 import com.yourssu.soomsil.usaint.ui.component.Chart
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 
@@ -36,6 +50,7 @@ fun ReportCardScreen(
     val reportCardUiState by viewModel.reportCardUiState.collectAsStateWithLifecycle()
 
     ReportCardScreen(
+        isFetching = viewModel.isFetching,
         reportCardUiState = reportCardUiState,
         modifier = modifier,
     )
@@ -44,6 +59,7 @@ fun ReportCardScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ReportCardScreen(
+    isFetching: Boolean,
     reportCardUiState: ReportCardUiState,
     modifier: Modifier = Modifier,
 ) {
@@ -52,7 +68,15 @@ private fun ReportCardScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(title = { Text(text = "성적") })
+            Box {
+                TopAppBar(title = { Text(text = "성적") })
+                AnimatedVisibility(
+                    visible = isFetching || isReportCardLoading,
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                ) {
+                    LinearProgressIndicator(Modifier.fillMaxWidth())
+                }
+            }
         }
     ) { padding ->
         Column(
@@ -65,6 +89,8 @@ private fun ReportCardScreen(
                 reportCardUiState,
                 modifier = Modifier.padding(horizontal = 24.dp),
             )
+
+
         }
     }
 }
@@ -79,6 +105,7 @@ private fun ChartSummary(
             is ReportCardUiState.Loading -> Unit
             is ReportCardUiState.ReportCard -> {
                 val semesters = reportCardUiState.semesterWithLectures.keys.toList()
+                    .sortedWith(compareBy({ it.year }, { it.semester }))
                 val summary = reportCardUiState.summary
 
                 if (semesters.isNotEmpty()) {
@@ -103,6 +130,59 @@ private fun ChartSummary(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SemesterDetail(
+    reportCardUiState: ReportCardUiState,
+    modifier: Modifier = Modifier,
+) {
+    when (reportCardUiState) {
+        is ReportCardUiState.Loading -> Unit
+
+        is ReportCardUiState.ReportCard -> {
+            val semesterWithLecturesMap = reportCardUiState.semesterWithLectures
+            val semesters = semesterWithLecturesMap.keys.toList()
+                .sortedWith(compareBy({ it.year }, { it.semester }))
+            val pagerState = rememberPagerState { semesters.size }
+            var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
+
+            LaunchedEffect(selectedTabIndex) {
+                pagerState.animateScrollToPage(selectedTabIndex)
+            }
+            LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+                if (!pagerState.isScrollInProgress)
+                    selectedTabIndex = pagerState.currentPage
+            }
+
+            Column(modifier) {
+                if (semesters.isNotEmpty()) {
+                    SecondaryScrollableTabRow(selectedTabIndex = pagerState.currentPage) {
+                        semesters.forEachIndexed { index, semester ->
+                            Tab(
+                                selected = pagerState.currentPage == index,
+                                onClick = { selectedTabIndex = index },
+                                text = {
+                                    Text(text = "${semester.year % 100}년 ${semester.semester.kor}학기")
+                                }
+                            )
+                        }
+                    }
+                }
+
+                HorizontalPager(state = pagerState) { pagerIndex ->
+                    val semester = semesters.getOrNull(pagerIndex) ?: return@HorizontalPager
+                    semesterWithLecturesMap[semester]?.let { lectureDataList ->
+//                        SemesterDetailItem(
+//
+//                        )
+                    }
+                }
+            }
+        }
+    }
+
+}
+
 @PreviewLightDark
 @Composable
 private fun ReportCardScreenPreview() {
@@ -121,6 +201,7 @@ private fun ReportCardScreenPreview() {
 
     SoomsilUSaintTheme {
         ReportCardScreen(
+            isFetching = false,
             reportCardUiState = ReportCardUiState.ReportCard(
                 summary = ReportCardSummaryData.previewData,
                 semesterWithLectures = semesters.zip(lectures).toMap(),
