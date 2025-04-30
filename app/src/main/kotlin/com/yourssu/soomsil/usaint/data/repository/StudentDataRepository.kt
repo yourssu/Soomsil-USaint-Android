@@ -19,13 +19,11 @@ class StudentDataRepository @Inject constructor(
     suspend fun setStudentData(studentData: StudentData) =
         studentInformation.setStudentData(studentData)
 
-    suspend fun fetchStudentData(): Result<Unit> {
-        return runCatching {
-            val credential = studentCredential.getStudentCredential()
-            val studentData = uSaintRemoteSource.remoteStudentData(credential)
-            studentInformation.setStudentData(studentData)
-            val reportCardSummaryData = uSaintRemoteSource.remoteReportCardSummaryData(credential)
-            reportCardSummary.setReportCardData(reportCardSummaryData)
-        }
+    suspend fun fetchStudentData(): Result<Unit> = runCatching {
+        val credential = studentCredential.getStudentCredential()
+        val studentData = uSaintRemoteSource.remoteStudentData(credential)
+        studentInformation.setStudentData(studentData)
+        val reportCardSummaryData = uSaintRemoteSource.remoteReportCardSummaryData(credential)
+        reportCardSummary.setReportCardData(reportCardSummaryData)
     }
 }

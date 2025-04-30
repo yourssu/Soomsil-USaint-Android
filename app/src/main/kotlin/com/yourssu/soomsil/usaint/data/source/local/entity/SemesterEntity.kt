@@ -25,11 +25,22 @@ data class SemesterEntity(
 
 fun SemesterEntity.asExternalModel() = SemesterData(
     year = year,
-    semester = SemesterType.from(semester),
+    semester = enumValueOf<SemesterType>(semester),
     gradePointsAverage = gpa,
     attemptedCredit = 0f, // TODO
     earnedCredit = earnedCredit,
     pfEarnedCredit = 0f, // TODO
     semesterRank = Pair(semesterRank, semesterStudentCount),
     generalRank = Pair(overallRank, overallStudentCount),
+)
+
+fun SemesterData.asEntity() = SemesterEntity(
+    year = year,
+    semester = semester.name,
+    semesterRank = semesterRank.first,
+    semesterStudentCount = semesterRank.second,
+    overallRank = generalRank.first,
+    overallStudentCount = generalRank.second,
+    earnedCredit = earnedCredit,
+    gpa = gradePointsAverage,
 )

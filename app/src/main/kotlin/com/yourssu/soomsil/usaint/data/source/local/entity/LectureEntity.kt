@@ -8,8 +8,6 @@ import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.LectureGrade
 import com.yourssu.soomsil.usaint.core.model.LectureScore
 import com.yourssu.soomsil.usaint.core.types.SemesterType
-import dev.eatsteak.rusaint.core.ClassGrade
-import dev.eatsteak.rusaint.core.ClassScore
 
 @Entity(
     tableName = "Lecture",
@@ -37,36 +35,16 @@ data class LectureEntity(
     val professorName: String,  // 교수님 성함
     val detail: Map<String, String>? = null, // 성적 상세 정보
 ) {
+    // TODO delete
     fun equalsIgnoreIds(other: LectureEntity): Boolean {
         return title == other.title && code == other.code && credit == other.credit &&
                 grade == other.grade && score == other.score && professorName == other.professorName
     }
 }
 
-fun ClassGrade.toLectureEntity(): LectureEntity {
-    val scoreString = when (score) {
-        is ClassScore.Score -> (score as ClassScore.Score).v1.toString()
-        is ClassScore.Pass -> "Pass"
-        is ClassScore.Failed -> "Failed"
-        is ClassScore.Empty -> "Empty"
-    }
-
-    return LectureEntity(
-        title = className,
-        code = code,
-        credit = gradePoints,
-        grade = rank,
-        score = scoreString,
-        professorName = professor,
-        year = year.toIntOrNull() ?: -1,
-        semester = semester.replace("학기", ""), // "1학기"를 "1"로 만들기 위함
-        detail = emptyMap(),
-    )
-}
-
 fun LectureEntity.asExternalModel() = LectureData(
     year = year,
-    semester = SemesterType.from(semester),
+    semester = enumValueOf<SemesterType>(semester),
     code = code,
     title = title,
     credit = credit,
@@ -74,4 +52,16 @@ fun LectureEntity.asExternalModel() = LectureData(
     lectureScore = LectureScore.from(score),
     professor = professorName,
     detail = detail ?: emptyMap(),
+)
+
+fun LectureData.asEntity() = LectureEntity(
+    year = year,
+    semester = semester.name,
+    title = title,
+    code = code,
+    credit = credit,
+    grade = lectureGrade.toString(),
+    score = lectureScore.toString(),
+    professorName = professor,
+    detail = detail,
 )

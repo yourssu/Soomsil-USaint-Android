@@ -38,6 +38,7 @@ class RusaintApi @Inject constructor() {
 
     // 학적 정보 - 일반 학생 정보
     // https://docs.rs/rusaint/latest/rusaint/application/student_information/struct.StudentInformationApplication.html#method.general
+    @Suppress("unused")
     suspend fun generalStudentInformation(credential: StudentCredential): StudentInformation {
         val session = getUSaintSession(credential)
         return StudentInformationApplicationBuilder().build(session).general()

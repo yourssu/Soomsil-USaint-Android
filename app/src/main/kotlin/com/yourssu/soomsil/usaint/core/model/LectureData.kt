@@ -19,7 +19,9 @@ data class LectureData(
 
 sealed interface LectureGrade {
     @JvmInline
-    value class Grade(val rank: String) : LectureGrade
+    value class Grade(val grade: String) : LectureGrade {
+        override fun toString(): String = grade
+    }
 
     companion object {
         fun from(str: String): LectureGrade {
@@ -41,7 +43,9 @@ sealed interface LectureGrade {
 
 sealed interface LectureScore {
     @JvmInline
-    value class Score(val score: Int) : LectureScore
+    value class Score(val score: Int) : LectureScore {
+        override fun toString(): String = score.toString()
+    }
 
     companion object {
         fun from(str: String): LectureScore {
@@ -54,6 +58,14 @@ sealed interface LectureScore {
     }
 }
 
-data object Pass : LectureGrade, LectureScore
-data object Fail : LectureGrade, LectureScore
-data object Unknown : LectureGrade, LectureScore
+data object Pass : LectureGrade, LectureScore {
+    override fun toString(): String = "P"
+}
+
+data object Fail : LectureGrade, LectureScore {
+    override fun toString(): String = "F"
+}
+
+data object Unknown : LectureGrade, LectureScore {
+    override fun toString(): String = "Unknown"
+}
