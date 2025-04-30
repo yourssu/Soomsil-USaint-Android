@@ -49,13 +49,14 @@ class LoginViewModel @Inject constructor(
             // id/pw 저장
             studentCredentialRepository.setStudentCredential(credential)
             // 저장된 id/pw로 학생 데이터 가져오기 시도
-            studentDataRepository.fetchStudentData().onFailure { e ->
-                isLoading = false
-                _uiEvent.emit(LoginUiEvent.Failure(e.message))
-                return@launch
-            }
-            studentCredentialRepository.setLoggedIn(true)
-            _uiEvent.emit(LoginUiEvent.Success)
+            studentDataRepository.fetchStudentData()
+                .onSuccess {
+                    studentCredentialRepository.setLoggedIn(true)
+                    _uiEvent.emit(LoginUiEvent.Success)
+                }
+                .onFailure { e ->
+                    _uiEvent.emit(LoginUiEvent.Failure(e.message))
+                }
             isLoading = false
         }
     }

@@ -11,12 +11,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.screen.home.components.ReportOutline
 import com.yourssu.soomsil.usaint.ui.component.Chart
@@ -27,12 +25,12 @@ fun ReportCardScreen(
     modifier: Modifier = Modifier,
     viewModel: ReportCardViewModel = hiltViewModel(),
 ) {
-    val reportCardUiState by viewModel.reportCardUiState.collectAsStateWithLifecycle()
-
-    ReportCardScreen(
-        reportCardUiState = reportCardUiState,
-        modifier = modifier,
-    )
+//    val reportCardUiState by viewModel.reportCardUiState.collectAsStateWithLifecycle()
+//
+//    ReportCardScreen(
+//        reportCardUiState = reportCardUiState,
+//        modifier = modifier,
+//    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

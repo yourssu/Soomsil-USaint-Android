@@ -3,7 +3,6 @@ package com.yourssu.soomsil.usaint.data.repository
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
 import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterEntity
 import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
-import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
 import dev.eatsteak.rusaint.ffi.USaintSession
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -40,24 +39,25 @@ class SemesterRepository @Inject constructor(
     }
 
     suspend fun getAllRemoteSemesters(session: USaintSession): Result<List<SemesterEntity>> {
-        val semesterGradeList = rusaintApi.getSemesterGradeList(session).getOrElse { e ->
-            return Result.failure(e)
-        }
-
-        return Result.success(semesterGradeList.map { semesterGrade ->
-            val year = semesterGrade.year.toInt()
-            val semester = makeSemesterType(year, semesterGrade.semester).storeFormat
-            SemesterEntity(
-                year = year,
-                semester = semester,
-                semesterRank = semesterGrade.semesterRank.first.toInt(),
-                semesterStudentCount = semesterGrade.semesterRank.second.toInt(),
-                overallRank = semesterGrade.generalRank.first.toInt(),
-                overallStudentCount = semesterGrade.generalRank.second.toInt(),
-                earnedCredit = semesterGrade.earnedCredits,
-                gpa = semesterGrade.gradePointsAvarage,
-            )
-        })
+//        val semesterGradeList = rusaintApi.semesterGradeList(session).getOrElse { e ->
+//            return Result.failure(e)
+//        }
+//
+//        return Result.success(semesterGradeList.map { semesterGrade ->
+//            val year = semesterGrade.year.toInt()
+//            val semester = makeSemesterType(year, semesterGrade.semester).storeFormat
+//            SemesterEntity(
+//                year = year,
+//                semester = semester,
+//                semesterRank = semesterGrade.semesterRank.first.toInt(),
+//                semesterStudentCount = semesterGrade.semesterRank.second.toInt(),
+//                overallRank = semesterGrade.generalRank.first.toInt(),
+//                overallStudentCount = semesterGrade.generalRank.second.toInt(),
+//                earnedCredit = semesterGrade.earnedCredits,
+//                gpa = semesterGrade.gradePointsAvarage,
+//            )
+//        })
+        return Result.success(emptyList())
     }
 
     // Stale-While-Revalidate

@@ -4,7 +4,7 @@ import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.data.source.local.datastore.ReportCardSummaryDataSource
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentCredentialDataSource
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentInformationDataSource
-import com.yourssu.soomsil.usaint.data.source.remote.rusaint.RusaintApi
+import com.yourssu.soomsil.usaint.data.source.remote.USaintRemoteSource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -12,7 +12,7 @@ class StudentDataRepository @Inject constructor(
     private val studentCredential: StudentCredentialDataSource,
     private val studentInformation: StudentInformationDataSource,
     private val reportCardSummary: ReportCardSummaryDataSource,
-    private val rusaintApi: RusaintApi,
+    private val uSaintRemoteSource: USaintRemoteSource,
 ) {
     val studentData: Flow<StudentData> = studentInformation.studentData
 
@@ -22,11 +22,10 @@ class StudentDataRepository @Inject constructor(
     suspend fun fetchStudentData(): Result<Unit> {
         return runCatching {
             val credential = studentCredential.getStudentCredential()
-            // TODO pass custom error
-//            val studentData = rusaintApi.getGraduationStudent(credential).getOrThrow()
-//            studentInformation.setStudentData(studentData)
-//            val reportCardData = rusaintApi.getCertificatedGradeSummary(credential).getOrThrow()
-//            reportCardSummary.setReportCardData(reportCardData)
+            val studentData = uSaintRemoteSource.remoteStudentData(credential)
+            studentInformation.setStudentData(studentData)
+            val reportCardSummaryData = uSaintRemoteSource.remoteReportCardSummaryData(credential)
+            reportCardSummary.setReportCardData(reportCardSummaryData)
         }
     }
 }
