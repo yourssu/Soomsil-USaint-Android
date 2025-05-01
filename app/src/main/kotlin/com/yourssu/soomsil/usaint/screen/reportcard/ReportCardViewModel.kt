@@ -37,7 +37,7 @@ class ReportCardViewModel @Inject constructor(
         reportCardRepository.semesterWithLectures,
         transform = ReportCardUiState::ReportCard,
     )
-        .onStart { fetchData() }
+        .onStart { fetchData(refresh = false) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -46,14 +46,20 @@ class ReportCardViewModel @Inject constructor(
 
     var isFetching by mutableStateOf(false)
         private set
+    // 사용자가 직접 pull to refresh를 했을 경우에만 true
+    var isRefreshing by mutableStateOf(false)
+        private set
 
-    fun fetchData() {
+    fun fetchData(refresh: Boolean) {
+        if (isFetching || isRefreshing) return
         viewModelScope.launch {
             isFetching = true
+            isRefreshing = refresh
             // TODO 에러처리
             reportCardRepository.fetchSemesterWithLectures().onFailure { e -> Timber.e(e) }
             reportCardRepository.fetchReportCardSummary().onFailure { e -> Timber.e(e) }
             isFetching = false
+            isRefreshing = false
         }
     }
 }

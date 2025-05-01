@@ -21,6 +21,7 @@ import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,8 +46,6 @@ import com.yourssu.soomsil.usaint.screen.reportcard.components.LectureItem
 import com.yourssu.soomsil.usaint.ui.component.Chart
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 
-// TODO 이전 SemesterDetail 삭제
-
 @Composable
 fun ReportCardScreen(
     modifier: Modifier = Modifier,
@@ -56,6 +55,8 @@ fun ReportCardScreen(
 
     ReportCardScreen(
         isFetching = viewModel.isFetching,
+        isRefreshing = viewModel.isRefreshing,
+        onRefresh = { viewModel.fetchData(refresh = true) },
         reportCardUiState = reportCardUiState,
         modifier = modifier,
     )
@@ -65,6 +66,8 @@ fun ReportCardScreen(
 @Composable
 private fun ReportCardScreen(
     isFetching: Boolean,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     reportCardUiState: ReportCardUiState,
     modifier: Modifier = Modifier,
 ) {
@@ -84,24 +87,27 @@ private fun ReportCardScreen(
             }
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .verticalScroll(rememberScrollState()),
         ) {
-            if (isReportCardLoading) {
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                if (isReportCardLoading) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    ChartSummary(reportCardUiState)
+                    SemesterTabsAndDetail(reportCardUiState)
                 }
-            } else {
-                ChartSummary(reportCardUiState)
-                SemesterTabsAndDetail(reportCardUiState)
             }
         }
     }
@@ -248,6 +254,8 @@ private fun ReportCardScreenPreview() {
     SoomsilUSaintTheme {
         ReportCardScreen(
             isFetching = false,
+            isRefreshing = false,
+            onRefresh = {},
             reportCardUiState = ReportCardUiState.ReportCard(
                 summary = ReportCardSummaryData.previewData,
                 semesterWithLectures = semesters.zip(lectures).toMap(),
@@ -262,6 +270,8 @@ private fun ReportCardScreenPreview_loading() {
     SoomsilUSaintTheme {
         ReportCardScreen(
             isFetching = false,
+            isRefreshing = false,
+            onRefresh = {},
             reportCardUiState = ReportCardUiState.Loading,
         )
     }
