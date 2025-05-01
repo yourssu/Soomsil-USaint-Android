@@ -68,11 +68,7 @@ fun LectureItem(
                     .background(MaterialTheme.colorScheme.surfaceContainer),
             )
         } else {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(top = 4.dp),
-            ) {
+            Column {
                 Text(
                     text = lectureTitle,
                     style = MaterialTheme.typography.bodyLarge,
