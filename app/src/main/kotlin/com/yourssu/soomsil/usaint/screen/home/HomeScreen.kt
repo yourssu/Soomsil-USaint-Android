@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -59,15 +59,7 @@ private fun HomeScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "유세인트",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-            )
+            TopAppBar(title = { Text(text = "유세인트") })
         }
     ) { padding ->
         Column(
@@ -111,7 +103,6 @@ private fun HomeScreen(
 
             Spacer(Modifier.height(8.dp))
             ReportCardItem(
-                studentData = studentData,
                 reportCardSummary = reportCardSummaryData,
                 onReportCardClick = onReportCardClick,
             )

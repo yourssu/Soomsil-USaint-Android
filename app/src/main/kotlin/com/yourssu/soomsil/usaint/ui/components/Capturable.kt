@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.util
+package com.yourssu.soomsil.usaint.ui.components
 
 import android.Manifest
 import android.app.Activity
@@ -163,4 +163,10 @@ private fun requestStoragePermission(context: Context): Boolean {
         101
     )
     return false
+}
+
+sealed interface CaptureFlag {
+    data object None : CaptureFlag
+    data object Original : CaptureFlag
+    data object HidingInfo : CaptureFlag
 }

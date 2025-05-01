@@ -25,14 +25,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -64,20 +63,6 @@ fun SettingScreen(
         viewModel.updateNotificationSetting(isGranted)
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event ->
-            when (event) {
-                is SettingUiEvent.SuccessLogout -> {
-                    Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
-                    navigateToLogin()
-                }
-
-                is SettingUiEvent.FailureLogout ->
-                    Toast.makeText(context, "로그아웃을 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     SettingScreen(
         modifier = modifier,
         settingUiState = settingUiState,
@@ -88,8 +73,6 @@ fun SettingScreen(
         onClickTermsOfPrivacy = {
             navigateToWebView(context.resources.getString(R.string.terms_of_privacy_info_url))
         },
-        showDialog = viewModel.showDialog,
-        onShowDialogChange = { viewModel.showDialog = it },
         onNotificationToggleChange = a@{ isChecked ->
             if (!isChecked) {
                 viewModel.updateNotificationSetting(false)
@@ -121,7 +104,10 @@ fun SettingScreen(
                 }
             }
         },
-        onLogout = viewModel::logout
+        onLogout = {
+            viewModel.logout()
+            navigateToLogin()
+        },
     )
 }
 
@@ -129,8 +115,6 @@ fun SettingScreen(
 @Composable
 fun SettingScreen(
     settingUiState: SettingUiState,
-    showDialog: Boolean,
-    onShowDialogChange: (Boolean) -> Unit,
     onNotificationToggleChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
@@ -138,10 +122,7 @@ fun SettingScreen(
     onClickTermsOfService: () -> Unit = {},
     onClickTermsOfPrivacy: () -> Unit = {},
 ) {
-    val notificationEnabled = when (settingUiState) {
-        is SettingUiState.UserEditableSettings -> settingUiState.notificationEnabled
-        else -> false
-    }
+    var showDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -173,11 +154,12 @@ fun SettingScreen(
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onShowDialogChange(true) },
-                headlineContent = {
-                    Text(text = "로그아웃")
-                }
+                    .clickable { showDialog = true },
+                headlineContent = { Text(text = "로그아웃") }
             )
+
+            /*
+            알림 설정 관련
 
             Spacer(Modifier.height(16.dp))
             Text(
@@ -193,17 +175,23 @@ fun SettingScreen(
                         if (settingUiState !is SettingUiState.Loading)
                             onNotificationToggleChange(!notificationEnabled)
                     },
-                headlineContent = {
-                    Text(text = "알림 받기")
-                },
+                headlineContent = { Text(text = "알림 받기") },
                 trailingContent = {
-                    Switch(
-                        checked = notificationEnabled,
-                        onCheckedChange = onNotificationToggleChange,
-                        enabled = settingUiState !is SettingUiState.Loading,
-                    )
+                    when (settingUiState) {
+                        is SettingUiState.UserEditableSettings -> {
+                            Switch(
+                                checked = settingUiState.notificationEnabled,
+                                onCheckedChange = onNotificationToggleChange,
+                            )
+                        }
+
+                        is SettingUiState.Loading -> {
+                            CircularProgressIndicator()
+                        }
+                    }
                 }
             )
+            */
 
             Spacer(Modifier.height(16.dp))
             Text(
@@ -216,21 +204,13 @@ fun SettingScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onClickTermsOfService),
-                headlineContent = {
-                    Text(
-                        text = stringResource(R.string.terms_of_service),
-                    )
-                }
+                headlineContent = { Text(text = stringResource(R.string.terms_of_service)) }
             )
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onClickTermsOfPrivacy),
-                headlineContent = {
-                    Text(
-                        text = stringResource(R.string.terms_of_privacy_info),
-                    )
-                }
+                headlineContent = { Text(text = stringResource(R.string.terms_of_privacy_info)) }
             )
 
             Spacer(Modifier.height(16.dp))
@@ -242,31 +222,25 @@ fun SettingScreen(
             Spacer(Modifier.height(8.dp))
             ListItem(
                 modifier = Modifier.fillMaxWidth(),
-                headlineContent = {
-                    Text(
-                        text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-                    )
-                }
+                headlineContent = { Text(text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})") }
             )
         }
 
         if (showDialog) {
             AlertDialog(
-                onDismissRequest = { onShowDialogChange(false) },
+                onDismissRequest = { showDialog = false },
                 title = { Text(text = "로그아웃") },
                 text = { Text(text = "로그아웃 하시겠습니까? 모든 데이터가 삭제됩니다.") },
                 confirmButton = {
                     TextButton(onClick = {
                         onLogout()
-                        onShowDialogChange(false)
+                        showDialog = false
                     }) {
                         Text(text = "로그아웃")
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = {
-                        onShowDialogChange(false)
-                    }) {
+                    TextButton(onClick = { showDialog = false }) {
                         Text(text = "취소")
                     }
                 },
@@ -278,13 +252,10 @@ fun SettingScreen(
 @PreviewLightDark
 @Composable
 fun PreviewSettingScreen() {
-    var showDialog by remember { mutableStateOf(false) }
     var notiToggle by remember { mutableStateOf(false) }
     SoomsilUSaintTheme {
         SettingScreen(
             settingUiState = SettingUiState.UserEditableSettings(notiToggle),
-            showDialog = showDialog,
-            onShowDialogChange = { showDialog = it },
             onNotificationToggleChange = { notiToggle = it },
         )
     }

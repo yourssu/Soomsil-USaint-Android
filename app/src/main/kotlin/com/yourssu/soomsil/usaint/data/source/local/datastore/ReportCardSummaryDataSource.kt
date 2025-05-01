@@ -21,23 +21,35 @@ class ReportCardSummaryDataSource @Inject constructor(
                 gradePointsAverage = it.gradePointsAverage,
                 arithmeticMean = it.arithmeticMean,
                 pfEarnedCredits = it.pfEarnedCredits,
+                graduationPoints = it.graduationPoints,
+                completedPoints = it.completedPoints,
             )
         }
 
-    suspend fun setReportCardData(reportCardSummaryData: ReportCardSummaryData) {
+    suspend fun setReportCardData(summaryData: ReportCardSummaryData) {
         try {
             reportCardSummaryDataSource.updateData {
                 ReportCardSummaryProto.newBuilder()
-                    .setAttemptedCredits(reportCardSummaryData.attemptedCredits)
-                    .setEarnedCredits(reportCardSummaryData.earnedCredits)
-                    .setGradePointsSum(reportCardSummaryData.gradePointsSum)
-                    .setGradePointsAverage(reportCardSummaryData.gradePointsAverage)
-                    .setArithmeticMean(reportCardSummaryData.arithmeticMean)
-                    .setPfEarnedCredits(reportCardSummaryData.pfEarnedCredits)
+                    .setAttemptedCredits(summaryData.attemptedCredits)
+                    .setEarnedCredits(summaryData.earnedCredits)
+                    .setGradePointsSum(summaryData.gradePointsSum)
+                    .setGradePointsAverage(summaryData.gradePointsAverage)
+                    .setArithmeticMean(summaryData.arithmeticMean)
+                    .setPfEarnedCredits(summaryData.pfEarnedCredits)
+                    .setGraduationPoints(summaryData.graduationPoints)
+                    .setCompletedPoints(summaryData.completedPoints)
                     .build()
             }
         } catch (e: IOException) {
             Timber.e("Failed to update report card data", e)
+        }
+    }
+
+    suspend fun clear() {
+        try {
+            reportCardSummaryDataSource.updateData { ReportCardSummaryProto.getDefaultInstance() }
+        } catch (e: IOException) {
+            Timber.e("Failed to clear report card data", e)
         }
     }
 }

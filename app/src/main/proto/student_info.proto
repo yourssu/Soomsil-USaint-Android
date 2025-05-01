@@ -16,6 +16,4 @@ message StudentInformation {
   string apply_type = 7;        // 입학유형 (ex: 신입학)
   string department = 8;        // 소속 (ex: IT대학)
   repeated string majors = 9;  // 제1전공 ~ 제4전공
-  float graduation_points = 10; // 졸업학점
-  float completed_points = 11;  // 인정학점
 }
