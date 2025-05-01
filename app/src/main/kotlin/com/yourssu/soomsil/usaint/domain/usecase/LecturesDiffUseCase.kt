@@ -3,6 +3,8 @@ package com.yourssu.soomsil.usaint.domain.usecase
 import com.yourssu.soomsil.usaint.data.source.local.entity.LectureEntity
 import javax.inject.Inject
 
+// TODO LectureData로 변경
+
 // Pair<before, after>
 data class LectureDiff(
     val title: String,

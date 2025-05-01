@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.ui.component
+package com.yourssu.soomsil.usaint.ui.components
 
 import android.annotation.SuppressLint
 import android.graphics.PointF

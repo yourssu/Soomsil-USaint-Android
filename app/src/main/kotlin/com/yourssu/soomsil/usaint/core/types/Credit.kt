@@ -1,4 +1,4 @@
-package com.yourssu.soomsil.usaint.ui.types
+package com.yourssu.soomsil.usaint.core.types
 
 import androidx.compose.runtime.Immutable
 import java.text.DecimalFormat

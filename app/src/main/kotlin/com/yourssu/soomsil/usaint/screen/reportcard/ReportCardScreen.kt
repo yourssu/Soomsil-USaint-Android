@@ -43,7 +43,7 @@ import com.yourssu.soomsil.usaint.core.types.SemesterType
 import com.yourssu.soomsil.usaint.screen.home.components.ReportOutline
 import com.yourssu.soomsil.usaint.screen.reportcard.components.GradeSummary
 import com.yourssu.soomsil.usaint.screen.reportcard.components.LectureItem
-import com.yourssu.soomsil.usaint.ui.component.Chart
+import com.yourssu.soomsil.usaint.ui.components.Chart
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 
 @Composable

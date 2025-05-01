@@ -28,7 +28,7 @@ import com.yourssu.soomsil.usaint.core.model.Fail
 import com.yourssu.soomsil.usaint.core.model.LectureGrade
 import com.yourssu.soomsil.usaint.core.model.Pass
 import com.yourssu.soomsil.usaint.core.model.Unknown
-import com.yourssu.soomsil.usaint.screen.semesterdetail.CaptureFlag
+import com.yourssu.soomsil.usaint.ui.components.CaptureFlag
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 
 @Composable
