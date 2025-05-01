@@ -47,6 +47,14 @@ class StudentInformationDataSource @Inject constructor(
             Timber.e("Failed to update student data", e)
         }
     }
+
+    suspend fun clear() {
+        try {
+            studentInformation.updateData { StudentInformation.getDefaultInstance() }
+        } catch (e: IOException) {
+            Timber.e("Failed to clear student data", e)
+        }
+    }
 }
 
 private fun StudentInformation.copy(builder: StudentInformation.Builder.() -> Unit) =

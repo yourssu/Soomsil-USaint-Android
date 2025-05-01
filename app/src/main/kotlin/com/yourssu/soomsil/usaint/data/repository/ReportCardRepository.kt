@@ -52,4 +52,10 @@ class ReportCardRepository @Inject constructor(
             lectureDao.upsertLectures(lectureDataList.map(LectureData::asEntity))
         }
     }
+
+    suspend fun deleteAll() {
+        // semester를 삭제할 경우 연관된 lecture까지 삭제됩니다 (Cascade)
+        semesterDao.deleteAllSemesters()
+        reportCardSummary.clear()
+    }
 }

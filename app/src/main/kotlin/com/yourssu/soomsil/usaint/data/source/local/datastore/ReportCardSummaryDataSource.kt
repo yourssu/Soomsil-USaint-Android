@@ -44,4 +44,12 @@ class ReportCardSummaryDataSource @Inject constructor(
             Timber.e("Failed to update report card data", e)
         }
     }
+
+    suspend fun clear() {
+        try {
+            reportCardSummaryDataSource.updateData { ReportCardSummaryProto.getDefaultInstance() }
+        } catch (e: IOException) {
+            Timber.e("Failed to clear report card data", e)
+        }
+    }
 }

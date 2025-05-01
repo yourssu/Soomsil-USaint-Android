@@ -47,6 +47,14 @@ class StudentCredentialDataSource @Inject constructor(
             Timber.e("Failed to update student credential", e)
         }
     }
+
+    suspend fun clear() {
+        try {
+            studentCredentialDataStore.updateData { StudentCredentialProto.getDefaultInstance() }
+        } catch (e: IOException) {
+            Timber.e("Failed to clear student credential", e)
+        }
+    }
 }
 
 private fun StudentCredentialProto.copy(builder: StudentCredentialProto.Builder.() -> Unit) =

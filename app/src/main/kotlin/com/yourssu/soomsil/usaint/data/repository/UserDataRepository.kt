@@ -15,4 +15,6 @@ class UserDataRepository @Inject constructor(
 
     suspend fun setIncludeSeasonalSemester(include: Boolean) =
         userPreferencesDataSource.setIncludeSeasonalSemester(include)
+
+    suspend fun clear() = userPreferencesDataSource.clear()
 }

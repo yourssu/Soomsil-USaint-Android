@@ -26,4 +26,6 @@ class StudentDataRepository @Inject constructor(
         val reportCardSummaryData = uSaintRemoteSource.remoteReportCardSummaryData(credential)
         reportCardSummary.setReportCardData(reportCardSummaryData)
     }
+
+    suspend fun clear() = studentInformation.clear()
 }

@@ -1,9 +1,8 @@
 package com.yourssu.soomsil.usaint.core.types
 
 import android.annotation.SuppressLint
-import androidx.compose.runtime.Immutable
 
-@Immutable
+@Suppress("unused")
 @JvmInline
 value class GradePoint(val point: Float) : Comparable<GradePoint> {
     init {
