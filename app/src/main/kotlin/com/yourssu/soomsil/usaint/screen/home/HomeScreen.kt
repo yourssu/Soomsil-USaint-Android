@@ -1,21 +1,28 @@
 package com.yourssu.soomsil.usaint.screen.home
 
-import androidx.compose.foundation.background
+import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -39,6 +46,9 @@ fun HomeScreen(
     val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
 
     HomeScreen(
+        isFetching = viewModel.isFetching,
+        isRefreshing = viewModel.isRefreshing,
+        onRefresh = { viewModel.fetchData(refresh = true) },
         homeUiState = homeUiState,
         onProfileClick = onProfileClick,
         onSettingClick = onSettingClick,
@@ -50,62 +60,85 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
+    isFetching: Boolean,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     homeUiState: HomeUiState,
     modifier: Modifier = Modifier,
     onProfileClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
     onReportCardClick: () -> Unit = {},
 ) {
+    // 임시
+    val context = LocalContext.current
+
+    val isHomeLoading = homeUiState is HomeUiState.Loading
+
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(title = { Text(text = "유세인트") })
+            Box {
+                TopAppBar(title = { Text(text = "유세인트") })
+                AnimatedVisibility(
+                    visible = isFetching || isHomeLoading,
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                ) {
+                    LinearProgressIndicator(Modifier.fillMaxWidth())
+                }
+            }
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            Modifier
                 .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .background(MaterialTheme.colorScheme.background)
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 12.dp,
-                ),
+                .fillMaxSize()
         ) {
-            val studentData =
-                if (homeUiState is HomeUiState.Home) homeUiState.studentData else null
-            val reportCardSummaryData =
-                if (homeUiState is HomeUiState.Home) homeUiState.reportCardSummaryData else null
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 12.dp,
+                    ),
+            ) {
+                val studentData =
+                    if (homeUiState is HomeUiState.Home) homeUiState.studentData else null
+                val reportCardSummaryData =
+                    if (homeUiState is HomeUiState.Home) homeUiState.reportCardSummaryData else null
 
-            StudentDataItem(
-                studentData = studentData,
-                onProfileClick = onProfileClick,
-                onSettingClick = onSettingClick,
-            )
+                StudentDataItem(
+                    studentData = studentData,
+                    onProfileClick = onProfileClick,
+                    onSettingClick = onSettingClick,
+                )
 
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = "내 성적",
-                modifier = Modifier.padding(vertical = 4.dp),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "내 성적",
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
 
-            if (studentData?.status == "재학") {
+                if (studentData?.status == "재학") {
+                    Spacer(Modifier.height(8.dp))
+                    ActionTitleItem(
+                        title = "이번 학기 성적 확인",
+                        onClick = {
+                            Toast.makeText(context, "서비스 예정입니다.", Toast.LENGTH_SHORT).show()
+                        },
+                    )
+                }
+
                 Spacer(Modifier.height(8.dp))
-                ActionTitleItem(
-                    title = "이번 학기 성적 확인",
-                    onClick = { /* TODO */ },
+                ReportCardItem(
+                    reportCardSummary = reportCardSummaryData,
+                    onReportCardClick = onReportCardClick,
                 )
             }
-
-            Spacer(Modifier.height(8.dp))
-            ReportCardItem(
-                reportCardSummary = reportCardSummaryData,
-                onReportCardClick = onReportCardClick,
-            )
         }
     }
 }
@@ -116,6 +149,9 @@ private fun HomePreview_being() {
     // 재학 상태
     SoomsilUSaintTheme {
         HomeScreen(
+            isFetching = false,
+            isRefreshing = false,
+            onRefresh = {},
             homeUiState = HomeUiState.Home(
                 studentData = StudentData.previewData,
                 reportCardSummaryData = ReportCardSummaryData.previewData,
@@ -130,6 +166,9 @@ private fun HomePreview_leave() {
     // 휴학 상태
     SoomsilUSaintTheme {
         HomeScreen(
+            isFetching = false,
+            isRefreshing = false,
+            onRefresh = {},
             homeUiState = HomeUiState.Home(
                 studentData = StudentData.previewData.copy(status = "휴학"),
                 reportCardSummaryData = ReportCardSummaryData.previewData,
