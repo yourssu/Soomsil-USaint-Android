@@ -12,7 +12,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryScrollableTabRow
@@ -33,14 +35,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.LectureGrade
-import com.yourssu.soomsil.usaint.core.model.LectureScore
+import com.yourssu.soomsil.usaint.core.model.Pass
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.core.types.SemesterType
 import com.yourssu.soomsil.usaint.screen.home.components.ReportOutline
-import com.yourssu.soomsil.usaint.screen.reportcard.components.SemesterDetailItem
+import com.yourssu.soomsil.usaint.screen.reportcard.components.GradeSummary
+import com.yourssu.soomsil.usaint.screen.reportcard.components.LectureItem
 import com.yourssu.soomsil.usaint.ui.component.Chart
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
+
+// TODO 이전 SemesterDetail 삭제
 
 @Composable
 fun ReportCardScreen(
@@ -85,12 +90,19 @@ private fun ReportCardScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState()),
         ) {
-            ChartSummary(
-                reportCardUiState,
-                modifier = Modifier.padding(horizontal = 24.dp),
-            )
-
-
+            if (isReportCardLoading) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                ChartSummary(reportCardUiState)
+                SemesterTabsAndDetail(reportCardUiState)
+            }
         }
     }
 }
@@ -103,6 +115,7 @@ private fun ChartSummary(
     Column(modifier) {
         when (reportCardUiState) {
             is ReportCardUiState.Loading -> Unit
+
             is ReportCardUiState.ReportCard -> {
                 val semesters = reportCardUiState.semesterWithLectures.keys.toList()
                     .sortedWith(compareBy({ it.year }, { it.semester }))
@@ -111,14 +124,16 @@ private fun ChartSummary(
                 if (semesters.isNotEmpty()) {
                     Chart(
                         semesters = semesters,
-                        modifier = Modifier.height(200.dp),
+                        modifier = Modifier
+                            .height(200.dp)
+                            .padding(horizontal = 20.dp),
                     )
                 }
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(16.dp))
                 ReportOutline(
                     title = "평균학점",
                     actualValue = summary.gradePointsAverage.toString(),
-                    maxValue = 4.5f.toString(),
+                    maxValue = "4.50",
                 )
                 ReportOutline(
                     title = "취득학점",
@@ -132,7 +147,7 @@ private fun ChartSummary(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SemesterDetail(
+private fun SemesterTabsAndDetail(
     reportCardUiState: ReportCardUiState,
     modifier: Modifier = Modifier,
 ) {
@@ -171,16 +186,40 @@ private fun SemesterDetail(
 
                 HorizontalPager(state = pagerState) { pagerIndex ->
                     val semester = semesters.getOrNull(pagerIndex) ?: return@HorizontalPager
+
                     semesterWithLecturesMap[semester]?.let { lectureDataList ->
-//                        SemesterDetailItem(
-//
-//                        )
+                        val sortedLectureDataList =
+                            lectureDataList.sortedBy { it.lectureScore }.reversed()
+
+                        Column {
+                            GradeSummary(
+                                gpa = semester.gradePointsAverage,
+                                earnedCredit = semester.earnedCredit,
+                                semesterRank = semester.semesterRank,
+                                generalRank = semester.generalRank,
+                            )
+
+                            HorizontalDivider(Modifier.padding(horizontal = 12.dp))
+
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                sortedLectureDataList.forEach { lecture ->
+                                    LectureItem(
+                                        lectureGrade = lecture.lectureGrade,
+                                        lectureTitle = lecture.title,
+                                        professor = lecture.professor,
+                                        credit = lecture.credit,
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
     }
-
 }
 
 @PreviewLightDark
@@ -192,11 +231,18 @@ private fun ReportCardScreenPreview() {
         makePreviewSemesterData(2023, SemesterType.One, 4.2f),
         makePreviewSemesterData(2023, SemesterType.Summer, 4.5f),
     )
+    val lectureGrades = listOf(
+        "A+", "A0", "A-",
+        "B+", "B0", "B-",
+        "C+", "C0", "C-",
+        "D+", "D0", "D-",
+        "P", "F", "Unknown"
+    ).map { LectureGrade.from(it) }
     val lectures = listOf(
-        makePreviewLectureDataList(2022, SemesterType.One),
-        makePreviewLectureDataList(2022, SemesterType.Two),
-        makePreviewLectureDataList(2023, SemesterType.One),
-        makePreviewLectureDataList(2023, SemesterType.Summer),
+        lectureGrades.map { makePreviewLectureData(2022, SemesterType.One, it) },
+        lectureGrades.map { makePreviewLectureData(2022, SemesterType.Two, it) },
+        lectureGrades.map { makePreviewLectureData(2023, SemesterType.One, it) },
+        lectureGrades.map { makePreviewLectureData(2023, SemesterType.Summer, it) },
     )
 
     SoomsilUSaintTheme {
@@ -206,6 +252,17 @@ private fun ReportCardScreenPreview() {
                 summary = ReportCardSummaryData.previewData,
                 semesterWithLectures = semesters.zip(lectures).toMap(),
             )
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ReportCardScreenPreview_loading() {
+    SoomsilUSaintTheme {
+        ReportCardScreen(
+            isFetching = false,
+            reportCardUiState = ReportCardUiState.Loading,
         )
     }
 }
@@ -225,28 +282,17 @@ private fun makePreviewSemesterData(
     generalRank = 0 to 0,
 )
 
-private fun makePreviewLectureDataList(
+private fun makePreviewLectureData(
     year: Int,
     semester: SemesterType,
-) = listOf(
-    LectureData(
-        year = year,
-        semester = semester,
-        code = "1234",
-        title = "가나다",
-        credit = 3f,
-        lectureGrade = LectureGrade.from("A+"),
-        lectureScore = LectureScore.from("90"),
-        professor = "professor",
-    ),
-    LectureData(
-        year = year,
-        semester = semester,
-        code = "5678",
-        title = "라마바",
-        credit = 2f,
-        lectureGrade = LectureGrade.from("P"),
-        lectureScore = LectureScore.from("P"),
-        professor = "professor",
-    ),
+    lectureGrade: LectureGrade,
+) = LectureData(
+    year = year,
+    semester = semester,
+    code = "1234",
+    title = "가나다",
+    credit = 3f,
+    lectureGrade = lectureGrade,
+    lectureScore = Pass,
+    professor = "professor",
 )

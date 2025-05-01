@@ -41,10 +41,17 @@ sealed interface LectureGrade {
     }
 }
 
-sealed interface LectureScore {
+sealed interface LectureScore : Comparable<LectureScore> {
     @JvmInline
     value class Score(val score: Int) : LectureScore {
         override fun toString(): String = score.toString()
+
+        override fun compareTo(other: LectureScore): Int {
+            return when (other) {
+                is Score -> score.compareTo(other.score)
+                else -> 1 // Score is always bigger than Pass, Fail or Unknown
+            }
+        }
     }
 
     companion object {
@@ -60,12 +67,34 @@ sealed interface LectureScore {
 
 data object Pass : LectureGrade, LectureScore {
     override fun toString(): String = "P"
+
+    override fun compareTo(other: LectureScore): Int {
+        // Pass는 항상 Score보다 작고, Fail/Unknown보다 큽니다
+        return when (other) {
+            Pass -> 0
+            Fail, Unknown -> 1
+            else -> -1
+        }
+    }
 }
 
 data object Fail : LectureGrade, LectureScore {
     override fun toString(): String = "F"
+
+    override fun compareTo(other: LectureScore): Int {
+        return when (other) {
+            Fail -> 0
+            Pass -> -1
+            Unknown -> 1
+            else -> -1
+        }
+    }
 }
 
 data object Unknown : LectureGrade, LectureScore {
     override fun toString(): String = "Unknown"
+
+    // Unknown은 항상 다른 것보다 작습니다
+    override fun compareTo(other: LectureScore): Int =
+        if (other == Unknown) 0 else -1
 }

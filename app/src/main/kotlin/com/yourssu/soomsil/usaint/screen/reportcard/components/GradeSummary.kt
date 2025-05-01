@@ -1,6 +1,7 @@
 package com.yourssu.soomsil.usaint.screen.reportcard.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,31 +26,14 @@ import java.text.DecimalFormat
 
 @Composable
 fun GradeSummary(
-    semesterName: String,
     gpa: Float,
     earnedCredit: Float,   // 취득 학점
     semesterRank: Pair<Int, Int>,      // 학기별 석차
     generalRank: Pair<Int, Int>,       // 전체 석차
-//    captureFlag: CaptureFlag,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .padding(
-                horizontal = 24.dp,
-                vertical = 16.dp,
-            )
-    ) {
-        Column {
-//            if (captureFlag !is CaptureFlag.None) {
-//                // 캡처 화면에서 필요함
-//                Text(
-//                    text = semesterName,
-//                    style = MaterialTheme.typography.bodyMedium,
-//                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-//                )
-//                Spacer(Modifier.height(2.dp))
-//            }
+    Box(modifier) {
+        Column(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
             Row(
                 verticalAlignment = Alignment.Bottom,
             ) {
@@ -71,24 +55,24 @@ fun GradeSummary(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            SummaryList(
+                title = "취득학점",
+                actualValue = earnedCredit,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            SummaryList(
+                title = "학기별 석차",
+                actualValue = semesterRank.first.toFloat(),
+                maxValue = semesterRank.second,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            SummaryList(
+                title = "전체 석차",
+                actualValue = generalRank.first.toFloat(),
+                maxValue = generalRank.second,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
-        SummaryList(
-            title = "취득학점",
-            actualValue = earnedCredit,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        SummaryList(
-            title = "학기별 석차",
-            actualValue = semesterRank.first.toFloat(),
-            maxValue = semesterRank.second,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        SummaryList(
-            title = "전체 석차",
-            actualValue = generalRank.first.toFloat(),
-            maxValue = generalRank.second,
-            modifier = Modifier.fillMaxWidth(),
-        )
     }
 }
 
@@ -134,7 +118,6 @@ private fun SummaryList(
 private fun GradeSummaryPreview() {
     SoomsilUSaintTheme {
         GradeSummary(
-            semesterName = "",
             gpa = 4.13f,
             earnedCredit = 100f,
             semesterRank = 3 to 100,

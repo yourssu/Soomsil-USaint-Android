@@ -12,7 +12,7 @@ import dev.eatsteak.rusaint.core.SemesterGrade
 import javax.inject.Inject
 
 /**
- * rusaint API를 사용하여 core model 타입으로 변환하여 반환하는 클래스입니다
+ * rusaint API를 사용하여 core model 타입으로 반환하는 클래스입니다
  */
 class USaintRemoteSource @Inject constructor(
     private val rusaintApi: RusaintApi,

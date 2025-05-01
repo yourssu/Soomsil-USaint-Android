@@ -28,7 +28,7 @@ fun ReportCardItem(
         onClick = onReportCardClick,
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 28.dp, vertical = 16.dp),
+            modifier = Modifier.padding(vertical = 16.dp),
         ) {
             ReportOutline(
                 title = "평균학점",
@@ -55,7 +55,7 @@ fun ReportOutline(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
