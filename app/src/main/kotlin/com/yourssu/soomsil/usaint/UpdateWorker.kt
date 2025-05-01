@@ -7,11 +7,6 @@ import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.yourssu.soomsil.usaint.data.repository.LectureRepository
-import com.yourssu.soomsil.usaint.data.repository.SemesterRepository
-import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterTypeUseCase
-import com.yourssu.soomsil.usaint.domain.usecase.LecturesDiffUseCase
-import com.yourssu.soomsil.usaint.domain.usecase.MakeSemesterFromLecturesUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.text.SimpleDateFormat
@@ -22,16 +17,10 @@ import java.util.Locale
 class UpdateWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-//    private val uSaintSessionRepo: USaintSessionRepository,
-    private val lectureRepo: LectureRepository,
-    private val semesterRepo: SemesterRepository,
-    private val lecturesDiffUseCase: LecturesDiffUseCase,
-    private val getCurrentSemesterTypeUseCase: GetCurrentSemesterTypeUseCase,
-    private val makeSemesterUseCase: MakeSemesterFromLecturesUseCase,
 ) : CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
         // TODO: UseCase로 분리하기
-        val currentSemester = getCurrentSemesterTypeUseCase() ?: return Result.success()
+//        val currentSemester = getCurrentSemesterTypeUseCase() ?: return Result.success()
 //        val session = uSaintSessionRepo.getSession().getOrElse { e ->
 //            Timber.e(e)
 //            return Result.failure()

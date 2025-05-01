@@ -1,5 +1,6 @@
-package com.yourssu.soomsil.usaint.ui.component
+package com.yourssu.soomsil.usaint.ui.components
 
+import android.annotation.SuppressLint
 import android.graphics.PointF
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
@@ -44,11 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.core.graphics.component1
 import androidx.core.graphics.component2
-import com.yourssu.soomsil.usaint.domain.type.makeSemesterType
+import com.yourssu.soomsil.usaint.core.model.SemesterData
+import com.yourssu.soomsil.usaint.core.types.SemesterType
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
-import com.yourssu.soomsil.usaint.ui.types.Grade
-import com.yourssu.soomsil.usaint.ui.types.Semester
-import com.yourssu.soomsil.usaint.ui.types.toGrade
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -57,7 +56,7 @@ import kotlin.math.sqrt
 // https://github.com/riggaroo/compose-playtime/blob/main/app/src/main/java/dev/riggaroo/composeplaytime/SmoothLineGraph.kt
 @Composable
 fun Chart(
-    semesters: List<Semester>,
+    semesters: List<SemesterData>,
     modifier: Modifier = Modifier,
     dotRadius: Dp = ChartDefaults.DotRadius,
     lineWidth: Dp = ChartDefaults.LineWidth,
@@ -80,8 +79,8 @@ fun Chart(
     val animationProgress = remember { Animatable(0f) }
     var highlightedIndex by remember { mutableStateOf<Int?>(null) }
 
-    val grades: List<Grade> = semesters.map { it.gpa }
-    val yAxis: List<Grade> = ChartDefaults.generateYAxisLabel(grades)
+    val grades: List<Float> = semesters.map { it.gradePointsAverage }
+    val yAxis: List<Float> = ChartDefaults.generateYAxisLabel(grades)
     var graphOffsetX = 0f
 
     LaunchedEffect(semesters, grades) {
@@ -123,15 +122,16 @@ fun Chart(
                 )
             }
             .drawWithCache {
+                @SuppressLint("DefaultLocale")
                 val yAxisTextLayoutResults = yAxis.map { grade ->
                     textMeasurer.measure(
-                        text = grade.formatToString(digit = 1),
+                        text = String.format("%.1f", grade),
                         style = axisTextStyle,
                     )
                 }
                 val xAxisTextLayoutResults = semesters.map { semester ->
                     textMeasurer.measure(
-                        text = semester.type.shortHandedName,
+                        text = "${semester.year % 100}-${semester.semester.kor}",
                         style = axisTextStyle,
                     )
                 }
@@ -195,15 +195,15 @@ fun Chart(
 
                 onDrawBehind {
                     // draw Divider and yAxis mark(눈금)
-                    val maximum = grades.max().value
-                    val lowerGuideline = yAxis.last().value
+                    val maximum = grades.max()
+                    val lowerGuideline = yAxis.last()
                     val range = maximum - lowerGuideline
                     val horizontalInterval = graphSize.height / range // 1.0 사이의 간격
 
                     val barCount = yAxis.size
 
                     repeat(barCount) { i ->
-                        val y = horizontalInterval * (maximum - yAxis[i].value) + graphLeftTop.y
+                        val y = horizontalInterval * (maximum - yAxis[i]) + graphLeftTop.y
                         val textLayout = yAxisTextLayoutResults[i]
                         drawText(
                             textLayout,
@@ -283,20 +283,19 @@ fun Chart(
 }
 
 private fun generatePoints(
-    grades: List<Grade>,
-    lowerBoundGrade: Grade,
+    grades: List<Float>,
+    lowerBoundGrade: Float,
     size: Size,
     graphLeftTop: Offset,
 ): List<PointF> {
-    val maxGrade = grades.max().value
-    val minGrade = lowerBoundGrade.value
-    val range = maxGrade - minGrade
+    val maxGrade = grades.max()
+    val range = maxGrade - lowerBoundGrade
     val semesterWidth = if (grades.size > 1) size.width / (grades.size - 1) else 0f
     val heightPxPerAmount = size.height / range
 
     return grades.mapIndexed { i, grade ->
         val x = semesterWidth * i
-        val y = size.height - (grade.value - minGrade) * heightPxPerAmount
+        val y = size.height - (grade - lowerBoundGrade) * heightPxPerAmount
         PointF(x + graphLeftTop.x, y + graphLeftTop.y)
     }
 }
@@ -331,7 +330,7 @@ private fun generatePath(points: List<PointF>): Path {
 
 fun DrawScope.drawHighlight(
     index: Int,
-    grades: List<Grade>,
+    grades: List<Float>,
     points: List<PointF>,
     textMeasurer: TextMeasurer,
     textStyle: TextStyle,
@@ -340,7 +339,8 @@ fun DrawScope.drawHighlight(
 ) {
     if (index !in points.indices) return
     val (pointX, pointY) = points[index]
-    val gradeText = grades[index].formatToString(digit = 2)
+    @SuppressLint("DefaultLocale")
+    val gradeText = String.format("%.2f", grades[index])
     val textLayoutResult = textMeasurer.measure(gradeText, style = textStyle)
     val containerSize = textLayoutResult.size.toSize().let { textSize ->
         textSize.copy(
@@ -382,17 +382,17 @@ object ChartDefaults {
         val ContainerRadius = 8.dp
     }
 
-    private val LowerBoundGrade = Grade(2.0f)
+    private val LowerBoundGrade = 2.0f
 
-    fun generateYAxisLabel(grades: List<Grade>): List<Grade> {
+    fun generateYAxisLabel(grades: List<Float>): List<Float> {
         // minimum이 하한(lower bound)보다 크면 하한으로 설정
-        val minGrade = grades.min().coerceAtMost(LowerBoundGrade).value
-        val maxGrade = grades.max().value
+        val minGrade = grades.min().coerceAtMost(LowerBoundGrade)
+        val maxGrade = grades.max()
         val minLabel = floor(minGrade).roundToInt()
         val maxLabel = floor(maxGrade).roundToInt()
 
         return (minLabel..maxLabel).map {
-            it.toFloat().toGrade()
+            it.toFloat()
         }.reversed()
     }
 }
@@ -408,10 +408,10 @@ private fun ChartPreview() {
         ) {
             Chart(
                 semesters = listOf(
-                    Semester(makeSemesterType(2022, "1"), 3.5.toGrade()),
-                    Semester(makeSemesterType(2022, "2"), 3.7.toGrade()),
-                    Semester(makeSemesterType(2023, "1"), 4.2.toGrade()),
-                    Semester(makeSemesterType(2023, "여름"), 4.5.toGrade()),
+                    makePreviewSemesterData(2022, SemesterType.One, 3.5f),
+                    makePreviewSemesterData(2022, SemesterType.Two, 3.7f),
+                    makePreviewSemesterData(2023, SemesterType.One, 4.2f),
+                    makePreviewSemesterData(2023, SemesterType.Summer, 4.5f),
                 ),
             )
         }
@@ -428,7 +428,7 @@ private fun ChartPreview_single_data() {
                 .background(MaterialTheme.colorScheme.surface),
         ) {
             Chart(
-                semesters = listOf(Semester(makeSemesterType(2022, "1"), 3.5.toGrade())),
+                semesters = listOf(makePreviewSemesterData(2022, SemesterType.One, 3.5f)),
             )
         }
     }
@@ -445,16 +445,31 @@ private fun ChartPreview_many_items() {
         ) {
             Chart(
                 semesters = listOf(
-                    Semester(makeSemesterType(2022, "1"), 3.5.toGrade()),
-                    Semester(makeSemesterType(2022, "2"), 3.7.toGrade()),
-                    Semester(makeSemesterType(2023, "1"), 4.2.toGrade()),
-                    Semester(makeSemesterType(2023, "여름"), 4.5.toGrade()),
-                    Semester(makeSemesterType(2023, "2"), 4.5.toGrade()),
-                    Semester(makeSemesterType(2023, "겨울"), 4.5.toGrade()),
-                    Semester(makeSemesterType(2024, "1"), 3.5.toGrade()),
-                    Semester(makeSemesterType(2024, "겨울"), 1.5.toGrade()),
+                    makePreviewSemesterData(2022, SemesterType.One, 3.5f),
+                    makePreviewSemesterData(2022, SemesterType.Two, 3.7f),
+                    makePreviewSemesterData(2023, SemesterType.One, 4.2f),
+                    makePreviewSemesterData(2023, SemesterType.Summer, 4.5f),
+                    makePreviewSemesterData(2023, SemesterType.Two, 4.5f),
+                    makePreviewSemesterData(2023, SemesterType.Winter, 4.5f),
+                    makePreviewSemesterData(2024, SemesterType.One, 3.5f),
+                    makePreviewSemesterData(2024, SemesterType.Winter, 1.5f),
                 ),
             )
         }
     }
 }
+
+private fun makePreviewSemesterData(
+    year: Int,
+    semester: SemesterType,
+    grade: Float,
+) = SemesterData(
+    year = year,
+    semester = semester,
+    gradePointsAverage = grade,
+    attemptedCredit = 0f,
+    earnedCredit = 0f,
+    pfEarnedCredit = 0f,
+    semesterRank = 0 to 0,
+    generalRank = 0 to 0,
+)

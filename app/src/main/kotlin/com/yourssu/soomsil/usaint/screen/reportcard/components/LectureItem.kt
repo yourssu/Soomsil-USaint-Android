@@ -1,5 +1,6 @@
-package com.yourssu.soomsil.usaint.screen.semesterdetail.components
+package com.yourssu.soomsil.usaint.screen.reportcard.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,25 +23,27 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import com.yourssu.soomsil.usaint.screen.semesterdetail.CaptureFlag
+import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.core.model.Fail
+import com.yourssu.soomsil.usaint.core.model.LectureGrade
+import com.yourssu.soomsil.usaint.core.model.Pass
+import com.yourssu.soomsil.usaint.core.model.Unknown
+import com.yourssu.soomsil.usaint.ui.components.CaptureFlag
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
-import com.yourssu.soomsil.usaint.ui.types.Credit
-import com.yourssu.soomsil.usaint.ui.types.Tier
-import com.yourssu.soomsil.usaint.ui.types.toCredit
 
 @Composable
-fun CourseGradeItem(
-    tier: Tier,
-    courseName: String,
+fun LectureItem(
+    lectureGrade: LectureGrade,
+    lectureTitle: String,
     professor: String,
-    courseCredit: Credit,
-    captureFlag: CaptureFlag,
+    credit: Float,
     modifier: Modifier = Modifier,
+    captureFlag: CaptureFlag = CaptureFlag.None,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -52,9 +55,9 @@ fun CourseGradeItem(
         ) {
             Image(
                 modifier = Modifier.size(48.dp),
-                painter = painterResource(id = tier.id),
+                painter = painterResource(id = lectureGrade.resourceId()),
                 contentScale = ContentScale.Fit,
-                contentDescription = "tier",
+                contentDescription = "grade",
             )
         }
         if (captureFlag is CaptureFlag.HidingInfo) {
@@ -65,23 +68,43 @@ fun CourseGradeItem(
                     .background(MaterialTheme.colorScheme.surfaceContainer),
             )
         } else {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(top = 4.dp),
-            ) {
+            Column {
                 Text(
-                    text = courseName,
+                    text = lectureTitle,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = "$professor · ${courseCredit.formatToString()}학점",
+                    text = "$professor · ${String.format("%.1f", credit)}학점",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
+    }
+}
+
+@DrawableRes
+private fun LectureGrade.resourceId(): Int = when (this) {
+    is Pass -> R.drawable.ic_tier_pass
+    is Fail -> R.drawable.ic_tier_fail
+    is Unknown -> R.drawable.ic_tier_unknown
+    is LectureGrade.Grade -> when (this.grade) {
+        "A+" -> R.drawable.ic_tier_ap
+        "A0" -> R.drawable.ic_tier_a0
+        "A-" -> R.drawable.ic_tier_am
+        "B+" -> R.drawable.ic_tier_bp
+        "B0" -> R.drawable.ic_tier_b0
+        "B-" -> R.drawable.ic_tier_bm
+        "C+" -> R.drawable.ic_tier_cp
+        "C0" -> R.drawable.ic_tier_c0
+        "C-" -> R.drawable.ic_tier_cm
+        "D+" -> R.drawable.ic_tier_dp
+        "D0" -> R.drawable.ic_tier_d0
+        "D-" -> R.drawable.ic_tier_dm
+        "P" -> R.drawable.ic_tier_pass
+        "F" -> R.drawable.ic_tier_fail
+        else -> R.drawable.ic_tier_unknown
     }
 }
 
@@ -95,13 +118,13 @@ private class CaptureFlagParamProvider : PreviewParameterProvider<CaptureFlag> {
 private fun CourseGradeItemPreview(
     @PreviewParameter(CaptureFlagParamProvider::class) captureFlag: CaptureFlag,
 ) {
-    val tiers = listOf(
+    val lectureGrades = listOf(
         "A+", "A0", "A-",
         "B+", "B0", "B-",
         "C+", "C0", "C-",
         "D+", "D0", "D-",
-        "P", "F",
-    ).map { Tier(it) }
+        "P", "F", "Unknown"
+    ).map { LectureGrade.from(it) }
 
     SoomsilUSaintTheme {
         Column(
@@ -109,12 +132,12 @@ private fun CourseGradeItemPreview(
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
         ) {
-            tiers.forEach { tier ->
-                CourseGradeItem(
-                    tier = tier,
-                    courseName = "가나다라",
+            lectureGrades.forEach { lectureGrade ->
+                LectureItem(
+                    lectureGrade = lectureGrade,
+                    lectureTitle = "가나다라",
                     professor = "홍길동",
-                    courseCredit = 3.toCredit(),
+                    credit = 3f,
                     captureFlag = captureFlag,
                 )
             }

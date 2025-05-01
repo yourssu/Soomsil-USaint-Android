@@ -9,7 +9,6 @@ import com.yourssu.soomsil.usaint.core.model.StudentCredential
 import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
-import com.yourssu.soomsil.usaint.domain.usecase.UpdateWorkerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -21,7 +20,7 @@ class LoginViewModel @Inject constructor(
     private val studentDataRepository: StudentDataRepository,
     private val studentCredentialRepository: StudentCredentialRepository,
     private val userDataRepository: UserDataRepository,
-    private val updateWorkerUseCase: UpdateWorkerUseCase,
+//    private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<LoginUiEvent> = MutableSharedFlow()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -35,10 +34,10 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             userDataRepository.setNotificationEnabled(enabled)
         }
-        if (enabled) {
-            // WorkManager 등록
-            updateWorkerUseCase.enqueue()
-        }
+//        if (enabled) {
+//            // WorkManager 등록
+//            updateWorkerUseCase.enqueue()
+//        }
     }
 
     fun login() {
@@ -49,13 +48,14 @@ class LoginViewModel @Inject constructor(
             // id/pw 저장
             studentCredentialRepository.setStudentCredential(credential)
             // 저장된 id/pw로 학생 데이터 가져오기 시도
-            studentDataRepository.fetchStudentData().onFailure { e ->
-                isLoading = false
-                _uiEvent.emit(LoginUiEvent.Failure(e.message))
-                return@launch
-            }
-            studentCredentialRepository.setLoggedIn(true)
-            _uiEvent.emit(LoginUiEvent.Success)
+            studentDataRepository.fetchStudentData()
+                .onSuccess {
+                    studentCredentialRepository.setLoggedIn(true)
+                    _uiEvent.emit(LoginUiEvent.Success)
+                }
+                .onFailure { e ->
+                    _uiEvent.emit(LoginUiEvent.Failure(e.message))
+                }
             isLoading = false
         }
     }

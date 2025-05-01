@@ -13,9 +13,6 @@ import com.yourssu.soomsil.usaint.screen.home.navigation.navigateToHome
 import com.yourssu.soomsil.usaint.screen.login.navigation.loginScreen
 import com.yourssu.soomsil.usaint.screen.login.navigation.navigateToLogin
 import com.yourssu.soomsil.usaint.screen.reportcard.navigation.reportCardScreen
-import com.yourssu.soomsil.usaint.screen.semesterdetail.navigation.navigateToSemesterDetail
-import com.yourssu.soomsil.usaint.screen.semesterdetail.navigation.semesterDetailScreen
-import com.yourssu.soomsil.usaint.screen.semesterlist.navigation.semesterListScreen
 import com.yourssu.soomsil.usaint.screen.setting.navigation.navigateToSetting
 import com.yourssu.soomsil.usaint.screen.setting.navigation.settingScreen
 
@@ -68,13 +65,6 @@ fun USaintNavHost(
                     }
                 )
             }
-        )
-        semesterListScreen(
-            navigateToSemesterListDetail = { idx -> navController.navigateToSemesterDetail(idx) },
-            navigateToBack = { navController.navigateUp() },
-        )
-        semesterDetailScreen(
-            navigateToBack = { navController.navigateUp() },
         )
         homeScreen(
             navigateToSetting = { navController.navigateToSetting() },

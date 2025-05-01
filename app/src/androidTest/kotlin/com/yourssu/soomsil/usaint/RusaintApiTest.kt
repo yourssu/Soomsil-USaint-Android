@@ -16,6 +16,11 @@ class RusaintApiTest {
 
     @Test
     fun getUSaintSession(): Unit = runBlocking {
-        rusaintApi.getUSaintSession(StudentCredential(id = "20222904", password = ""))
+        rusaintApi.graduationStudentInformation(
+            StudentCredential(
+                id = "20222904",
+                password = ""
+            )
+        )
     }
 }

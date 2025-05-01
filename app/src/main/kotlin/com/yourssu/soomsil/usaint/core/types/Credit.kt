@@ -1,9 +1,8 @@
-package com.yourssu.soomsil.usaint.ui.types
+package com.yourssu.soomsil.usaint.core.types
 
-import androidx.compose.runtime.Immutable
 import java.text.DecimalFormat
 
-@Immutable
+@Suppress("unused")
 @JvmInline
 value class Credit(val value: Float) {
     fun formatToString(): String {

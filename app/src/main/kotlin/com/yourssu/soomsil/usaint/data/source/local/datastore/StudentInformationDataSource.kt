@@ -24,8 +24,6 @@ class StudentInformationDataSource @Inject constructor(
                 applyType = it.applyType,
                 department = it.department,
                 majors = it.majorsList.toList(),
-                graduationPoints = it.graduationPoints,
-                completedPoints = it.completedPoints,
             )
         }
 
@@ -43,12 +41,18 @@ class StudentInformationDataSource @Inject constructor(
                     setDepartment(studentData.department)
                     clearMajors()
                     addAllMajors(studentData.majors)
-                    setGraduationPoints(studentData.graduationPoints)
-                    setCompletedPoints(studentData.completedPoints)
                 }
             }
         } catch (e: IOException) {
             Timber.e("Failed to update student data", e)
+        }
+    }
+
+    suspend fun clear() {
+        try {
+            studentInformation.updateData { StudentInformation.getDefaultInstance() }
+        } catch (e: IOException) {
+            Timber.e("Failed to clear student data", e)
         }
     }
 }

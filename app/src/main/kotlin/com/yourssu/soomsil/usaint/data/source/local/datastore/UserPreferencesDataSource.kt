@@ -43,6 +43,14 @@ class UserPreferencesDataSource @Inject constructor(
             Timber.e("Failed to update user preferences", e)
         }
     }
+
+    suspend fun clear() {
+        try {
+            userPreferences.updateData { UserPreferences.getDefaultInstance() }
+        } catch (e: IOException) {
+            Timber.e("Failed to clear user preferences", e)
+        }
+    }
 }
 
 private fun UserPreferences.copy(builder: UserPreferences.Builder.() -> Unit) =

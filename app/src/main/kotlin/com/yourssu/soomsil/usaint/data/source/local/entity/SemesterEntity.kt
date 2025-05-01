@@ -2,6 +2,8 @@ package com.yourssu.soomsil.usaint.data.source.local.entity
 
 import androidx.room.Entity
 import androidx.room.Index
+import com.yourssu.soomsil.usaint.core.model.SemesterData
+import com.yourssu.soomsil.usaint.core.types.SemesterType
 
 @Entity(
     tableName = "Semester",
@@ -19,4 +21,26 @@ data class SemesterEntity(
     val overallStudentCount: Int,   // 전체 수강생 수
     val earnedCredit: Float,        // 학기 취득 학점
     val gpa: Float,                 // 학기 평균 학점
+)
+
+fun SemesterEntity.asExternalModel() = SemesterData(
+    year = year,
+    semester = enumValueOf<SemesterType>(semester),
+    gradePointsAverage = gpa,
+    attemptedCredit = 0f, // TODO
+    earnedCredit = earnedCredit,
+    pfEarnedCredit = 0f, // TODO
+    semesterRank = Pair(semesterRank, semesterStudentCount),
+    generalRank = Pair(overallRank, overallStudentCount),
+)
+
+fun SemesterData.asEntity() = SemesterEntity(
+    year = year,
+    semester = semester.name,
+    semesterRank = semesterRank.first,
+    semesterStudentCount = semesterRank.second,
+    overallRank = generalRank.first,
+    overallStudentCount = generalRank.second,
+    earnedCredit = earnedCredit,
+    gpa = gradePointsAverage,
 )

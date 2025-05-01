@@ -6,10 +6,6 @@ option java_multiple_files = true;
 message ReportCardSummaryProto {
   /**
    * [dev.eatsteak.rusaint.core.GradeSummary]
-   *
-   * help me:
-   * - 학적부와 증명의 차이점?
-   * - 졸업사정표의 인정학점과 학적부 취득학점의 차이점?
    */
   float attemptedCredits = 1;   // 학적부 신청학점
   float earnedCredits = 2;      // 학적부 취득학점
@@ -17,4 +13,6 @@ message ReportCardSummaryProto {
   float gradePointsAverage = 4; // 학적부 평점평균
   float arithmeticMean = 5;     // 학적부 산술평균
   float pfEarnedCredits = 6;    // 학적부 P/F학점
+  float graduationPoints = 7;   // 졸업학점
+  float completed_points = 8;   // 인정학점
 }
