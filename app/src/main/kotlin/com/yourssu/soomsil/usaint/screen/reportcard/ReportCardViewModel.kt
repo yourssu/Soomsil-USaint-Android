@@ -13,7 +13,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -37,7 +36,6 @@ class ReportCardViewModel @Inject constructor(
         reportCardRepository.semesterWithLectures,
         transform = ReportCardUiState::ReportCard,
     )
-        .onStart { fetchData(refresh = false) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -46,9 +44,14 @@ class ReportCardViewModel @Inject constructor(
 
     var isFetching by mutableStateOf(false)
         private set
+
     // 사용자가 직접 pull to refresh를 했을 경우에만 true
     var isRefreshing by mutableStateOf(false)
         private set
+
+    init {
+        fetchData(refresh = false)
+    }
 
     fun fetchData(refresh: Boolean) {
         if (isFetching || isRefreshing) return
@@ -57,7 +60,6 @@ class ReportCardViewModel @Inject constructor(
             isRefreshing = refresh
             // TODO 에러처리
             reportCardRepository.fetchSemesterWithLectures().onFailure { e -> Timber.e(e) }
-            reportCardRepository.fetchReportCardSummary().onFailure { e -> Timber.e(e) }
             isFetching = false
             isRefreshing = false
         }
