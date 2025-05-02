@@ -19,7 +19,7 @@ android {
         applicationId = "com.yourssu.soomsil.usaint"
         minSdk = 26
         targetSdk = 35
-        versionCode = 9
+        versionCode = 11
         versionName = "0.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -46,11 +46,6 @@ android {
     }
     room {
         schemaDirectory("$projectDir/schemas")
-    }
-    defaultConfig {
-        ndk {
-            abiFilters += setOf("x86_64")
-        }
     }
 }
 
