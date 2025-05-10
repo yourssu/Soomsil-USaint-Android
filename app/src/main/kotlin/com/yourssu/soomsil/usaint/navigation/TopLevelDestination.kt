@@ -1,14 +1,18 @@
 package com.yourssu.soomsil.usaint.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Church
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.outlined.Church
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.School
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.navOptions
+import com.yourssu.soomsil.usaint.screen.chapel.navigation.Chapel
+import com.yourssu.soomsil.usaint.screen.chapel.navigation.navigateToChapel
 import com.yourssu.soomsil.usaint.screen.home.navigation.Home
 import com.yourssu.soomsil.usaint.screen.home.navigation.navigateToHome
 import com.yourssu.soomsil.usaint.screen.reportcard.navigation.ReportCard
@@ -33,12 +37,12 @@ enum class TopLevelDestination(
         label = "성적",
         route = ReportCard::class,
     ),
-//    CHAPEL(
-//        selectedIcon = Icons.Filled.Church,
-//        unselectedIcon = Icons.Outlined.Church,
-//        label = "채플",
-//        route = Chapel::class,
-//    )
+    CHAPEL(
+        selectedIcon = Icons.Filled.Church,
+        unselectedIcon = Icons.Outlined.Church,
+        label = "채플",
+        route = Chapel::class,
+    )
 }
 
 fun NavHostController.navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
@@ -58,6 +62,6 @@ fun NavHostController.navigateToTopLevelDestination(topLevelDestination: TopLeve
     when (topLevelDestination) {
         TopLevelDestination.HOME -> this.navigateToHome(topLevelNavOptions)
         TopLevelDestination.REPORT_CARD -> this.navigateToReportCard(topLevelNavOptions)
-//        TopLevelDestination.CHAPEL -> this.navigateToChapel(topLevelNavOptions)
+        TopLevelDestination.CHAPEL -> this.navigateToChapel(topLevelNavOptions)
     }
 }

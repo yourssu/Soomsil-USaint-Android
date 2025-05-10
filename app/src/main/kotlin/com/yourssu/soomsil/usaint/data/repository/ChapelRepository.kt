@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class ChapelCardRepository @Inject constructor(
+class ChapelRepository @Inject constructor(
     private val studentCredential: StudentCredentialDataSource,
     private val chapelDataSource: ChapelDataSource,
     private val semesterDao: SemesterDao,
@@ -25,11 +25,11 @@ class ChapelCardRepository @Inject constructor(
     val chapelCardData: Flow<ChapelData> =
         chapelDataSource.chapelCardData
 
-    val semesterWithChapels: Flow<Map<SemesterData, List<ChapelData>>> =
-        semesterDao.getSemesterWithChapels().map { semesterEntityListMap ->
+    val semesterWithChapels: Flow<Map<SemesterData, ChapelData>> =
+        semesterDao.getSemesterWithChapel().map { semesterEntityListMap ->
             semesterEntityListMap
                 .mapKeys { (semesterEntity, _) -> semesterEntity.asExternalModel() }
-                .mapValues { (_, chapelEntity) -> chapelEntity.map(ChapelEntity::asExternalModel) }
+                .mapValues { (_, chapelEntity) -> chapelEntity.asExternalModel() }
         }
 
     suspend fun fetchChapelCardData(): Result<Unit> = runCatching {
@@ -39,18 +39,23 @@ class ChapelCardRepository @Inject constructor(
         chapelDataSource.setChapelCardData(chapelCardData)
     }
 
-    suspend fun fetchChapelData(): Result<Unit> = runCatching {
+    suspend fun fetchSemesterWithChapels(): Result<Unit> = runCatching {
         val credential = studentCredential.getStudentCredential()
         val semesterDataList = uSaintRemoteSource.remoteSemesterDataList(credential)
         semesterDao.upsertSemesters(semesterDataList.map(SemesterData::asEntity))
 
         for (semesterData in semesterDataList) {
-            val chapelData = uSaintRemoteSource.remoteChapelData(
-                credential,
-                semesterData.year,
-                semesterData.semester
-            )
-            chapelDao.upsertChapel(chapelData.asEntity())
+            try {
+                val chapelData = uSaintRemoteSource.remoteChapelData(
+                    credential,
+                    semesterData.year,
+                    semesterData.semester
+                )
+                chapelDao.upsertChapel(chapelData.asEntity())
+            } catch (e: Exception) {
+                // 계절학기, 6회 수강 완료 등 채플 데이터가 없는 학기에 대해서는
+                // 에러가 발생하지만 동작이 멈추면 안되고 다음 학기를 검색해야함
+            }
         }
     }
 }

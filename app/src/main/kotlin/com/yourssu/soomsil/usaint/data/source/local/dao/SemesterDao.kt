@@ -34,7 +34,7 @@ interface SemesterDao {
         JOIN Chapel ON Semester.year = Chapel.year AND Semester.semester = Chapel.semester
         """
     )
-    fun getSemesterWithChapels(): Flow<Map<SemesterEntity, List<ChapelEntity>>>
+    fun getSemesterWithChapel(): Flow<Map<SemesterEntity, ChapelEntity>>
 
     @Query("SELECT * FROM Semester")
     suspend fun getOneOffSemesterEntities(): List<SemesterEntity>

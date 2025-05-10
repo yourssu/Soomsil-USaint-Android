@@ -23,7 +23,7 @@ data class ChapelData(
             floorLevel = 1,
             seatNumber = "H-5-9",
             absenceTime = 3,
-            result = "이게모여",
+            result = "P",
         )
     }
 }
