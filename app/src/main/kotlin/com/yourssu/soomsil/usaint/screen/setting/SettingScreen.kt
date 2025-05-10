@@ -149,6 +149,31 @@ fun SettingScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             Spacer(Modifier.height(16.dp))
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        if (settingUiState is SettingUiState.UserEditableSettings)
+                            onAutoFetchToggleChange(!settingUiState.autoFetchEnabled)
+                    },
+                headlineContent = { Text(text = "최신 학사 정보 자동으로 불러오기") },
+                trailingContent = {
+                    when (settingUiState) {
+                        is SettingUiState.UserEditableSettings -> {
+                            Switch(
+                                checked = settingUiState.autoFetchEnabled,
+                                onCheckedChange = onAutoFetchToggleChange,
+                            )
+                        }
+
+                        is SettingUiState.Loading -> {
+                            CircularProgressIndicator()
+                        }
+                    }
+                }
+            )
+
+            Spacer(Modifier.height(16.dp))
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 text = "계정관리",
@@ -196,37 +221,6 @@ fun SettingScreen(
                 }
             )
             */
-
-            Spacer(Modifier.height(16.dp))
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                text = "앱 설정",
-                style = MaterialTheme.typography.titleSmall,
-            )
-            Spacer(Modifier.height(8.dp))
-            ListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        if (settingUiState is SettingUiState.UserEditableSettings)
-                            onAutoFetchToggleChange(!settingUiState.autoFetchEnabled)
-                    },
-                headlineContent = { Text(text = "최신 학사 정보 자동으로 불러오기") },
-                trailingContent = {
-                    when (settingUiState) {
-                        is SettingUiState.UserEditableSettings -> {
-                            Switch(
-                                checked = settingUiState.autoFetchEnabled,
-                                onCheckedChange = onAutoFetchToggleChange,
-                            )
-                        }
-
-                        is SettingUiState.Loading -> {
-                            CircularProgressIndicator()
-                        }
-                    }
-                }
-            )
 
             Spacer(Modifier.height(16.dp))
             Text(
