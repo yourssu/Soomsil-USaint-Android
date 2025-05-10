@@ -2,6 +2,7 @@ package com.yourssu.soomsil.usaint.screen.setting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
@@ -13,6 +14,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed interface SettingUiState {
+    data object Loading : SettingUiState
+
+    data class UserEditableSettings(
+        val notificationEnabled: Boolean,
+        val autoFetchEnabled: Boolean,
+    ) : SettingUiState
+}
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
@@ -27,6 +37,7 @@ class SettingViewModel @Inject constructor(
             .map {
                 SettingUiState.UserEditableSettings(
                     notificationEnabled = it.notificationEnabled,
+                    autoFetchEnabled = it.autoFetch,
                 )
             }.stateIn(
                 scope = viewModelScope,
@@ -45,6 +56,12 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    fun updateAutoFetchEnabled(enable: Boolean) {
+        viewModelScope.launch {
+            userDataRepository.setAutoFetch(enable)
+        }
+    }
+
     fun logout() {
         viewModelScope.launch {
             reportCardRepository.deleteAll()
@@ -57,10 +74,3 @@ class SettingViewModel @Inject constructor(
     }
 }
 
-sealed interface SettingUiState {
-    data object Loading : SettingUiState
-
-    data class UserEditableSettings(
-        val notificationEnabled: Boolean,
-    ) : SettingUiState
-}
