@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "2056534157d8564c09232a83d8a3922e",
+    "identityHash": "95112d074e5a093d9502258c482be6c0",
     "entities": [
       {
         "tableName": "Semester",
@@ -173,11 +173,107 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "Chapel",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`year` INTEGER NOT NULL DEFAULT 0, `semester` TEXT NOT NULL DEFAULT 'One', `division` INTEGER NOT NULL, `chapelTime` TEXT NOT NULL, `chapelRoom` TEXT NOT NULL, `floorLevel` INTEGER NOT NULL, `seatNumber` TEXT NOT NULL, `absenceTime` INTEGER NOT NULL, `result` TEXT NOT NULL, PRIMARY KEY(`year`, `semester`), FOREIGN KEY(`year`, `semester`) REFERENCES `Chapel`(`year`, `semester`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "year",
+            "columnName": "year",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "semester",
+            "columnName": "semester",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'One'"
+          },
+          {
+            "fieldPath": "division",
+            "columnName": "division",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chapelTime",
+            "columnName": "chapelTime",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chapelRoom",
+            "columnName": "chapelRoom",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "floorLevel",
+            "columnName": "floorLevel",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "seatNumber",
+            "columnName": "seatNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "absenceTime",
+            "columnName": "absenceTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "result",
+            "columnName": "result",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "year",
+            "semester"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Chapel_year_semester",
+            "unique": true,
+            "columnNames": [
+              "year",
+              "semester"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Chapel_year_semester` ON `${TABLE_NAME}` (`year`, `semester`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Chapel",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "year",
+              "semester"
+            ],
+            "referencedColumns": [
+              "year",
+              "semester"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2056534157d8564c09232a83d8a3922e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '95112d074e5a093d9502258c482be6c0')"
     ]
   }
 }

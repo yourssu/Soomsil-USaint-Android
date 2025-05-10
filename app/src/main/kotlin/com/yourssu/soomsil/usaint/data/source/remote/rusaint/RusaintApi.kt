@@ -2,12 +2,15 @@ package com.yourssu.soomsil.usaint.data.source.remote.rusaint
 
 import com.yourssu.soomsil.usaint.core.model.StudentCredential
 import com.yourssu.soomsil.usaint.core.types.SemesterType
+import dev.eatsteak.rusaint.core.ChapelInformation
 import dev.eatsteak.rusaint.core.ClassGrade
 import dev.eatsteak.rusaint.core.CourseType
 import dev.eatsteak.rusaint.core.GradeSummary
 import dev.eatsteak.rusaint.core.GraduationStudent
 import dev.eatsteak.rusaint.core.SemesterGrade
 import dev.eatsteak.rusaint.core.StudentInformation
+import dev.eatsteak.rusaint.ffi.ChapelApplication
+import dev.eatsteak.rusaint.ffi.ChapelApplicationBuilder
 import dev.eatsteak.rusaint.ffi.CourseGradesApplicationBuilder
 import dev.eatsteak.rusaint.ffi.GraduationRequirementsApplicationBuilder
 import dev.eatsteak.rusaint.ffi.StudentInformationApplicationBuilder
@@ -76,5 +79,17 @@ class RusaintApi @Inject constructor() {
     suspend fun graduationStudentInformation(credential: StudentCredential): GraduationStudent {
         val session = getUSaintSession(credential)
         return GraduationRequirementsApplicationBuilder().build(session).studentInfo()
+    }
+
+    // 특정학기 채플정보 조회
+    // https://docs.rs/rusaint/latest/rusaint/application/chapel/struct.ChapelApplication.html#method.information
+    suspend fun chapelInformation(
+        credential: StudentCredential,
+        year: Int,
+        semester: SemesterType
+    ): ChapelInformation {
+        val session = getUSaintSession(credential)
+        ChapelApplication
+        return ChapelApplicationBuilder().build(session).information(year.toUInt(), semester.toRusaintSemesterType())
     }
 }

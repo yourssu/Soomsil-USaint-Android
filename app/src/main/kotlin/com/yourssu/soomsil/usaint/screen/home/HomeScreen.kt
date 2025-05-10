@@ -35,9 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yourssu.soomsil.usaint.core.model.ChapelData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.screen.home.components.ActionTitleItem
+import com.yourssu.soomsil.usaint.screen.home.components.ChapelCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.StudentDataItem
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
@@ -114,6 +116,8 @@ private fun HomeScreen(
                     if (homeUiState is HomeUiState.Home) homeUiState.studentData else null
                 val reportCardSummaryData =
                     if (homeUiState is HomeUiState.Home) homeUiState.reportCardSummaryData else null
+                val chapelCardData =
+                    if (homeUiState is HomeUiState.Home) homeUiState.chapelCardData else null
 
                 StudentDataItem(
                     studentData = studentData,
@@ -175,6 +179,12 @@ private fun HomeScreen(
                     reportCardSummary = reportCardSummaryData,
                     onReportCardClick = onReportCardClick,
                 )
+
+                Spacer(Modifier.height(8.dp))
+                ChapelCardItem(
+                    onChapelCardClick = {},
+                    chapelData = chapelCardData
+                )
             }
         }
     }
@@ -192,6 +202,7 @@ private fun HomePreview_being() {
             homeUiState = HomeUiState.Home(
                 studentData = StudentData.previewData,
                 reportCardSummaryData = ReportCardSummaryData.previewData,
+                chapelCardData =  ChapelData.previewData
             ),
         )
     }
@@ -209,6 +220,7 @@ private fun HomePreview_leave() {
             homeUiState = HomeUiState.Home(
                 studentData = StudentData.previewData.copy(status = "휴학"),
                 reportCardSummaryData = ReportCardSummaryData.previewData,
+                chapelCardData = ChapelData.previewData
             ),
         )
     }

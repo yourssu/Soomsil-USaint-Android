@@ -16,13 +16,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.core.model.ChapelData
-import kotlin.math.ceil
 
 @Composable
 fun ChapelCardItem(
     modifier: Modifier = Modifier,
     onChapelCardClick: () -> Unit,
-    chapelData: ChapelData
+    chapelData: ChapelData?
 ) {
     ElevatedCard(
         modifier = modifier,
@@ -50,15 +49,17 @@ fun ChapelCardItem(
 
             Text(
                 text = buildAnnotatedString {
-                    append("Pass까지 ")
+                    append("지금까지 ")
                     withStyle(
                         SpanStyle(color = MaterialTheme.colorScheme.primary)
                     ) {
+                        // TODO 'Pass까지 N회 남았어요'로 수정
+                        // 주차별 채플 내용 불러올 수 있기 전까지 유지
                         append(
-                            "${ceil(chapelData.totalAttendance * (2F / 3F)).toInt() - chapelData.currentAttendance}회 "
+                            "${(chapelData?.absenceTime ?: 0)}회 "
                         )
                     }
-                    append("남았어요")
+                    append("결석했어요.")
                 },
                 modifier = Modifier
                     .padding(
@@ -73,7 +74,8 @@ fun ChapelCardItem(
             )
 
             LinearProgressIndicator(
-                progress = { chapelData.currentAttendance.toFloat() / chapelData.totalAttendance.toFloat() },
+                // TODO 출석완료 / 전체출석
+                progress = { (14 - ((chapelData?.absenceTime)?.toFloat() ?: 0F)) / 14.toFloat() },
                 modifier
                     .fillMaxWidth()
                     .padding(
@@ -85,7 +87,8 @@ fun ChapelCardItem(
 
             Row {
                 Text(
-                    text = "${chapelData.currentAttendance}회",
+                    // TODO 출석완료
+                    text = "${14 - (chapelData?.absenceTime ?: 0)}회",
                     modifier = Modifier
                         .weight(1f)
                         .padding(
@@ -100,7 +103,8 @@ fun ChapelCardItem(
                 )
 
                 Text(
-                    text = "${chapelData.totalAttendance}회",
+                    // TODO 전체출석
+                    text = "${14}회",
                     modifier = Modifier
                         .padding(
                             bottom = 4.dp,
@@ -136,7 +140,7 @@ fun ChapelCardItem(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = chapelData.time,
+                        text = chapelData?.chapelTime ?: "정보 없음",
                         modifier = Modifier
                             .padding(
                                 bottom = 4.dp,
@@ -165,7 +169,7 @@ fun ChapelCardItem(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = chapelData.seat,
+                        text = chapelData?.seatNumber ?: "정보 없음",
                         modifier = Modifier
                             .padding(
                                 bottom = 4.dp,

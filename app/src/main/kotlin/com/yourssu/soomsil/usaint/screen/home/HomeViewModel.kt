@@ -5,8 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yourssu.soomsil.usaint.core.model.ChapelData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentData
+import com.yourssu.soomsil.usaint.data.repository.ChapelCardRepository
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +26,7 @@ sealed interface HomeUiState {
     data class Home(
         val studentData: StudentData,
         val reportCardSummaryData: ReportCardSummaryData,
+        val chapelCardData: ChapelData,
     ) : HomeUiState
 }
 
@@ -31,11 +34,13 @@ sealed interface HomeUiState {
 class HomeViewModel @Inject constructor(
     private val studentDataRepository: StudentDataRepository,
     private val reportCardRepository: ReportCardRepository,
+    private val chapelCardRepository: ChapelCardRepository
 ) : ViewModel() {
     val homeUiState: StateFlow<HomeUiState> =
         combine(
             studentDataRepository.studentData,
             reportCardRepository.reportCardSummaryData,
+            chapelCardRepository.chapelCardData,
             transform = HomeUiState::Home,
         )
             .stateIn(
@@ -62,6 +67,7 @@ class HomeViewModel @Inject constructor(
             isRefreshing = refresh
             studentDataRepository.fetchStudentData().onFailure { e -> Timber.e(e) }
             reportCardRepository.fetchReportCardSummary().onFailure { e -> Timber.e(e) }
+            chapelCardRepository.fetchChapelCardData().onFailure { e -> Timber.e(e) }
             isFetching = false
             isRefreshing = false
         }

@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.data.source.remote.rusaint
 
+import com.yourssu.soomsil.usaint.core.model.ChapelData
 import com.yourssu.soomsil.usaint.core.model.Fail
 import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.LectureGrade
@@ -10,6 +11,7 @@ import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.core.model.Unknown
 import com.yourssu.soomsil.usaint.core.types.SemesterType
+import dev.eatsteak.rusaint.core.ChapelInformation
 import dev.eatsteak.rusaint.core.ClassGrade
 import dev.eatsteak.rusaint.core.ClassScore
 import dev.eatsteak.rusaint.core.GradeSummary
@@ -64,6 +66,19 @@ internal fun ClassGrade.asExternalModel(year: Int, semester: SemesterType) = Lec
     professor = professor,
     detail = detail?.mapValues { (_, value) -> value.toString() } ?: emptyMap()
 )
+
+internal fun ChapelInformation.asExternalModel(year: Int, semester: SemesterType) = ChapelData(
+    year = year,
+    semester = semester,
+    division = generalInformation.division.toInt(),
+    chapelTime = generalInformation.chapelTime,
+    chapelRoom = generalInformation.chapelRoom,
+    floorLevel = generalInformation.floorLevel.toInt(),
+    seatNumber = generalInformation.seatNumber,
+    absenceTime = generalInformation.absenceTime.toInt(),
+    result = generalInformation.result,
+)
+
 
 private fun ClassScore.toLectureScore(): LectureScore = when (this) {
     is ClassScore.Pass -> Pass

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
+import com.yourssu.soomsil.usaint.data.source.local.entity.ChapelEntity
 import com.yourssu.soomsil.usaint.data.source.local.entity.LectureEntity
 import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterEntity
 import kotlinx.coroutines.flow.Flow
@@ -25,6 +26,15 @@ interface SemesterDao {
         """
     )
     fun getSemesterWithLectures(): Flow<Map<SemesterEntity, List<LectureEntity>>>
+
+    // 학기와 그에 대응되는 채플 정보 리스트를 쌍으로 반환합니다
+    @Query(
+        """
+        SELECT * FROM Semester
+        JOIN Chapel ON Semester.year = Chapel.year AND Semester.semester = Chapel.semester
+        """
+    )
+    fun getSemesterWithChapels(): Flow<Map<SemesterEntity, List<ChapelEntity>>>
 
     @Query("SELECT * FROM Semester")
     suspend fun getOneOffSemesterEntities(): List<SemesterEntity>
