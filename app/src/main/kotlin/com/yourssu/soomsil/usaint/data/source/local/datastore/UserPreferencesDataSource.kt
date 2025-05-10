@@ -17,15 +17,14 @@ class UserPreferencesDataSource @Inject constructor(
             UserData(
                 notificationEnabled = it.notificationEnabled,
                 includeSeasonalSemester = it.includeSeasonalSemester,
+                autoFetch = it.autoFetch,
             )
         }
 
     suspend fun setNotificationEnabled(enable: Boolean) {
         try {
             userPreferences.updateData {
-                it.copy {
-                    setNotificationEnabled(enable)
-                }
+                it.copy { setNotificationEnabled(enable) }
             }
         } catch (e: IOException) {
             Timber.e("Failed to update user preferences", e)
@@ -35,9 +34,17 @@ class UserPreferencesDataSource @Inject constructor(
     suspend fun setIncludeSeasonalSemester(include: Boolean) {
         try {
             userPreferences.updateData {
-                it.copy {
-                    setIncludeSeasonalSemester(include)
-                }
+                it.copy { setIncludeSeasonalSemester(include) }
+            }
+        } catch (e: IOException) {
+            Timber.e("Failed to update user preferences", e)
+        }
+    }
+
+    suspend fun setAutoFetch(autoFetch: Boolean) {
+        try {
+            userPreferences.updateData {
+                it.copy { setAutoFetch(autoFetch) }
             }
         } catch (e: IOException) {
             Timber.e("Failed to update user preferences", e)

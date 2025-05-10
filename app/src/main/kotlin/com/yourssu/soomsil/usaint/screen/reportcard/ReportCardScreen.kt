@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -79,7 +80,7 @@ private fun ReportCardScreen(
             Box {
                 TopAppBar(title = { Text(text = "성적") })
                 AnimatedVisibility(
-                    visible = isFetching || isReportCardLoading,
+                    visible = isFetching,
                     modifier = Modifier.align(Alignment.BottomCenter),
                 ) {
                     LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -94,7 +95,11 @@ private fun ReportCardScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
+            Column(
+                Modifier
+                    .fillMaxHeight()
+                    .verticalScroll(rememberScrollState()),
+            ) {
                 if (isReportCardLoading) {
                     Box(
                         Modifier
@@ -104,10 +109,11 @@ private fun ReportCardScreen(
                     ) {
                         CircularProgressIndicator()
                     }
-                } else {
-                    ChartSummary(reportCardUiState)
-                    SemesterTabsAndDetail(reportCardUiState)
+                    return@Column
                 }
+
+                ChartSummary(reportCardUiState)
+                SemesterTabsAndDetail(reportCardUiState)
             }
         }
     }
