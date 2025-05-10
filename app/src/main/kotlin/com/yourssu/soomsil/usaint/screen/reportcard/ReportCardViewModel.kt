@@ -37,8 +37,13 @@ class ReportCardViewModel @Inject constructor(
     val reportCardUiState: StateFlow<ReportCardUiState> = combine(
         reportCardRepository.reportCardSummaryData,
         reportCardRepository.semesterWithLectures,
-        transform = ReportCardUiState::ReportCard,
-    )
+    ) { summary, semesterWithLectures ->
+        if (semesterWithLectures.isEmpty()) {
+            ReportCardUiState.Loading
+        } else {
+            ReportCardUiState.ReportCard(summary, semesterWithLectures)
+        }
+    }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -55,7 +60,7 @@ class ReportCardViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val autoFetch = userDataRepository.userData.first().autoFetch
-            if (autoFetch) {
+            if (autoFetch || reportCardRepository.semesterWithLectures.first().isEmpty()) {
                 fetchData(refresh = false)
             }
         }
