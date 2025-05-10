@@ -11,10 +11,12 @@ import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -27,6 +29,12 @@ sealed interface ReportCardUiState {
         val summary: ReportCardSummaryData,
         val semesterWithLectures: Map<SemesterData, List<LectureData>>,
     ) : ReportCardUiState
+}
+
+sealed interface ReportCardUiEvent {
+    data object FetchStart : ReportCardUiEvent
+    data object FetchSuccess : ReportCardUiEvent
+    data class FetchFailed(val message: String?) : ReportCardUiEvent
 }
 
 @HiltViewModel
@@ -50,6 +58,9 @@ class ReportCardViewModel @Inject constructor(
             initialValue = ReportCardUiState.Loading,
         )
 
+    private val _eventChannel = Channel<ReportCardUiEvent>(Channel.BUFFERED)
+    val reportCardEventFlow = _eventChannel.receiveAsFlow()
+
     var isFetching by mutableStateOf(false)
         private set
 
@@ -69,10 +80,22 @@ class ReportCardViewModel @Inject constructor(
     fun fetchData(refresh: Boolean) {
         if (isFetching || isRefreshing) return
         viewModelScope.launch {
+            if (!refresh) {
+                _eventChannel.send(ReportCardUiEvent.FetchStart)
+            }
             isFetching = true
             isRefreshing = refresh
-            // TODO 에러처리
-            reportCardRepository.fetchSemesterWithLectures().onFailure { e -> Timber.e(e) }
+            reportCardRepository.fetchSemesterWithLectures()
+                .onSuccess {
+                    if (!refresh) {
+                        _eventChannel.send(ReportCardUiEvent.FetchSuccess)
+                    }
+                }
+                .onFailure { e ->
+                    // TODO 에러처리
+                    Timber.e(e)
+                    _eventChannel.send(ReportCardUiEvent.FetchFailed(e.message))
+                }
             isFetching = false
             isRefreshing = false
         }
