@@ -12,7 +12,7 @@ interface ChapelDao {
     fun getChapelEntity(year: Int, semesterName: String): Flow<ChapelEntity>
 
     @Query("SELECT * FROM Chapel")
-    fun getLectureEntities(): Flow<List<ChapelEntity>>
+    fun getChapelEntities(): Flow<List<ChapelEntity>>
 
     @Upsert
     suspend fun upsertChapel(entity: ChapelEntity)

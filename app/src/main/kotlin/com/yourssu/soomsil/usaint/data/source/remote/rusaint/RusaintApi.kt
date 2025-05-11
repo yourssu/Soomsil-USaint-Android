@@ -9,7 +9,6 @@ import dev.eatsteak.rusaint.core.GradeSummary
 import dev.eatsteak.rusaint.core.GraduationStudent
 import dev.eatsteak.rusaint.core.SemesterGrade
 import dev.eatsteak.rusaint.core.StudentInformation
-import dev.eatsteak.rusaint.ffi.ChapelApplication
 import dev.eatsteak.rusaint.ffi.ChapelApplicationBuilder
 import dev.eatsteak.rusaint.ffi.CourseGradesApplicationBuilder
 import dev.eatsteak.rusaint.ffi.GraduationRequirementsApplicationBuilder
@@ -89,7 +88,6 @@ class RusaintApi @Inject constructor() {
         semester: SemesterType
     ): ChapelInformation {
         val session = getUSaintSession(credential)
-        ChapelApplication
         return ChapelApplicationBuilder().build(session).information(year.toUInt(), semester.toRusaintSemesterType())
     }
 }

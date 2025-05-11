@@ -1,6 +1,8 @@
 package com.yourssu.soomsil.usaint.data.source.remote.rusaint
 
+import com.yourssu.soomsil.usaint.core.model.ChapelAttendanceData
 import com.yourssu.soomsil.usaint.core.model.ChapelData
+import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.model.Fail
 import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.LectureGrade
@@ -11,6 +13,7 @@ import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.core.model.Unknown
 import com.yourssu.soomsil.usaint.core.types.SemesterType
+import dev.eatsteak.rusaint.core.ChapelAttendance
 import dev.eatsteak.rusaint.core.ChapelInformation
 import dev.eatsteak.rusaint.core.ClassGrade
 import dev.eatsteak.rusaint.core.ClassScore
@@ -68,15 +71,31 @@ internal fun ClassGrade.asExternalModel(year: Int, semester: SemesterType) = Lec
 )
 
 internal fun ChapelInformation.asExternalModel(year: Int, semester: SemesterType) = ChapelData(
-    year = year,
-    semester = semester,
-    division = generalInformation.division.toInt(),
-    chapelTime = generalInformation.chapelTime,
-    chapelRoom = generalInformation.chapelRoom,
-    floorLevel = generalInformation.floorLevel.toInt(),
-    seatNumber = generalInformation.seatNumber,
-    absenceTime = generalInformation.absenceTime.toInt(),
-    result = generalInformation.result,
+    chapelSimpleData = ChapelSimpleData(
+        year = year,
+        semester = semester,
+        division = generalInformation.division.toInt(),
+        chapelTime = generalInformation.chapelTime,
+        chapelRoom = generalInformation.chapelRoom,
+        floorLevel = generalInformation.floorLevel.toInt(),
+        seatNumber = generalInformation.seatNumber,
+        absenceTime = generalInformation.absenceTime.toInt(),
+        result = generalInformation.result,
+    ),
+    chapelAttendances = attendances.map((ChapelAttendance::asExternalModel))
+
+)
+
+internal fun ChapelAttendance.asExternalModel() = ChapelAttendanceData(
+    division = division.toInt(),
+    classDate = classDate,
+    category = category,
+    instructor = instructor,
+    instructorDepartment = instructorDepartment,
+    title = title,
+    attendance = attendance,
+    result = result,
+    note = note
 )
 
 

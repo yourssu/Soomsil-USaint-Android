@@ -4,20 +4,21 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
-import com.yourssu.soomsil.usaint.core.model.ChapelData
+import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.types.SemesterType
 
 @Entity(
     tableName = "Chapel",
-    primaryKeys = ["year", "semester"],
+    primaryKeys = ["year", "semester", "division"],
     foreignKeys = [ForeignKey(
-        entity = ChapelEntity::class,
+        entity = SemesterEntity::class,
         parentColumns = ["year", "semester"],
         childColumns = ["year", "semester"],
         onDelete = ForeignKey.CASCADE,
     )],
     indices = [
-        Index(value = ["year", "semester"], unique = true) // code 컬럼에 고유 인덱스를 추가
+        Index(value = ["year", "semester"], unique = true),
+        Index(value = ["division"], unique = true)
     ]
 )
 data class ChapelEntity(
@@ -25,16 +26,19 @@ data class ChapelEntity(
     val year: Int,              // foreign key
     @ColumnInfo(defaultValue = "One")
     val semester: String,       // foreign key
-    val division: Int,
+    @ColumnInfo(defaultValue = "0")
+    val division: Int,          // primary key
     val chapelTime: String,
     val chapelRoom: String,
     val floorLevel: Int,
     val seatNumber: String,
     val absenceTime: Int,
-    val result: String
+    val result: String,
+    val totalAttendance: Int,
+    val currentAttendance: Int,
 )
 
-fun ChapelEntity.asExternalModel() = ChapelData(
+fun ChapelEntity.asExternalModel() = ChapelSimpleData(
     year = year,
     semester = enumValueOf<SemesterType>(semester),
     division = division,
@@ -44,9 +48,12 @@ fun ChapelEntity.asExternalModel() = ChapelData(
     seatNumber = seatNumber,
     absenceTime = absenceTime,
     result = result,
+    totalAttendance = totalAttendance,
+    currentAttendance = currentAttendance,
+
 )
 
-fun ChapelData.asEntity() = ChapelEntity(
+fun ChapelSimpleData.asEntity() = ChapelEntity(
     year = year,
     semester = semester.name,
     division = division,
@@ -55,5 +62,7 @@ fun ChapelData.asEntity() = ChapelEntity(
     floorLevel = floorLevel,
     seatNumber = seatNumber,
     absenceTime = absenceTime,
+    totalAttendance = totalAttendance,
+    currentAttendance = currentAttendance,
     result = result,
 )

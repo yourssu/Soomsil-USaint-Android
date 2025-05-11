@@ -3,6 +3,7 @@ package com.yourssu.soomsil.usaint.di
 import android.content.Context
 import androidx.room.Room
 import com.yourssu.soomsil.usaint.data.source.local.AppDatabase
+import com.yourssu.soomsil.usaint.data.source.local.dao.ChapelAttendanceDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.ChapelDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.LectureDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
@@ -39,5 +40,10 @@ object DataBaseModule {
     @Provides
     fun provideChapelDao(db: AppDatabase): ChapelDao {
         return db.chapelDao()
+    }
+
+    @Provides
+    fun provideChapelAttendanceDao(db: AppDatabase): ChapelAttendanceDao {
+        return db.chapelAttendanceDao()
     }
 }

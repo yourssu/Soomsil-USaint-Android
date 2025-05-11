@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourssu.soomsil.usaint.core.model.ChapelData
+import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
@@ -26,7 +26,7 @@ sealed interface HomeUiState {
     data class Home(
         val studentData: StudentData,
         val reportCardSummaryData: ReportCardSummaryData,
-        val chapelCardData: ChapelData,
+        val chapelCardData: ChapelSimpleData
     ) : HomeUiState
 }
 
@@ -34,7 +34,7 @@ sealed interface HomeUiState {
 class HomeViewModel @Inject constructor(
     private val studentDataRepository: StudentDataRepository,
     private val reportCardRepository: ReportCardRepository,
-    private val chapelRepository: ChapelRepository
+    private val chapelRepository: ChapelRepository,
 ) : ViewModel() {
     val homeUiState: StateFlow<HomeUiState> =
         combine(

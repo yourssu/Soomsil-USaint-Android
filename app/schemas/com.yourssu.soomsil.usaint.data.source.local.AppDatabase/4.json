@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "95112d074e5a093d9502258c482be6c0",
+    "identityHash": "d2a45d1d1d2acb06f3743d46b2161f0d",
     "entities": [
       {
         "tableName": "Semester",
@@ -176,7 +176,7 @@
       },
       {
         "tableName": "Chapel",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`year` INTEGER NOT NULL DEFAULT 0, `semester` TEXT NOT NULL DEFAULT 'One', `division` INTEGER NOT NULL, `chapelTime` TEXT NOT NULL, `chapelRoom` TEXT NOT NULL, `floorLevel` INTEGER NOT NULL, `seatNumber` TEXT NOT NULL, `absenceTime` INTEGER NOT NULL, `result` TEXT NOT NULL, PRIMARY KEY(`year`, `semester`), FOREIGN KEY(`year`, `semester`) REFERENCES `Chapel`(`year`, `semester`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`year` INTEGER NOT NULL DEFAULT 0, `semester` TEXT NOT NULL DEFAULT 'One', `division` INTEGER NOT NULL DEFAULT 0, `chapelTime` TEXT NOT NULL, `chapelRoom` TEXT NOT NULL, `floorLevel` INTEGER NOT NULL, `seatNumber` TEXT NOT NULL, `absenceTime` INTEGER NOT NULL, `result` TEXT NOT NULL, `totalAttendance` INTEGER NOT NULL, `currentAttendance` INTEGER NOT NULL, PRIMARY KEY(`year`, `semester`, `division`), FOREIGN KEY(`year`, `semester`) REFERENCES `Semester`(`year`, `semester`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "year",
@@ -196,7 +196,8 @@
             "fieldPath": "division",
             "columnName": "division",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
             "fieldPath": "chapelTime",
@@ -233,13 +234,26 @@
             "columnName": "result",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "totalAttendance",
+            "columnName": "totalAttendance",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "currentAttendance",
+            "columnName": "currentAttendance",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
             "year",
-            "semester"
+            "semester",
+            "division"
           ]
         },
         "indices": [
@@ -252,11 +266,20 @@
             ],
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Chapel_year_semester` ON `${TABLE_NAME}` (`year`, `semester`)"
+          },
+          {
+            "name": "index_Chapel_division",
+            "unique": true,
+            "columnNames": [
+              "division"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Chapel_division` ON `${TABLE_NAME}` (`division`)"
           }
         ],
         "foreignKeys": [
           {
-            "table": "Chapel",
+            "table": "Semester",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
@@ -269,11 +292,104 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "ChapelAttendance",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`division` INTEGER NOT NULL DEFAULT 0, `classDate` TEXT NOT NULL, `category` TEXT NOT NULL, `instructor` TEXT NOT NULL, `instructorDepartment` TEXT NOT NULL, `title` TEXT NOT NULL, `attendance` TEXT NOT NULL, `result` TEXT NOT NULL, `note` TEXT NOT NULL, PRIMARY KEY(`division`, `classDate`), FOREIGN KEY(`division`) REFERENCES `Chapel`(`division`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "division",
+            "columnName": "division",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "classDate",
+            "columnName": "classDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "instructor",
+            "columnName": "instructor",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "instructorDepartment",
+            "columnName": "instructorDepartment",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "attendance",
+            "columnName": "attendance",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "result",
+            "columnName": "result",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "note",
+            "columnName": "note",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "division",
+            "classDate"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ChapelAttendance_division_classDate",
+            "unique": true,
+            "columnNames": [
+              "division",
+              "classDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_ChapelAttendance_division_classDate` ON `${TABLE_NAME}` (`division`, `classDate`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Chapel",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "division"
+            ],
+            "referencedColumns": [
+              "division"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '95112d074e5a093d9502258c482be6c0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd2a45d1d1d2acb06f3743d46b2161f0d')"
     ]
   }
 }

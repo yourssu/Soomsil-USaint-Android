@@ -1,21 +1,21 @@
 package com.yourssu.soomsil.usaint.data.source.local.datastore
 
 import androidx.datastore.core.DataStore
-import com.yourssu.soomsil.usaint.core.model.ChapelData
+import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.types.SemesterType
+import com.yourssu.soomsil.usaint.proto.ChapelDataProto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
-import com.yourssu.soomsil.usaint.proto.ChapelDataProto
 import java.io.IOException
 import javax.inject.Inject
 
 class ChapelDataSource @Inject constructor (
     private val chapelDataSource: DataStore<ChapelDataProto>
 )  {
-    val chapelCardData: Flow<ChapelData> = chapelDataSource.data
+    val chapelCardData: Flow<ChapelSimpleData> = chapelDataSource.data
         .map {
-            ChapelData(
+            ChapelSimpleData(
                 year = it.year,
                 semester = SemesterType.One,
                 division = it.division,
@@ -25,22 +25,26 @@ class ChapelDataSource @Inject constructor (
                 seatNumber = it.seatNumber,
                 absenceTime = it.absenceTime,
                 result = it.result,
+                totalAttendance = it.totalAttendance,
+                currentAttendance = it.currentAttendance
             )
         }
 
-    suspend fun setChapelCardData(chapelData: ChapelData) {
+    suspend fun setChapelCardData(chapelSimpleData: ChapelSimpleData) {
         try {
             chapelDataSource.updateData {
                 ChapelDataProto.newBuilder()
-                    .setDivision(chapelData.division)
-                    .setAbsenceTime(chapelData.absenceTime)
-                    .setChapelRoom(chapelData.chapelRoom)
-                    .setChapelTime(chapelData.chapelTime)
-                    .setFloorLevel(chapelData.floorLevel)
-                    .setResult(chapelData.result)
-                    .setSemester(chapelData.semester.name)
-                    .setSeatNumber(chapelData.seatNumber)
-                    .setYear(chapelData.year)
+                    .setDivision(chapelSimpleData.division)
+                    .setAbsenceTime(chapelSimpleData.absenceTime)
+                    .setChapelRoom(chapelSimpleData.chapelRoom)
+                    .setChapelTime(chapelSimpleData.chapelTime)
+                    .setFloorLevel(chapelSimpleData.floorLevel)
+                    .setResult(chapelSimpleData.result)
+                    .setSemester(chapelSimpleData.semester.name)
+                    .setSeatNumber(chapelSimpleData.seatNumber)
+                    .setYear(chapelSimpleData.year)
+                    .setTotalAttendance(chapelSimpleData.totalAttendance)
+                    .setCurrentAttendance(chapelSimpleData.currentAttendance)
                     .build()
             }
         } catch (e: IOException) {

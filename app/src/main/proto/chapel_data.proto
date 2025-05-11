@@ -13,4 +13,7 @@ message ChapelDataProto {
   string seatNumber = 7;              // 좌석
   int32 absenceTime = 8;              // 결석일수
   string result = 9;        // 성적
+
+  int32 totalAttendance = 10;        // 전체출석일 (내부에서만 처리)
+  int32 currentAttendance = 11;        // 현재출석일 (내부에서만 처리)
 }

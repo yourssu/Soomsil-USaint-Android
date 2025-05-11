@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yourssu.soomsil.usaint.core.model.ChapelData
+import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.screen.home.components.ActionTitleItem
@@ -183,7 +183,9 @@ private fun HomeScreen(
                 Spacer(Modifier.height(8.dp))
                 ChapelCardItem(
                     onChapelCardClick = {},
-                    chapelData = chapelCardData
+                    chapelSimpleData = chapelCardData,
+                    currentAttendance = chapelCardData?.currentAttendance ?: 0,
+                    totalAttendance = chapelCardData?.totalAttendance ?: 0
                 )
             }
         }
@@ -202,7 +204,7 @@ private fun HomePreview_being() {
             homeUiState = HomeUiState.Home(
                 studentData = StudentData.previewData,
                 reportCardSummaryData = ReportCardSummaryData.previewData,
-                chapelCardData =  ChapelData.previewData
+                chapelCardData = ChapelSimpleData.previewData,
             ),
         )
     }
@@ -220,7 +222,7 @@ private fun HomePreview_leave() {
             homeUiState = HomeUiState.Home(
                 studentData = StudentData.previewData.copy(status = "휴학"),
                 reportCardSummaryData = ReportCardSummaryData.previewData,
-                chapelCardData = ChapelData.previewData
+                chapelCardData = ChapelSimpleData.previewData,
             ),
         )
     }

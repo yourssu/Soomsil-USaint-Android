@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.model.ChapelData
+import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,8 +22,9 @@ sealed interface ChapelUiState {
     data object Loading : ChapelUiState
 
     data class ChapelCard(
-        val card: ChapelData,
-        val semesterWithChapel: Map<SemesterData, ChapelData>,
+        val card: ChapelSimpleData,
+        val semesterWithChapel: Map<SemesterData, ChapelSimpleData>,
+        val chapelWithAttendance: List<ChapelData>,
     ): ChapelUiState
 }
 
@@ -32,7 +34,8 @@ class ChapelViewModel @Inject constructor(
 ) : ViewModel() {
     val chapelCardUiState: StateFlow<ChapelUiState> = combine(
         chapelRepository.chapelCardData,
-        chapelRepository.semesterWithChapels,
+        chapelRepository.semesterWithChapel,
+        chapelRepository.chapelWithAttendance,
         transform = ChapelUiState::ChapelCard,
     )
         .stateIn(
