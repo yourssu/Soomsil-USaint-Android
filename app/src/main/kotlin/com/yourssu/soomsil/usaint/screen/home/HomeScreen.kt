@@ -1,6 +1,5 @@
 package com.yourssu.soomsil.usaint.screen.home
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,14 +16,17 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -36,6 +38,7 @@ import com.yourssu.soomsil.usaint.screen.home.components.ActionTitleItem
 import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.StudentDataItem
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -45,6 +48,7 @@ fun HomeScreen(
     onReportCardClick: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
     val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
 
     HomeScreen(
@@ -56,6 +60,7 @@ fun HomeScreen(
         onSettingClick = onSettingClick,
         onReportCardClick = onReportCardClick,
         modifier = modifier,
+        snackbarHostState = snackbarHostState,
     )
 }
 
@@ -67,17 +72,19 @@ private fun HomeScreen(
     onRefresh: () -> Unit,
     homeUiState: HomeUiState,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onProfileClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
     onReportCardClick: () -> Unit = {},
 ) {
     // 임시
-    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val isHomeLoading = homeUiState is HomeUiState.Loading
 
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Box {
                 TopAppBar(title = { Text(text = "유세인트") })
@@ -143,7 +150,9 @@ private fun HomeScreen(
                     ActionTitleItem(
                         title = "이번 학기 성적 확인",
                         onClick = {
-                            Toast.makeText(context, "서비스 예정입니다.", Toast.LENGTH_SHORT).show()
+                            scope.launch {
+                                snackbarHostState.showSnackbar("준비 중입니다.")
+                            }
                         },
                     )
                 }
