@@ -355,7 +355,7 @@ private fun CurrentSemesterSettingDialog(
             shape = MaterialTheme.shapes.large,
             tonalElevation = AlertDialogDefaults.TonalElevation,
         ) {
-            Column(Modifier.padding(8.dp)) {
+            Column(Modifier.padding(24.dp)) {
                 OutlinedTextField(
                     value = yearText,
                     onValueChange = { yearText = it },
