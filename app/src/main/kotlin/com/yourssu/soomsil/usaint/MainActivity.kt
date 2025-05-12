@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yourssu.soomsil.usaint.screen.home.navigation.Home
 import com.yourssu.soomsil.usaint.screen.login.navigation.Login
@@ -31,7 +30,6 @@ class MainActivity : ComponentActivity() {
                     val credentialExist = mainUiState is MainUiState.Success
                     USaintApp(
                         startDestination = if (credentialExist) Home else Login,
-                        modifier = Modifier
                     )
                 }
             }

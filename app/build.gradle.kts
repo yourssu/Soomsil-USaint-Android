@@ -1,5 +1,3 @@
-import com.google.protobuf.gradle.GenerateProtoTask
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -19,7 +17,7 @@ android {
         applicationId = "com.yourssu.soomsil.usaint"
         minSdk = 26
         targetSdk = 35
-        versionCode = 8
+        versionCode = 11
         versionName = "0.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -46,11 +44,6 @@ android {
     }
     room {
         schemaDirectory("$projectDir/schemas")
-    }
-    defaultConfig {
-        ndk {
-            abiFilters += setOf("x86_64", "arm64-v8a")
-        }
     }
 }
 

@@ -126,7 +126,7 @@ private fun HomeScreen(
                     onClick = {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            "https://play.google.com/store/apps/details?id=kr.co.motov.timedeal&hl=ko".toUri()
+                            "https://trendwave-one.vercel.app/".toUri()
                         )
                         context.startActivity(intent)
                     }
