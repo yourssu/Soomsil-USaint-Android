@@ -34,8 +34,6 @@ class MainActivity : ComponentActivity() {
                     USaintApp(
                         startDestination = if (credentialExist) Home else Login,
                         modifier = Modifier
-                            .navigationBarsPadding()
-                            .statusBarsPadding()
                     )
                 }
             }
