@@ -6,4 +6,12 @@ option java_multiple_files = true;
 message UserPreferences {
   bool notificationEnabled = 1;
   bool includeSeasonalSemester = 2;
+
+  // 사용자가 현재 학기를 따로 설정했는지 여부를 나타냅니다.
+  // 설정 여부에 따라 [GetCurrentSemesterUseCase]의 반환값이 달라집니다.
+  // 설정했을 경우 `specifiedCurrentYear`와 `specifiedCurrentSemester`를 반환하며
+  // 설정하지 않았다면 기본 반환값이 반환됩니다.
+  bool isCurrentSemesterSpecified = 3;
+  int32 specifiedCurrentYear = 4;
+  string specifiedCurrentSemester = 5;
 }

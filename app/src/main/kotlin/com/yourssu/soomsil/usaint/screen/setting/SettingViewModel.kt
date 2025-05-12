@@ -2,10 +2,12 @@ package com.yourssu.soomsil.usaint.screen.setting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yourssu.soomsil.usaint.core.types.SemesterType
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
+import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +22,7 @@ class SettingViewModel @Inject constructor(
     private val studentCredentialRepository: StudentCredentialRepository,
     private val studentDataRepository: StudentDataRepository,
     private val userDataRepository: UserDataRepository,
+    private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
 //    private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<SettingUiState> =
@@ -27,6 +30,12 @@ class SettingViewModel @Inject constructor(
             .map {
                 SettingUiState.UserEditableSettings(
                     notificationEnabled = it.notificationEnabled,
+                    currentSemesterSpecified = it.isCurrentSemesterSpecified,
+                    specifiedCurrentSemester = if (it.isCurrentSemesterSpecified) {
+                        it.specifiedCurrentSemester
+                    } else {
+                        getCurrentSemesterUseCase.default()
+                    },
                 )
             }.stateIn(
                 scope = viewModelScope,
@@ -55,6 +64,18 @@ class SettingViewModel @Inject constructor(
             // TODO dequeue workmanager
         }
     }
+
+    fun specifyCurrentSemester(year: Int, semester: SemesterType) {
+        viewModelScope.launch {
+            userDataRepository.setCurrentSemesterSpecified(year, semester)
+        }
+    }
+
+    fun unspecifiedCurrentSemester() {
+        viewModelScope.launch {
+            userDataRepository.setCurrentSemesterUnspecified()
+        }
+    }
 }
 
 sealed interface SettingUiState {
@@ -62,5 +83,7 @@ sealed interface SettingUiState {
 
     data class UserEditableSettings(
         val notificationEnabled: Boolean,
+        val currentSemesterSpecified: Boolean,
+        val specifiedCurrentSemester: Pair<Int, SemesterType>?,
     ) : SettingUiState
 }

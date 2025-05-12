@@ -1,11 +1,21 @@
 package com.yourssu.soomsil.usaint.domain.usecase
 
 import com.yourssu.soomsil.usaint.core.types.SemesterType
+import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesDataSource
+import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import javax.inject.Inject
 
-class GetCurrentSemesterUseCase @Inject constructor() {
-    operator fun invoke(): Pair<Int, SemesterType>? {
+class GetCurrentSemesterUseCase @Inject constructor(
+    private val userPreferencesDataSource: UserPreferencesDataSource,
+) {
+    suspend operator fun invoke(): Pair<Int, SemesterType>? {
+        val userData = userPreferencesDataSource.userData.first()
+        if (userData.isCurrentSemesterSpecified) return userData.specifiedCurrentSemester
+        return default()
+    }
+
+    fun default(): Pair<Int, SemesterType>? {
         val now = LocalDate.now()
         val year = now.year
 

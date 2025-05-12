@@ -2,6 +2,7 @@ package com.yourssu.soomsil.usaint.data.source.local.datastore
 
 import androidx.datastore.core.DataStore
 import com.yourssu.soomsil.usaint.core.model.UserData
+import com.yourssu.soomsil.usaint.core.types.SemesterType
 import com.yourssu.soomsil.usaint.proto.UserPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,15 +18,19 @@ class UserPreferencesDataSource @Inject constructor(
             UserData(
                 notificationEnabled = it.notificationEnabled,
                 includeSeasonalSemester = it.includeSeasonalSemester,
+                isCurrentSemesterSpecified = it.isCurrentSemesterSpecified,
+                specifiedCurrentSemester = try {
+                    Pair(it.specifiedCurrentYear, enumValueOf(it.specifiedCurrentSemester))
+                } catch (e: Exception) {
+                    null
+                },
             )
         }
 
     suspend fun setNotificationEnabled(enable: Boolean) {
         try {
             userPreferences.updateData {
-                it.copy {
-                    setNotificationEnabled(enable)
-                }
+                it.copy { setNotificationEnabled(enable) }
             }
         } catch (e: IOException) {
             Timber.e("Failed to update user preferences", e)
@@ -35,9 +40,31 @@ class UserPreferencesDataSource @Inject constructor(
     suspend fun setIncludeSeasonalSemester(include: Boolean) {
         try {
             userPreferences.updateData {
+                it.copy { setIncludeSeasonalSemester(include) }
+            }
+        } catch (e: IOException) {
+            Timber.e("Failed to update user preferences", e)
+        }
+    }
+
+    suspend fun setCurrentSemesterSpecified(year: Int, semester: SemesterType) {
+        try {
+            userPreferences.updateData {
                 it.copy {
-                    setIncludeSeasonalSemester(include)
+                    setIsCurrentSemesterSpecified(true)
+                    setSpecifiedCurrentYear(year)
+                    setSpecifiedCurrentSemester(semester.name)
                 }
+            }
+        } catch (e: IOException) {
+            Timber.e("Failed to update user preferences", e)
+        }
+    }
+
+    suspend fun setCurrentSemesterUnspecified() {
+        try {
+            userPreferences.updateData {
+                it.copy { setIsCurrentSemesterSpecified(false) }
             }
         } catch (e: IOException) {
             Timber.e("Failed to update user preferences", e)
