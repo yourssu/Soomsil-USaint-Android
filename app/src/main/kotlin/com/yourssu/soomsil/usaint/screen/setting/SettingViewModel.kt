@@ -14,6 +14,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed interface SettingUiState {
+    data object Loading : SettingUiState
+
+    data class UserEditableSettings(
+        val notificationEnabled: Boolean,
+        val autoFetchEnabled: Boolean,
+    ) : SettingUiState
+}
+
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val reportCardRepository: ReportCardRepository,
@@ -27,6 +36,7 @@ class SettingViewModel @Inject constructor(
             .map {
                 SettingUiState.UserEditableSettings(
                     notificationEnabled = it.notificationEnabled,
+                    autoFetchEnabled = it.autoFetch,
                 )
             }.stateIn(
                 scope = viewModelScope,
@@ -45,6 +55,12 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    fun updateAutoFetchEnabled(enable: Boolean) {
+        viewModelScope.launch {
+            userDataRepository.setAutoFetch(enable)
+        }
+    }
+
     fun logout() {
         viewModelScope.launch {
             reportCardRepository.deleteAll()
@@ -57,10 +73,3 @@ class SettingViewModel @Inject constructor(
     }
 }
 
-sealed interface SettingUiState {
-    data object Loading : SettingUiState
-
-    data class UserEditableSettings(
-        val notificationEnabled: Boolean,
-    ) : SettingUiState
-}

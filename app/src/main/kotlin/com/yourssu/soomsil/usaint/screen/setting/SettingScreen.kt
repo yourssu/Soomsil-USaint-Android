@@ -19,12 +19,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -104,6 +106,7 @@ fun SettingScreen(
                 }
             }
         },
+        onAutoFetchToggleChange = viewModel::updateAutoFetchEnabled,
         onLogout = {
             viewModel.logout()
             navigateToLogin()
@@ -116,6 +119,7 @@ fun SettingScreen(
 fun SettingScreen(
     settingUiState: SettingUiState,
     onNotificationToggleChange: (Boolean) -> Unit,
+    onAutoFetchToggleChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onLogout: () -> Unit = {},
@@ -144,6 +148,31 @@ fun SettingScreen(
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
+            Spacer(Modifier.height(16.dp))
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        if (settingUiState is SettingUiState.UserEditableSettings)
+                            onAutoFetchToggleChange(!settingUiState.autoFetchEnabled)
+                    },
+                headlineContent = { Text(text = "최신 학사 정보 자동으로 불러오기") },
+                trailingContent = {
+                    when (settingUiState) {
+                        is SettingUiState.UserEditableSettings -> {
+                            Switch(
+                                checked = settingUiState.autoFetchEnabled,
+                                onCheckedChange = onAutoFetchToggleChange,
+                            )
+                        }
+
+                        is SettingUiState.Loading -> {
+                            CircularProgressIndicator()
+                        }
+                    }
+                }
+            )
+
             Spacer(Modifier.height(16.dp))
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -253,10 +282,12 @@ fun SettingScreen(
 @Composable
 fun PreviewSettingScreen() {
     var notiToggle by remember { mutableStateOf(false) }
+    var autoFetchToggle by remember { mutableStateOf(false) }
     SoomsilUSaintTheme {
         SettingScreen(
-            settingUiState = SettingUiState.UserEditableSettings(notiToggle),
+            settingUiState = SettingUiState.UserEditableSettings(notiToggle, autoFetchToggle),
             onNotificationToggleChange = { notiToggle = it },
+            onAutoFetchToggleChange = { autoFetchToggle = it },
         )
     }
 }
