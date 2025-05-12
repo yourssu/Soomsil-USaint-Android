@@ -9,10 +9,12 @@ import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
+import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -31,6 +33,7 @@ sealed interface HomeUiState {
 class HomeViewModel @Inject constructor(
     private val studentDataRepository: StudentDataRepository,
     private val reportCardRepository: ReportCardRepository,
+    userDataRepository: UserDataRepository,
 ) : ViewModel() {
     val homeUiState: StateFlow<HomeUiState> =
         combine(
@@ -52,7 +55,12 @@ class HomeViewModel @Inject constructor(
         private set
 
     init {
-        fetchData(refresh = false)
+        viewModelScope.launch {
+            val autoFetch = userDataRepository.userData.first().autoFetch
+            if (autoFetch) {
+                fetchData(refresh = false)
+            }
+        }
     }
 
     fun fetchData(refresh: Boolean) {

@@ -23,5 +23,8 @@ class UserDataRepository @Inject constructor(
     suspend fun setCurrentSemesterUnspecified() =
         userPreferencesDataSource.setCurrentSemesterUnspecified()
 
+    suspend fun setAutoFetch(autoFetch: Boolean) =
+        userPreferencesDataSource.setAutoFetch(autoFetch)
+
     suspend fun clear() = userPreferencesDataSource.clear()
 }

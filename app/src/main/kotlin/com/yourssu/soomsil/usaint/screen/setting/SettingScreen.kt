@@ -122,6 +122,7 @@ fun SettingScreen(
         },
         onSpecifiedCurrentSemester = viewModel::specifyCurrentSemester,
         onUnspecifiedCurrentSemester = viewModel::unspecifiedCurrentSemester,
+        onAutoFetchToggleChange = viewModel::updateAutoFetchEnabled,
         onLogout = {
             viewModel.logout()
             navigateToLogin()
@@ -134,6 +135,7 @@ fun SettingScreen(
 fun SettingScreen(
     settingUiState: SettingUiState,
     @Suppress("unused") onNotificationToggleChange: (Boolean) -> Unit,
+    onAutoFetchToggleChange: (Boolean) -> Unit,
     onSpecifiedCurrentSemester: (year: Int, semester: SemesterType) -> Unit,
     onUnspecifiedCurrentSemester: () -> Unit,
     modifier: Modifier = Modifier,
@@ -206,6 +208,31 @@ fun SettingScreen(
                                         showCurrentSemesterSettingDialog = true
                                     }
                                 },
+                            )
+                        }
+
+                        is SettingUiState.Loading -> {
+                            CircularProgressIndicator()
+                        }
+                    }
+                }
+            )
+
+            Spacer(Modifier.height(16.dp))
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        if (settingUiState is SettingUiState.UserEditableSettings)
+                            onAutoFetchToggleChange(!settingUiState.autoFetchEnabled)
+                    },
+                headlineContent = { Text(text = "최신 학사 정보 자동으로 불러오기") },
+                trailingContent = {
+                    when (settingUiState) {
+                        is SettingUiState.UserEditableSettings -> {
+                            Switch(
+                                checked = settingUiState.autoFetchEnabled,
+                                onCheckedChange = onAutoFetchToggleChange,
                             )
                         }
 
@@ -405,19 +432,22 @@ fun SettingScreenPreview() {
     var notiToggle by remember { mutableStateOf(false) }
     var currentSemesterToggle by remember { mutableStateOf(false) }
     var specifiedSemester: Pair<Int, SemesterType> by remember { mutableStateOf(2025 to SemesterType.One) }
+    var autoFetchToggle by remember { mutableStateOf(false) }
     SoomsilUSaintTheme {
         SettingScreen(
             settingUiState = SettingUiState.UserEditableSettings(
                 notiToggle,
                 currentSemesterToggle,
-                specifiedSemester
+                specifiedSemester,
+                autoFetchToggle,
             ),
             onNotificationToggleChange = { notiToggle = it },
             onSpecifiedCurrentSemester = { year, semester ->
                 currentSemesterToggle = true
                 specifiedSemester = year to semester
             },
-            onUnspecifiedCurrentSemester = { currentSemesterToggle = false }
+            onUnspecifiedCurrentSemester = { currentSemesterToggle = false },
+            onAutoFetchToggleChange = { autoFetchToggle = it },
         )
     }
 }

@@ -16,6 +16,17 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed interface SettingUiState {
+    data object Loading : SettingUiState
+
+    data class UserEditableSettings(
+        val notificationEnabled: Boolean,
+        val currentSemesterSpecified: Boolean,
+        val specifiedCurrentSemester: Pair<Int, SemesterType>?,
+        val autoFetchEnabled: Boolean,
+    ) : SettingUiState
+}
+
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val reportCardRepository: ReportCardRepository,
@@ -36,6 +47,7 @@ class SettingViewModel @Inject constructor(
                     } else {
                         getCurrentSemesterUseCase.default()
                     },
+                    autoFetchEnabled = it.autoFetch,
                 )
             }.stateIn(
                 scope = viewModelScope,
@@ -51,6 +63,12 @@ class SettingViewModel @Inject constructor(
 //            } else {
 //                updateWorkerUseCase.dequeue()
 //            }
+        }
+    }
+
+    fun updateAutoFetchEnabled(enable: Boolean) {
+        viewModelScope.launch {
+            userDataRepository.setAutoFetch(enable)
         }
     }
 
@@ -76,14 +94,4 @@ class SettingViewModel @Inject constructor(
             userDataRepository.setCurrentSemesterUnspecified()
         }
     }
-}
-
-sealed interface SettingUiState {
-    data object Loading : SettingUiState
-
-    data class UserEditableSettings(
-        val notificationEnabled: Boolean,
-        val currentSemesterSpecified: Boolean,
-        val specifiedCurrentSemester: Pair<Int, SemesterType>?,
-    ) : SettingUiState
 }

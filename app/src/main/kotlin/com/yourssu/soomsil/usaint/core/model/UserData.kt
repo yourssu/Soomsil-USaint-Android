@@ -7,4 +7,5 @@ data class UserData(
     val includeSeasonalSemester: Boolean,
     val isCurrentSemesterSpecified: Boolean,
     val specifiedCurrentSemester: Pair<Int, SemesterType>? = null,
+    val autoFetch: Boolean,
 )

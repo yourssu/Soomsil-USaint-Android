@@ -24,6 +24,7 @@ class UserPreferencesDataSource @Inject constructor(
                 } catch (e: Exception) {
                     null
                 },
+                autoFetch = it.autoFetch,
             )
         }
 
@@ -41,6 +42,16 @@ class UserPreferencesDataSource @Inject constructor(
         try {
             userPreferences.updateData {
                 it.copy { setIncludeSeasonalSemester(include) }
+            }
+        } catch (e: IOException) {
+            Timber.e("Failed to update user preferences", e)
+        }
+    }
+
+    suspend fun setAutoFetch(autoFetch: Boolean) {
+        try {
+            userPreferences.updateData {
+                it.copy { setAutoFetch(autoFetch) }
             }
         } catch (e: IOException) {
             Timber.e("Failed to update user preferences", e)
