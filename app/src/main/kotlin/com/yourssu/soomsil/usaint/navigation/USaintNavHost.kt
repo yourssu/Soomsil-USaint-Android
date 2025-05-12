@@ -1,6 +1,5 @@
 package com.yourssu.soomsil.usaint.navigation
 
-import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,6 +14,7 @@ import com.yourssu.soomsil.usaint.screen.login.navigation.navigateToLogin
 import com.yourssu.soomsil.usaint.screen.reportcard.navigation.reportCardScreen
 import com.yourssu.soomsil.usaint.screen.setting.navigation.navigateToSetting
 import com.yourssu.soomsil.usaint.screen.setting.navigation.settingScreen
+import androidx.core.net.toUri
 
 @Composable
 fun USaintNavHost(
@@ -50,7 +50,7 @@ fun USaintNavHost(
             },
             navigateToWebView = { url ->
                 CustomTabsIntent.Builder().build().also {
-                    it.launchUrl(context, Uri.parse(url))
+                    it.launchUrl(context, url.toUri())
                 }
             },
             navigateToLogin = {

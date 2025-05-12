@@ -49,7 +49,7 @@ android {
     }
     defaultConfig {
         ndk {
-            abiFilters += setOf("x86_64")
+            abiFilters += setOf("x86_64", "arm64-v8a")
         }
     }
 }
