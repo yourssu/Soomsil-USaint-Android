@@ -3,10 +3,12 @@ package com.yourssu.soomsil.usaint.screen.home
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -87,7 +91,7 @@ private fun HomeScreen(
             Box {
                 TopAppBar(title = { Text(text = "유세인트") })
                 AnimatedVisibility(
-                    visible = isFetching || isHomeLoading,
+                    visible = isFetching,
                     modifier = Modifier.align(Alignment.BottomCenter),
                 ) {
                     LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -104,12 +108,25 @@ private fun HomeScreen(
         ) {
             Column(
                 modifier = Modifier
+                    .fillMaxHeight()
                     .verticalScroll(rememberScrollState())
                     .padding(
                         horizontal = 16.dp,
                         vertical = 12.dp,
                     ),
             ) {
+                if (isHomeLoading) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                    return@Column
+                }
+
                 val studentData =
                     if (homeUiState is HomeUiState.Home) homeUiState.studentData else null
                 val reportCardSummaryData =
@@ -210,6 +227,19 @@ private fun HomePreview_leave() {
                 studentData = StudentData.previewData.copy(status = "휴학"),
                 reportCardSummaryData = ReportCardSummaryData.previewData,
             ),
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun HomePreview_loading() {
+    SoomsilUSaintTheme {
+        HomeScreen(
+            isFetching = false,
+            isRefreshing = false,
+            onRefresh = {},
+            homeUiState = HomeUiState.Loading,
         )
     }
 }

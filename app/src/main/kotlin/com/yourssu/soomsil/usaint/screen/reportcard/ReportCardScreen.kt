@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +19,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryScrollableTabRow
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -26,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,7 +37,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.LectureGrade
 import com.yourssu.soomsil.usaint.core.model.Pass
@@ -51,7 +58,27 @@ fun ReportCardScreen(
     modifier: Modifier = Modifier,
     viewModel: ReportCardViewModel = hiltViewModel(),
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val snackbarHostState = remember { SnackbarHostState() }
     val reportCardUiState by viewModel.reportCardUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(lifecycleOwner.lifecycle) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.reportCardEventFlow.collect { uiEvent ->
+                when (uiEvent) {
+                    ReportCardUiEvent.FetchStart ->
+                        snackbarHostState.showSnackbar("성적 정보를 불러오고 있습니다.")
+
+                    ReportCardUiEvent.FetchSuccess ->
+                        snackbarHostState.showSnackbar("성적 정보를 불러왔습니다.")
+
+                    is ReportCardUiEvent.FetchFailed ->
+                        snackbarHostState.showSnackbar(uiEvent.message?.let { "에러 발생: $it" }
+                            ?: "문제가 발생했습니다.")
+                }
+            }
+        }
+    }
 
     ReportCardScreen(
         isFetching = viewModel.isFetching,
@@ -59,6 +86,7 @@ fun ReportCardScreen(
         onRefresh = { viewModel.fetchData(refresh = true) },
         reportCardUiState = reportCardUiState,
         modifier = modifier,
+        snackbarHostState = snackbarHostState,
     )
 }
 
@@ -70,16 +98,18 @@ private fun ReportCardScreen(
     onRefresh: () -> Unit,
     reportCardUiState: ReportCardUiState,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val isReportCardLoading = reportCardUiState is ReportCardUiState.Loading
 
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Box {
                 TopAppBar(title = { Text(text = "성적") })
                 AnimatedVisibility(
-                    visible = isFetching || isReportCardLoading,
+                    visible = isFetching,
                     modifier = Modifier.align(Alignment.BottomCenter),
                 ) {
                     LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -94,7 +124,11 @@ private fun ReportCardScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
+            Column(
+                Modifier
+                    .fillMaxHeight()
+                    .verticalScroll(rememberScrollState()),
+            ) {
                 if (isReportCardLoading) {
                     Box(
                         Modifier
@@ -104,10 +138,11 @@ private fun ReportCardScreen(
                     ) {
                         CircularProgressIndicator()
                     }
-                } else {
-                    ChartSummary(reportCardUiState)
-                    SemesterTabsAndDetail(reportCardUiState)
+                    return@Column
                 }
+
+                ChartSummary(reportCardUiState)
+                SemesterTabsAndDetail(reportCardUiState)
             }
         }
     }
