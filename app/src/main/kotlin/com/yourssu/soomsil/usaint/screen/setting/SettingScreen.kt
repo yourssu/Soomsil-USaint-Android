@@ -172,6 +172,29 @@ fun SettingScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
+                        if (settingUiState is SettingUiState.UserEditableSettings)
+                            onAutoFetchToggleChange(!settingUiState.autoFetchEnabled)
+                    },
+                headlineContent = { Text(text = "최신 학사 정보 자동으로 불러오기") },
+                trailingContent = {
+                    when (settingUiState) {
+                        is SettingUiState.UserEditableSettings -> {
+                            Switch(
+                                checked = settingUiState.autoFetchEnabled,
+                                onCheckedChange = onAutoFetchToggleChange,
+                            )
+                        }
+
+                        is SettingUiState.Loading -> {
+                            CircularProgressIndicator()
+                        }
+                    }
+                }
+            )
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
                         if (settingUiState is SettingUiState.UserEditableSettings) {
                             if (settingUiState.currentSemesterSpecified) {
                                 onUnspecifiedCurrentSemester()
@@ -208,31 +231,6 @@ fun SettingScreen(
                                         showCurrentSemesterSettingDialog = true
                                     }
                                 },
-                            )
-                        }
-
-                        is SettingUiState.Loading -> {
-                            CircularProgressIndicator()
-                        }
-                    }
-                }
-            )
-
-            Spacer(Modifier.height(16.dp))
-            ListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        if (settingUiState is SettingUiState.UserEditableSettings)
-                            onAutoFetchToggleChange(!settingUiState.autoFetchEnabled)
-                    },
-                headlineContent = { Text(text = "최신 학사 정보 자동으로 불러오기") },
-                trailingContent = {
-                    when (settingUiState) {
-                        is SettingUiState.UserEditableSettings -> {
-                            Switch(
-                                checked = settingUiState.autoFetchEnabled,
-                                onCheckedChange = onAutoFetchToggleChange,
                             )
                         }
 
@@ -371,6 +369,7 @@ private fun CurrentSemesterSettingDialog(
 ) {
     var yearText by rememberSaveable { mutableStateOf(year.toString()) }
     var selectedSemester by rememberSaveable { mutableStateOf(semester) }
+    var confirmButtonEnabled by rememberSaveable { mutableStateOf(true) }
 
     BasicAlertDialog(
         onDismissRequest = onDismissRequest,
@@ -385,7 +384,10 @@ private fun CurrentSemesterSettingDialog(
             Column(Modifier.padding(24.dp)) {
                 OutlinedTextField(
                     value = yearText,
-                    onValueChange = { yearText = it },
+                    onValueChange = {
+                        yearText = it
+                        confirmButtonEnabled = yearText.toIntOrNull() != null
+                    },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next,
@@ -417,7 +419,10 @@ private fun CurrentSemesterSettingDialog(
                     TextButton(onClick = onDismissRequest) {
                         Text("취소")
                     }
-                    TextButton(onClick = { onConfirmClick(yearText.toInt(), selectedSemester) }) {
+                    TextButton(
+                        onClick = { onConfirmClick(yearText.toInt(), selectedSemester) },
+                        enabled = confirmButtonEnabled,
+                    ) {
                         Text("확인")
                     }
                 }
