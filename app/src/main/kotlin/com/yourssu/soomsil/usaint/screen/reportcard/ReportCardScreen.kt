@@ -153,11 +153,11 @@ private fun ChartSummary(
     reportCardUiState: ReportCardUiState,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier) {
-        when (reportCardUiState) {
-            is ReportCardUiState.Loading -> Unit
+    when (reportCardUiState) {
+        is ReportCardUiState.Loading -> Unit
 
-            is ReportCardUiState.ReportCard -> {
+        is ReportCardUiState.ReportCard -> {
+            Column(modifier) {
                 val semesters = reportCardUiState.semesterWithLectures.keys.toList()
                     .sortedWith(compareBy({ it.year }, { it.semester }))
                 val summary = reportCardUiState.summary
@@ -225,7 +225,10 @@ private fun SemesterTabsAndDetail(
                     }
                 }
 
-                HorizontalPager(state = pagerState) { pagerIndex ->
+                HorizontalPager(
+                    state = pagerState,
+                    verticalAlignment = Alignment.Top,
+                ) { pagerIndex ->
                     val semester = semesters.getOrNull(pagerIndex) ?: return@HorizontalPager
 
                     semesterWithLecturesMap[semester]?.let { lectureDataList ->
