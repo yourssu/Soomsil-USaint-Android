@@ -16,11 +16,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -73,41 +71,30 @@ private fun ReportCardScreen(
 ) {
     val isReportCardLoading = reportCardUiState is ReportCardUiState.Loading
 
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            Box {
-                TopAppBar(title = { Text(text = "성적") })
-                AnimatedVisibility(
-                    visible = isFetching || isReportCardLoading,
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                ) {
-                    LinearProgressIndicator(Modifier.fillMaxWidth())
-                }
-            }
-        }
-    ) { padding ->
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            Modifier
-                .fillMaxSize()
-                .padding(padding)
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = modifier.fillMaxSize()
+    ) {
+        AnimatedVisibility(
+            visible = isFetching || isReportCardLoading,
+            modifier = Modifier.align(Alignment.TopCenter),
         ) {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                if (isReportCardLoading) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    ChartSummary(reportCardUiState)
-                    SemesterTabsAndDetail(reportCardUiState)
+            LinearProgressIndicator(Modifier.fillMaxWidth())
+        }
+        Column(Modifier.verticalScroll(rememberScrollState())) {
+            if (isReportCardLoading) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
+            } else {
+                ChartSummary(reportCardUiState)
+                SemesterTabsAndDetail(reportCardUiState)
             }
         }
     }
