@@ -3,7 +3,6 @@ package com.yourssu.soomsil.usaint.screen.home
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,9 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -79,103 +76,93 @@ private fun HomeScreen(
     // 임시
     val context = LocalContext.current
 
-    val isHomeLoading = homeUiState is HomeUiState.Loading
+    val gisHomeLoading = homeUiState is HomeUiState.Loading
 
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            Box {
-                TopAppBar(title = { Text(text = "유세인트") })
-                AnimatedVisibility(
-                    visible = isFetching || isHomeLoading,
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                ) {
-                    LinearProgressIndicator(Modifier.fillMaxWidth())
-                }
-            }
-        }
-    ) { padding ->
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            Modifier
-                .padding(padding)
-                .fillMaxSize()
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        AnimatedVisibility(
+            visible = isFetching,
+            modifier = Modifier.align(Alignment.TopCenter),
         ) {
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp,
-                    ),
-            ) {
-                val studentData =
-                    if (homeUiState is HomeUiState.Home) homeUiState.studentData else null
-                val reportCardSummaryData =
-                    if (homeUiState is HomeUiState.Home) homeUiState.reportCardSummaryData else null
+            LinearProgressIndicator(Modifier.fillMaxWidth())
+        }
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 12.dp,
+                ),
+        ) {
+            val studentData =
+                if (homeUiState is HomeUiState.Home) homeUiState.studentData else null
+            val reportCardSummaryData =
+                if (homeUiState is HomeUiState.Home) homeUiState.reportCardSummaryData else null
 
-                StudentDataItem(
-                    studentData = studentData,
-                    onProfileClick = onProfileClick,
-                    onSettingClick = onSettingClick,
-                )
+            StudentDataItem(
+                studentData = studentData,
+                onProfileClick = onProfileClick,
+                onSettingClick = onSettingClick,
+            )
 
-                Spacer(Modifier.height(8.dp))
-                ElevatedCard(
-                    onClick = {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            "https://trendwave-one.vercel.app/".toUri()
-                        )
-                        context.startActivity(intent)
-                    }
-                ) {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "\"TREND WAVE 2025\" 티켓 받으러 가기",
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(vertical = 16.dp)
-                        )
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
+            Spacer(Modifier.height(8.dp))
+            ElevatedCard(
+                onClick = {
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        "https://trendwave-one.vercel.app/".toUri()
+                    )
+                    context.startActivity(intent)
                 }
-
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    text = "내 성적",
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-
-                if (studentData?.status == "재학") {
-                    Spacer(Modifier.height(8.dp))
-                    ActionTitleItem(
-                        title = "이번 학기 성적 확인",
-                        onClick = {
-                            Toast.makeText(context, "서비스 예정입니다.", Toast.LENGTH_SHORT).show()
-                        },
+            ) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "\"TREND WAVE 2025\" 티켓 받으러 가기",
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(vertical = 16.dp)
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
+            }
 
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "내 성적",
+                modifier = Modifier.padding(vertical = 4.dp),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            if (studentData?.status == "재학") {
                 Spacer(Modifier.height(8.dp))
-                ReportCardItem(
-                    reportCardSummary = reportCardSummaryData,
-                    onReportCardClick = onReportCardClick,
+                ActionTitleItem(
+                    title = "이번 학기 성적 확인",
+                    onClick = {
+                        Toast.makeText(context, "서비스 예정입니다.", Toast.LENGTH_SHORT).show()
+                    },
                 )
             }
+
+            Spacer(Modifier.height(8.dp))
+            ReportCardItem(
+                reportCardSummary = reportCardSummaryData,
+                onReportCardClick = onReportCardClick,
+            )
         }
     }
 }
