@@ -50,7 +50,6 @@ fun HomeScreen(
     val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
 
     HomeScreen(
-        isFetching = viewModel.isFetching,
         isRefreshing = viewModel.isRefreshing,
         onRefresh = { viewModel.fetchData(refresh = true) },
         homeUiState = homeUiState,
@@ -64,7 +63,6 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
-    isFetching: Boolean,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     homeUiState: HomeUiState,
@@ -76,7 +74,7 @@ private fun HomeScreen(
     // 임시
     val context = LocalContext.current
 
-    val gisHomeLoading = homeUiState is HomeUiState.Loading
+    val isHomeLoading = homeUiState is HomeUiState.Loading
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
@@ -85,7 +83,7 @@ private fun HomeScreen(
             .fillMaxSize()
     ) {
         AnimatedVisibility(
-            visible = isFetching,
+            visible = isHomeLoading,
             modifier = Modifier.align(Alignment.TopCenter),
         ) {
             LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -173,7 +171,6 @@ private fun HomePreview_being() {
     // 재학 상태
     SoomsilUSaintTheme {
         HomeScreen(
-            isFetching = false,
             isRefreshing = false,
             onRefresh = {},
             homeUiState = HomeUiState.Home(
@@ -190,7 +187,6 @@ private fun HomePreview_leave() {
     // 휴학 상태
     SoomsilUSaintTheme {
         HomeScreen(
-            isFetching = false,
             isRefreshing = false,
             onRefresh = {},
             homeUiState = HomeUiState.Home(

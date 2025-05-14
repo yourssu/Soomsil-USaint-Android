@@ -44,9 +44,6 @@ class HomeViewModel @Inject constructor(
                 initialValue = HomeUiState.Loading,
             )
 
-    var isFetching by mutableStateOf(false)
-        private set
-
     // 사용자가 직접 pull to refresh를 했을 경우에만 true
     var isRefreshing by mutableStateOf(false)
         private set
@@ -56,13 +53,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun fetchData(refresh: Boolean) {
-        if (isFetching || isRefreshing) return
+        if (isRefreshing) return
         viewModelScope.launch {
-            isFetching = true
             isRefreshing = refresh
             studentDataRepository.fetchStudentData().onFailure { e -> Timber.e(e) }
             reportCardRepository.fetchReportCardSummary().onFailure { e -> Timber.e(e) }
-            isFetching = false
             isRefreshing = false
         }
     }
