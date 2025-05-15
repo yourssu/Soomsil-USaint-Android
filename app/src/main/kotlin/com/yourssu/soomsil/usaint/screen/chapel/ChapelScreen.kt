@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -118,14 +119,15 @@ private fun SemesterTabsAndDetail(
         is ChapelUiState.Loading -> Unit
 
         is ChapelUiState.ChapelCard -> {
-            val semesterWithChapelMap = chapelUiState.semesterWithChapel
-                .mapValues { (_, data) ->
+            val semesterWithChapelList = chapelUiState.semesterWithChapel
+                .map { data ->
                     chapelUiState.chapelWithAttendance.find {
                         data.division == it.chapelSimpleData.division
                     }
                 }
-            val semesters = semesterWithChapelMap.keys.toList()
-                .sortedWith(compareBy({ it.year }, { it.semester }))
+            val semesters = semesterWithChapelList
+                .sortedWith(compareBy({ it?.chapelSimpleData?.year }, { it?.chapelSimpleData?.semester }))
+                .reversed()
             val pagerState = rememberPagerState { semesters.size }
             var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
 
@@ -140,28 +142,48 @@ private fun SemesterTabsAndDetail(
             Column(modifier) {
                 if (semesters.isNotEmpty()) {
                     SecondaryScrollableTabRow(selectedTabIndex = pagerState.currentPage) {
-                        semesters.forEachIndexed { index, semester ->
-                            Tab(
-                                selected = pagerState.currentPage == index,
-                                onClick = { selectedTabIndex = index },
-                                text = {
-                                    Text(text = "${semester.year % 100}년 ${semester.semester.kor}학기")
-                                }
-                            )
+
+
+                        semesters.forEachIndexed { index, chapelData ->
+                            // 현재학기를 과거학기로 잡았을 경우 현재학기 탭에만 뜨도록
+                            if(chapelUiState.card.year == chapelData?.chapelSimpleData?.year &&
+                                chapelUiState.card.semester == chapelData.chapelSimpleData.semester)
+                                Tab(
+                                    selected = pagerState.currentPage == index,
+                                    onClick = { selectedTabIndex = index },
+                                    text = {
+                                        Text(text = "현재 학기")
+                                    }
+                                )
+                            else
+                                Tab(
+                                    selected = pagerState.currentPage == index,
+                                    onClick = { selectedTabIndex = index},
+                                    text = {
+                                        Text(text = "${(chapelData?.chapelSimpleData?.year ?: 0) % 100}년 ${chapelData?.chapelSimpleData?.semester?.kor}학기")
+                                    }
+                                )
                         }
                     }
                 }
 
                 HorizontalPager(state = pagerState) { pagerIndex ->
-                    val semester = semesters.getOrNull(pagerIndex) ?: return@HorizontalPager
+                    val chapelPagerData = semesters.getOrNull(pagerIndex) ?: return@HorizontalPager
 
-                    semesterWithChapelMap[semester]?.let { chapelData ->
+                    chapelPagerData.let { chapelData ->
                         val attendances = chapelData.chapelAttendances
+                        val totalAttendance = chapelData.chapelAttendances.size
+                        val currentAttendance by remember {
+                            mutableIntStateOf(
+                                chapelData.chapelAttendances.filter {
+                                    it.attendance == "출석"
+                                }.size)
+                        }
                         Column {
                             ChapelSummary(
                                 chapelSimpleData = chapelData.chapelSimpleData,
-                                currentAttendance = chapelData.chapelSimpleData.currentAttendance,
-                                totalAttendance = chapelData.chapelSimpleData.totalAttendance
+                                currentAttendance = currentAttendance,
+                                totalAttendance = totalAttendance
                             )
 
                             HorizontalDivider(Modifier.padding(horizontal = 12.dp))

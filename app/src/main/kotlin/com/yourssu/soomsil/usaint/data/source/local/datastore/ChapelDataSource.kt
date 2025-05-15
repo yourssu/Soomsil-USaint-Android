@@ -24,9 +24,7 @@ class ChapelDataSource @Inject constructor (
                 floorLevel = it.floorLevel,
                 seatNumber = it.seatNumber,
                 absenceTime = it.absenceTime,
-                result = it.result,
-                totalAttendance = it.totalAttendance,
-                currentAttendance = it.currentAttendance
+                result = it.result
             )
         }
 
@@ -43,8 +41,6 @@ class ChapelDataSource @Inject constructor (
                     .setSemester(chapelSimpleData.semester.name)
                     .setSeatNumber(chapelSimpleData.seatNumber)
                     .setYear(chapelSimpleData.year)
-                    .setTotalAttendance(chapelSimpleData.totalAttendance)
-                    .setCurrentAttendance(chapelSimpleData.currentAttendance)
                     .build()
             }
         } catch (e: IOException) {

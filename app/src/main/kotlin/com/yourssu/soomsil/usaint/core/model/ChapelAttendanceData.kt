@@ -1,7 +1,7 @@
 package com.yourssu.soomsil.usaint.core.model
 
 data class ChapelAttendanceData(
-    val division: Int,
+    val division: Long,
     val classDate: String,
     val category: String,
     val instructor: String,

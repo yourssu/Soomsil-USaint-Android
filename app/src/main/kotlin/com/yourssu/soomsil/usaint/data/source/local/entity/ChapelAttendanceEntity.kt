@@ -22,7 +22,7 @@ import com.yourssu.soomsil.usaint.core.model.ChapelAttendanceData
 )
 data class ChapelAttendanceEntity(
     @ColumnInfo(defaultValue = "0")
-    val division: Int,
+    val division: Long,
     val classDate: String,
     val category: String,
     val instructor: String,

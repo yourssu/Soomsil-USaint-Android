@@ -40,7 +40,7 @@ internal fun GradeSummary.asExternalModel(
     attemptedCredits = attemptedCredits,
     earnedCredits = earnedCredits,
     gradePointsSum = gradePointsSum,
-    gradePointsAverage = gradePointsAvarage,
+    gradePointsAverage = gradePointsAverage,
     arithmeticMean = arithmeticMean,
     pfEarnedCredits = pfEarnedCredits,
     graduationPoints = graduationPoints,
@@ -50,7 +50,7 @@ internal fun GradeSummary.asExternalModel(
 internal fun SemesterGrade.asExternalModel() = SemesterData(
     year = year.toInt(),
     semester = semester.toSemesterType(),
-    gradePointsAverage = gradePointsAvarage,
+    gradePointsAverage = gradePointsAverage,
     attemptedCredit = attemptedCredits,
     earnedCredit = earnedCredits,
     pfEarnedCredit = pfEarnedCredits,
@@ -74,7 +74,7 @@ internal fun ChapelInformation.asExternalModel(year: Int, semester: SemesterType
     chapelSimpleData = ChapelSimpleData(
         year = year,
         semester = semester,
-        division = generalInformation.division.toInt(),
+        division = generalInformation.division.toLong(),
         chapelTime = generalInformation.chapelTime,
         chapelRoom = generalInformation.chapelRoom,
         floorLevel = generalInformation.floorLevel.toInt(),
@@ -87,7 +87,7 @@ internal fun ChapelInformation.asExternalModel(year: Int, semester: SemesterType
 )
 
 internal fun ChapelAttendance.asExternalModel() = ChapelAttendanceData(
-    division = division.toInt(),
+    division = division.toLong(),
     classDate = classDate,
     category = category,
     instructor = instructor,
@@ -113,6 +113,14 @@ internal fun String.toSemesterType(): SemesterType = when {
     contains("겨울") || uppercase().contains("WINTER") -> SemesterType.Winter
     else -> throw Exception("undefined semester string: $this")
 }
+
+internal fun dev.eatsteak.rusaint.core.SemesterType.toSemesterType(): SemesterType = when (this) {
+    dev.eatsteak.rusaint.core.SemesterType.ONE -> SemesterType.One
+    dev.eatsteak.rusaint.core.SemesterType.SUMMER -> SemesterType.Summer
+    dev.eatsteak.rusaint.core.SemesterType.TWO -> SemesterType.Two
+    dev.eatsteak.rusaint.core.SemesterType.WINTER -> SemesterType.Winter
+}
+
 
 typealias RusaintSemesterType = dev.eatsteak.rusaint.core.SemesterType
 

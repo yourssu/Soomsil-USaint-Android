@@ -11,6 +11,7 @@ import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
 import com.yourssu.soomsil.usaint.data.source.local.datastore.ChapelDataSource
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentCredentialDataSource
 import com.yourssu.soomsil.usaint.data.source.local.entity.ChapelAttendanceEntity
+import com.yourssu.soomsil.usaint.data.source.local.entity.ChapelEntity
 import com.yourssu.soomsil.usaint.data.source.local.entity.asEntity
 import com.yourssu.soomsil.usaint.data.source.local.entity.asExternalModel
 import com.yourssu.soomsil.usaint.data.source.remote.USaintRemoteSource
@@ -29,11 +30,15 @@ class ChapelRepository @Inject constructor(
     val chapelCardData: Flow<ChapelSimpleData> =
         chapelDataSource.chapelCardData
 
-    val semesterWithChapel: Flow<Map<SemesterData, ChapelSimpleData>> =
-        semesterDao.getSemesterWithChapel().map { semesterEntityListMap ->
-            semesterEntityListMap
-                .mapKeys { (semesterEntity, _) -> semesterEntity.asExternalModel() }
-                .mapValues { (_, chapelEntity) -> chapelEntity.asExternalModel() }
+    val chapelCardAttendanceData: Flow<List<ChapelAttendanceData>> =
+        chapelAttendanceDao.getChapelAttendancesDivision()
+            .map {
+                it.map(ChapelAttendanceEntity::asExternalModel)
+            }
+    val semesterWithChapel: Flow<List<ChapelSimpleData>> =
+        chapelDao.getChapelEntities().map { chapelEntityListMap ->
+            chapelEntityListMap
+                .map(ChapelEntity::asExternalModel)
         }
 
     val chapelWithAttendance: Flow<List<ChapelData>> =
@@ -43,23 +48,22 @@ class ChapelRepository @Inject constructor(
             }
         }
 
-    suspend fun fetchChapelCardData(): Result<Unit> = runCatching {
+    suspend fun fetchChapelCardData(specifiedCurrentSemester: Pair<Int, SemesterType>): Result<Unit> = runCatching {
         val credential = studentCredential.getStudentCredential()
-        // TODO 현재 연도하고 학기를 뭘로 가져와야 하는거지???
-        val chapelCardData = uSaintRemoteSource.remoteChapelData(credential, 2025, SemesterType.One)
-        chapelCardData.chapelSimpleData.totalAttendance = chapelCardData.chapelAttendances.size
-        chapelCardData.chapelSimpleData.currentAttendance =
-            chapelCardData.chapelAttendances.filter {
-                it.attendance == "출석"
-            }.size
+        val chapelCardData = uSaintRemoteSource.remoteChapelData(
+            credential,
+            specifiedCurrentSemester.first,
+            specifiedCurrentSemester.second)
+
         chapelDataSource.setChapelCardData(chapelCardData.chapelSimpleData)
+        chapelDao.upsertChapel(chapelCardData.chapelSimpleData.asEntity())
+        chapelAttendanceDao.upsertChapelAttendances(chapelCardData.chapelAttendances.map(ChapelAttendanceData::asEntity))
     }
 
     suspend fun fetchSemesterWithChapels(): Result<Unit> = runCatching {
         val credential = studentCredential.getStudentCredential()
         val semesterDataList = uSaintRemoteSource.remoteSemesterDataList(credential)
         semesterDao.upsertSemesters(semesterDataList.map(SemesterData::asEntity))
-
         for (semesterData in semesterDataList) {
             try {
                 val chapelData = uSaintRemoteSource.remoteChapelData(
@@ -67,11 +71,6 @@ class ChapelRepository @Inject constructor(
                     semesterData.year,
                     semesterData.semester
                 )
-
-                chapelData.chapelSimpleData.totalAttendance = chapelData.chapelAttendances.size
-                chapelData.chapelSimpleData.currentAttendance = chapelData.chapelAttendances.filter {
-                    it.attendance == "출석"
-                }.size
 
                 chapelDao.upsertChapel(chapelData.chapelSimpleData.asEntity())
                 chapelAttendanceDao.upsertChapelAttendances(chapelData.chapelAttendances.map(ChapelAttendanceData::asEntity))

@@ -12,11 +12,10 @@ interface ChapelAttendanceDao {
 //    @Query("SELECT * FROM ChapelAttendance WHERE division = :division")
     @Query(
         """
-        SELECT * FROM Chapel
-        JOIN ChapelAttendance ON Chapel.division = ChapelAttendance.division WHERE Chapel.division = :division
+        SELECT * FROM ChapelAttendance
         """
     )
-    fun getChapelAttendancesDivision(division: Int): Flow<Map<ChapelEntity, List<ChapelAttendanceEntity>>>
+    fun getChapelAttendancesDivision(): Flow<List<ChapelAttendanceEntity>>
 
     @Query(
         """

@@ -6,13 +6,16 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.model.StudentCredential
+import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
+import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +23,8 @@ class LoginViewModel @Inject constructor(
     private val studentDataRepository: StudentDataRepository,
     private val studentCredentialRepository: StudentCredentialRepository,
     private val userDataRepository: UserDataRepository,
+    private val chapelRepository: ChapelRepository,
+    private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
 //    private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<LoginUiEvent> = MutableSharedFlow()
@@ -56,6 +61,12 @@ class LoginViewModel @Inject constructor(
                 .onFailure { e ->
                     _uiEvent.emit(LoginUiEvent.Failure(e.message))
                 }
+
+            getCurrentSemesterUseCase.invoke()?.let {
+                chapelRepository.fetchChapelCardData(it)
+                    .onFailure { e -> Timber.e(e) }
+            }
+
             isLoading = false
         }
     }

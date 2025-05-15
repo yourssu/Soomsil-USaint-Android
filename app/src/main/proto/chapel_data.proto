@@ -6,14 +6,11 @@ option java_multiple_files = true;
 message ChapelDataProto {
   int32 year = 1;        // 연도
   string semester = 2;        // 학기
-  int32 division = 3;        // 분반
+  int64 division = 3;        // 분반
   string chapelTime = 4;              // 채플 시간
   string chapelRoom = 5;              // 채플 강의실
   int32 floorLevel = 6;              // 층수
   string seatNumber = 7;              // 좌석
   int32 absenceTime = 8;              // 결석일수
   string result = 9;        // 성적
-
-  int32 totalAttendance = 10;        // 전체출석일 (내부에서만 처리)
-  int32 currentAttendance = 11;        // 현재출석일 (내부에서만 처리)
 }

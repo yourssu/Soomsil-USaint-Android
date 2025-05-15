@@ -4,7 +4,7 @@ option java_package = "com.yourssu.soomsil.usaint.proto";
 option java_multiple_files = true;
 
 message ChapelAttendanceDataProto {
-  int32 division = 1;        // 분반
+  int64 division = 1;        // 분반
   string classDate = 2;              // 수업일자
   string category = 3;              // 강의구분
   string instructor = 4;              // 강사명

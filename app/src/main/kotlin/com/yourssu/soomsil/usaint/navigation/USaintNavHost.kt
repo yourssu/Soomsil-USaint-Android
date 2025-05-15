@@ -74,6 +74,11 @@ fun USaintNavHost(
                     TopLevelDestination.REPORT_CARD
                 )
             },
+            navigateToChapel = {
+                navController.navigateToTopLevelDestination(
+                    TopLevelDestination.CHAPEL
+                )
+            }
         )
         reportCardScreen()
         chapelScreen()

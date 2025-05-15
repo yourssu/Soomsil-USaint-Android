@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yourssu.soomsil.usaint.core.model.ChapelAttendanceData
 import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentData
@@ -12,6 +13,7 @@ import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
+import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +30,8 @@ sealed interface HomeUiState {
     data class Home(
         val studentData: StudentData,
         val reportCardSummaryData: ReportCardSummaryData,
-        val chapelCardData: ChapelSimpleData
+        val chapelCardData: ChapelSimpleData,
+        val chapelCardAttendancesData: List<ChapelAttendanceData>
     ) : HomeUiState
 }
 
@@ -36,14 +39,16 @@ sealed interface HomeUiState {
 class HomeViewModel @Inject constructor(
     private val studentDataRepository: StudentDataRepository,
     private val reportCardRepository: ReportCardRepository,
-    userDataRepository: UserDataRepository,
+    private val userDataRepository: UserDataRepository,
     private val chapelRepository: ChapelRepository,
+    private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
 ) : ViewModel() {
     val homeUiState: StateFlow<HomeUiState> =
         combine(
             studentDataRepository.studentData,
             reportCardRepository.reportCardSummaryData,
             chapelRepository.chapelCardData,
+            chapelRepository.chapelCardAttendanceData,
             transform = HomeUiState::Home,
         )
             .stateIn(
@@ -75,7 +80,10 @@ class HomeViewModel @Inject constructor(
             isRefreshing = refresh
             studentDataRepository.fetchStudentData().onFailure { e -> Timber.e(e) }
             reportCardRepository.fetchReportCardSummary().onFailure { e -> Timber.e(e) }
-            chapelRepository.fetchChapelCardData().onFailure { e -> Timber.e(e) }
+            getCurrentSemesterUseCase.invoke()?.let {
+                chapelRepository.fetchChapelCardData(it)
+                    .onFailure { e -> Timber.e(e) }
+            }
             isFetching = false
             isRefreshing = false
         }

@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.model.ChapelData
 import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
-import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
+import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +23,7 @@ sealed interface ChapelUiState {
 
     data class ChapelCard(
         val card: ChapelSimpleData,
-        val semesterWithChapel: Map<SemesterData, ChapelSimpleData>,
+        val semesterWithChapel: List<ChapelSimpleData>,
         val chapelWithAttendance: List<ChapelData>,
     ): ChapelUiState
 }
@@ -31,6 +31,7 @@ sealed interface ChapelUiState {
 @HiltViewModel
 class ChapelViewModel @Inject constructor(
     private val chapelRepository: ChapelRepository,
+    private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
 ) : ViewModel() {
     val chapelCardUiState: StateFlow<ChapelUiState> = combine(
         chapelRepository.chapelCardData,
@@ -61,7 +62,12 @@ class ChapelViewModel @Inject constructor(
         viewModelScope.launch {
             isFetching = true
             isRefreshing = refresh
-            // TODO 에러처리
+
+            getCurrentSemesterUseCase.invoke()?.let {
+                chapelRepository.fetchChapelCardData(it)
+                    .onFailure { e -> Timber.e(e) }
+            }
+
             chapelRepository.fetchSemesterWithChapels().onFailure { e -> Timber.e(e) }
             isFetching = false
             isRefreshing = false

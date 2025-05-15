@@ -49,18 +49,32 @@ fun ChapelCardItem(
                 color = MaterialTheme.colorScheme.onSurface,
             )
 
+
             Text(
-                text = buildAnnotatedString {
-                    append("Pass까지 ")
-                    withStyle(
-                        SpanStyle(color = MaterialTheme.colorScheme.primary)
-                    ) {
-                        append(
-                            "${(totalAttendance * (2/3F)).toInt() - currentAttendance}회 "
-                        )
-                    }
-                    append("남았어요.")
-                },
+                text =
+                    buildAnnotatedString {
+                        if(chapelSimpleData == null) {
+                            append("Pass까지 ")
+                            withStyle(
+                                SpanStyle(color = MaterialTheme.colorScheme.primary)
+                            ) {
+                                append(
+                                    "${(totalAttendance * (2 / 3F)).toInt() - currentAttendance}회 "
+                                )
+                            }
+                            append("남았어요.")
+                        } else {
+                            append("${chapelSimpleData.year % 100}년도 ${chapelSimpleData.semester.kor}학기 채플을 ")
+                            withStyle(
+                                SpanStyle(color = MaterialTheme.colorScheme.primary)
+                            ) {
+                                append(
+                                    "Pass"
+                                )
+                            }
+                            append("했어요!")
+                        }
+                    },
                 modifier = Modifier
                     .padding(
                         bottom = 4.dp,

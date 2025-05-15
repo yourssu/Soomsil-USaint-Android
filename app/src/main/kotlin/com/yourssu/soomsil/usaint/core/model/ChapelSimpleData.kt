@@ -5,15 +5,13 @@ import com.yourssu.soomsil.usaint.core.types.SemesterType
 data class ChapelSimpleData(
     val year: Int,
     val semester: SemesterType,
-    val division: Int,
+    val division: Long,
     val chapelTime: String,
     val chapelRoom: String,
     val floorLevel: Int,
     val seatNumber: String,
     val absenceTime: Int,
-    val result: String,
-    var totalAttendance: Int = 0,
-    var currentAttendance: Int = 0
+    val result: String
 ) {
     companion object {
         val previewData = ChapelSimpleData(
