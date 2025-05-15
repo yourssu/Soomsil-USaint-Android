@@ -52,7 +52,7 @@ fun ReportCardScreen(
     val reportCardUiState by viewModel.reportCardUiState.collectAsStateWithLifecycle()
 
     ReportCardScreen(
-        isFetching = viewModel.isFetching,
+        hasInitialized = viewModel.hasInitialized,
         isRefreshing = viewModel.isRefreshing,
         onRefresh = { viewModel.fetchData(refresh = true) },
         reportCardUiState = reportCardUiState,
@@ -63,7 +63,7 @@ fun ReportCardScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ReportCardScreen(
-    isFetching: Boolean,
+    hasInitialized: Boolean,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     reportCardUiState: ReportCardUiState,
@@ -77,7 +77,7 @@ private fun ReportCardScreen(
         modifier = modifier.fillMaxSize()
     ) {
         AnimatedVisibility(
-            visible = isFetching || isReportCardLoading,
+            visible = !hasInitialized,
             modifier = Modifier.align(Alignment.TopCenter),
         ) {
             LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -240,7 +240,7 @@ private fun ReportCardScreenPreview() {
 
     SoomsilUSaintTheme {
         ReportCardScreen(
-            isFetching = false,
+            hasInitialized = false,
             isRefreshing = false,
             onRefresh = {},
             reportCardUiState = ReportCardUiState.ReportCard(
@@ -256,7 +256,7 @@ private fun ReportCardScreenPreview() {
 private fun ReportCardScreenPreview_loading() {
     SoomsilUSaintTheme {
         ReportCardScreen(
-            isFetching = false,
+            hasInitialized = false,
             isRefreshing = false,
             onRefresh = {},
             reportCardUiState = ReportCardUiState.Loading,

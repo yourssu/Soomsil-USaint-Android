@@ -48,17 +48,21 @@ class HomeViewModel @Inject constructor(
     var isRefreshing by mutableStateOf(false)
         private set
 
+    var hasInitialized by mutableStateOf(false)
+        private set
+
     init {
         fetchData(refresh = false)
     }
 
     fun fetchData(refresh: Boolean) {
-        if (isRefreshing) return
+        if (isRefreshing || (!hasInitialized && refresh)) return
         viewModelScope.launch {
             isRefreshing = refresh
             studentDataRepository.fetchStudentData().onFailure { e -> Timber.e(e) }
             reportCardRepository.fetchReportCardSummary().onFailure { e -> Timber.e(e) }
             isRefreshing = false
+            hasInitialized = true
         }
     }
 }

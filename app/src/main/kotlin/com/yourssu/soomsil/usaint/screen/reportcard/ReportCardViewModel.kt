@@ -42,11 +42,11 @@ class ReportCardViewModel @Inject constructor(
             initialValue = ReportCardUiState.Loading,
         )
 
-    var isFetching by mutableStateOf(false)
-        private set
-
     // 사용자가 직접 pull to refresh를 했을 경우에만 true
     var isRefreshing by mutableStateOf(false)
+        private set
+
+    var hasInitialized by mutableStateOf(false)
         private set
 
     init {
@@ -54,13 +54,12 @@ class ReportCardViewModel @Inject constructor(
     }
 
     fun fetchData(refresh: Boolean) {
-        if (isFetching || isRefreshing) return
+        if (isRefreshing || (!hasInitialized && refresh)) return
         viewModelScope.launch {
-            isFetching = true
             isRefreshing = refresh
             // TODO 에러처리
             reportCardRepository.fetchSemesterWithLectures().onFailure { e -> Timber.e(e) }
-            isFetching = false
+            hasInitialized = true
             isRefreshing = false
         }
     }
