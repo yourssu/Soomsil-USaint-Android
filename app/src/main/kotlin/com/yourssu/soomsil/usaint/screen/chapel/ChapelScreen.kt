@@ -119,16 +119,11 @@ private fun SemesterTabsAndDetail(
         is ChapelUiState.Loading -> Unit
 
         is ChapelUiState.ChapelCard -> {
-            val semesterWithChapelList = chapelUiState.semesterWithChapel
-                .map { data ->
-                    chapelUiState.chapelWithAttendance.find {
-                        data.division == it.chapelSimpleData.division
-                    }
-                }
-            val semesters = semesterWithChapelList
-                .sortedWith(compareBy({ it?.chapelSimpleData?.year }, { it?.chapelSimpleData?.semester }))
-                .reversed()
-            val pagerState = rememberPagerState { semesters.size }
+
+            val chapels = chapelUiState.chapels
+                .sortedWith(compareBy({ it.chapelSimpleData.year }, { it.chapelSimpleData.semester }))
+                .reversed() // 연도와 학기에 맞춰 정렬 (현재->과거 순)
+            val pagerState = rememberPagerState { chapels.size }
             var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
 
             LaunchedEffect(selectedTabIndex) {
@@ -140,14 +135,14 @@ private fun SemesterTabsAndDetail(
             }
 
             Column(modifier) {
-                if (semesters.isNotEmpty()) {
+                if (chapels.isNotEmpty()) {
                     SecondaryScrollableTabRow(selectedTabIndex = pagerState.currentPage) {
 
 
-                        semesters.forEachIndexed { index, chapelData ->
+                        chapels.forEachIndexed { index, chapelData ->
                             // 현재학기를 과거학기로 잡았을 경우 현재학기 탭에만 뜨도록
-                            if(chapelUiState.card.year == chapelData?.chapelSimpleData?.year &&
-                                chapelUiState.card.semester == chapelData.chapelSimpleData.semester)
+                            if(chapelUiState.chapelCard?.chapelSimpleData?.year == chapelData.chapelSimpleData.year &&
+                                chapelUiState.chapelCard.chapelSimpleData.semester == chapelData.chapelSimpleData.semester)
                                 Tab(
                                     selected = pagerState.currentPage == index,
                                     onClick = { selectedTabIndex = index },
@@ -160,7 +155,7 @@ private fun SemesterTabsAndDetail(
                                     selected = pagerState.currentPage == index,
                                     onClick = { selectedTabIndex = index},
                                     text = {
-                                        Text(text = "${(chapelData?.chapelSimpleData?.year ?: 0) % 100}년 ${chapelData?.chapelSimpleData?.semester?.kor}학기")
+                                        Text(text = "${chapelData.chapelSimpleData.year % 100}년 ${chapelData.chapelSimpleData.semester.kor}학기")
                                     }
                                 )
                         }
@@ -168,7 +163,7 @@ private fun SemesterTabsAndDetail(
                 }
 
                 HorizontalPager(state = pagerState) { pagerIndex ->
-                    val chapelPagerData = semesters.getOrNull(pagerIndex) ?: return@HorizontalPager
+                    val chapelPagerData = chapels.getOrNull(pagerIndex) ?: return@HorizontalPager
 
                     chapelPagerData.let { chapelData ->
                         val attendances = chapelData.chapelAttendances

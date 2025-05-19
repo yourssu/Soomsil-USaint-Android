@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.model.ChapelData
-import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,9 +21,8 @@ sealed interface ChapelUiState {
     data object Loading : ChapelUiState
 
     data class ChapelCard(
-        val card: ChapelSimpleData,
-        val semesterWithChapel: List<ChapelSimpleData>,
-        val chapelWithAttendance: List<ChapelData>,
+        val chapelCard: ChapelData?,
+        val chapels: List<ChapelData>,
     ): ChapelUiState
 }
 
@@ -34,9 +32,8 @@ class ChapelViewModel @Inject constructor(
     private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
 ) : ViewModel() {
     val chapelCardUiState: StateFlow<ChapelUiState> = combine(
-        chapelRepository.chapelCardData,
-        chapelRepository.semesterWithChapel,
-        chapelRepository.chapelWithAttendance,
+        chapelRepository.chapelCard,
+        chapelRepository.chapels,
         transform = ChapelUiState::ChapelCard,
     )
         .stateIn(
@@ -52,6 +49,7 @@ class ChapelViewModel @Inject constructor(
     // 사용자가 직접 pull to refresh를 했을 경우에만 true
     var isRefreshing by mutableStateOf(false)
         private set
+
 
     init {
         fetchData(refresh = false)

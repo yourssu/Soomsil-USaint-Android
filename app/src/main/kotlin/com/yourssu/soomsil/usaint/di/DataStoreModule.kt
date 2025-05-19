@@ -4,13 +4,11 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.yourssu.soomsil.usaint.data.source.local.datastore.ChapelAttendanceDataSerializer
 import com.yourssu.soomsil.usaint.data.source.local.datastore.ChapelDataSerializer
 import com.yourssu.soomsil.usaint.data.source.local.datastore.ReportCardSummarySerializer
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentCredentialSerializer
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentInformationSerializer
 import com.yourssu.soomsil.usaint.data.source.local.datastore.UserPreferencesSerializer
-import com.yourssu.soomsil.usaint.proto.ChapelAttendanceDataProto
 import com.yourssu.soomsil.usaint.proto.ChapelDataProto
 import com.yourssu.soomsil.usaint.proto.ReportCardSummaryProto
 import com.yourssu.soomsil.usaint.proto.StudentCredentialProto
@@ -72,15 +70,6 @@ object DataStoreModule {
         return DataStoreFactory.create(
             serializer = ChapelDataSerializer,
             produceFile = { context.dataStoreFile("chapel_data.pb") }
-        )
-    }
-
-    @Singleton
-    @Provides
-    fun provideChapelAttendanceDataStore(@ApplicationContext context: Context): DataStore<ChapelAttendanceDataProto> {
-        return DataStoreFactory.create(
-            serializer = ChapelAttendanceDataSerializer,
-            produceFile = { context.dataStoreFile("chapel_attandance_data.pb") }
         )
     }
 

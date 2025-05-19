@@ -4,7 +4,6 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.yourssu.soomsil.usaint.data.source.local.dao.ChapelAttendanceDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.ChapelDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.LectureDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
@@ -28,5 +27,4 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun semesterDao(): SemesterDao
     abstract fun lectureDao(): LectureDao
     abstract fun chapelDao(): ChapelDao
-    abstract fun chapelAttendanceDao(): ChapelAttendanceDao
 }

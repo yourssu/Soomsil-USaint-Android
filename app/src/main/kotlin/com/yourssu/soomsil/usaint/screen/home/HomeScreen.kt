@@ -28,8 +28,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -40,6 +38,7 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yourssu.soomsil.usaint.core.model.ChapelAttendanceData
+import com.yourssu.soomsil.usaint.core.model.ChapelData
 import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentData
@@ -139,8 +138,6 @@ private fun HomeScreen(
                     if (homeUiState is HomeUiState.Home) homeUiState.reportCardSummaryData else null
                 val chapelCardData =
                     if (homeUiState is HomeUiState.Home) homeUiState.chapelCardData else null
-                val chapelCardAttendanceData =
-                    if (homeUiState is HomeUiState.Home) homeUiState.chapelCardAttendancesData else null
 
                 StudentDataItem(
                     studentData = studentData,
@@ -204,26 +201,17 @@ private fun HomeScreen(
                 )
 
                 Spacer(Modifier.height(8.dp))
-                val totalAttendance by remember {
-                    mutableIntStateOf(
-                        chapelCardAttendanceData?.filter {
-                            it.division == chapelCardData?.division
-                        }?.size ?: 0
-                    )
-                }
-                val currentAttendance by remember {
-                    mutableIntStateOf(
-                        chapelCardAttendanceData?.filter {
-                            it.attendance == "출석" && it.division == chapelCardData?.division
-                        }?.size ?: 0)
-                }
+                val totalAttendance = chapelCardData?.chapelAttendances?.size ?: 0
+                val currentAttendance = chapelCardData?.chapelAttendances?.filter {
+                    it.attendance == "출석"
+                }?.size ?: 0
 
                 // 앱 최초 실행 후 현재 학기에 채플 정보 없으면 카드 띄우지 않음
                 // 단, 채플 카드가 뜬 적이 있다면 채플 정보가 없는 학기로 수정해서 새로고침해도 기존 카드로 유지됨
-                if(chapelCardData?.division != 0L)
+                if(chapelCardData?.chapelSimpleData?.division != 0L && chapelCardData != null)
                     ChapelCardItem(
                         onChapelCardClick = onChapelCardClick,
-                        chapelSimpleData = chapelCardData,
+                        chapelData = chapelCardData,
                         currentAttendance = currentAttendance,
                         totalAttendance = totalAttendance,
                     )
@@ -245,8 +233,7 @@ private fun HomePreview_being() {
             homeUiState = HomeUiState.Home(
                 studentData = StudentData.previewData,
                 reportCardSummaryData = ReportCardSummaryData.previewData,
-                chapelCardData = ChapelSimpleData.previewData,
-                chapelCardAttendancesData = listOf(ChapelAttendanceData.previewData),
+                chapelCardData = ChapelData(ChapelSimpleData.previewData, listOf(ChapelAttendanceData.previewData)),
             ),
         )
     }
@@ -264,8 +251,7 @@ private fun HomePreview_leave() {
             homeUiState = HomeUiState.Home(
                 studentData = StudentData.previewData.copy(status = "휴학"),
                 reportCardSummaryData = ReportCardSummaryData.previewData,
-                chapelCardData = ChapelSimpleData.previewData,
-                chapelCardAttendancesData = listOf(ChapelAttendanceData.previewData),
+                chapelCardData = ChapelData(ChapelSimpleData.previewData, listOf(ChapelAttendanceData.previewData)),
             ),
         )
     }

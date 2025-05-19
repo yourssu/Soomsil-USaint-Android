@@ -16,6 +16,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
+import kotlin.math.ceil
 
 @Composable
 fun ChapelSummary(
@@ -56,7 +57,7 @@ fun ChapelSummary(
                             "Pass!"
                         else
                             // 유세인트에 성적 결과은 없이 출결 상태만 있는 경우가 22년 2학기에 존재
-                            if( currentAttendance >= (totalAttendance * (2/3F)) )
+                            if( currentAttendance >= ceil(totalAttendance * (2/3F)) )
                                 "Pass!"
                             else
                                 "Fail"

@@ -15,13 +15,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
+import com.yourssu.soomsil.usaint.core.model.ChapelData
+import kotlin.math.ceil
 
 @Composable
 fun ChapelCardItem(
     modifier: Modifier = Modifier,
     onChapelCardClick: () -> Unit,
-    chapelSimpleData: ChapelSimpleData?,
+    chapelData: ChapelData,
     totalAttendance: Int,
     currentAttendance: Int
 ) {
@@ -53,18 +54,8 @@ fun ChapelCardItem(
             Text(
                 text =
                     buildAnnotatedString {
-                        if(chapelSimpleData == null) {
-                            append("Pass까지 ")
-                            withStyle(
-                                SpanStyle(color = MaterialTheme.colorScheme.primary)
-                            ) {
-                                append(
-                                    "${(totalAttendance * (2 / 3F)).toInt() - currentAttendance}회 "
-                                )
-                            }
-                            append("남았어요.")
-                        } else {
-                            append("${chapelSimpleData.year % 100}년도 ${chapelSimpleData.semester.kor}학기 채플을 ")
+                        if(chapelData.chapelSimpleData.result == "P" || currentAttendance >= ceil(totalAttendance * (2 / 3F))) {
+                            append("${chapelData.chapelSimpleData.year % 100}년도 ${chapelData.chapelSimpleData.semester.kor}학기 채플을 ")
                             withStyle(
                                 SpanStyle(color = MaterialTheme.colorScheme.primary)
                             ) {
@@ -73,6 +64,16 @@ fun ChapelCardItem(
                                 )
                             }
                             append("했어요!")
+                        } else {
+                            append("Pass까지 ")
+                            withStyle(
+                                SpanStyle(color = MaterialTheme.colorScheme.primary)
+                            ) {
+                                append(
+                                    "${ceil(totalAttendance * (2 / 3.0)) - currentAttendance}회 "
+                                )
+                            }
+                            append("남았어요.")
                         }
                     },
                 modifier = Modifier
@@ -151,7 +152,7 @@ fun ChapelCardItem(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = chapelSimpleData?.chapelTime ?: "정보 없음",
+                        text = chapelData.chapelSimpleData.chapelTime,
                         modifier = Modifier
                             .padding(
                                 bottom = 4.dp,
@@ -180,7 +181,7 @@ fun ChapelCardItem(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = chapelSimpleData?.seatNumber ?: "정보 없음",
+                        text = chapelData.chapelSimpleData.seatNumber,
                         modifier = Modifier
                             .padding(
                                 bottom = 4.dp,

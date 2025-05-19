@@ -5,8 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourssu.soomsil.usaint.core.model.ChapelAttendanceData
-import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
+import com.yourssu.soomsil.usaint.core.model.ChapelData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
@@ -30,8 +29,7 @@ sealed interface HomeUiState {
     data class Home(
         val studentData: StudentData,
         val reportCardSummaryData: ReportCardSummaryData,
-        val chapelCardData: ChapelSimpleData,
-        val chapelCardAttendancesData: List<ChapelAttendanceData>
+        val chapelCardData: ChapelData?,
     ) : HomeUiState
 }
 
@@ -47,8 +45,7 @@ class HomeViewModel @Inject constructor(
         combine(
             studentDataRepository.studentData,
             reportCardRepository.reportCardSummaryData,
-            chapelRepository.chapelCardData,
-            chapelRepository.chapelCardAttendanceData,
+            chapelRepository.chapelCard,
             transform = HomeUiState::Home,
         )
             .stateIn(
@@ -83,6 +80,7 @@ class HomeViewModel @Inject constructor(
             getCurrentSemesterUseCase.invoke()?.let {
                 chapelRepository.fetchChapelCardData(it)
                     .onFailure { e -> Timber.e(e) }
+
             }
             isFetching = false
             isRefreshing = false
