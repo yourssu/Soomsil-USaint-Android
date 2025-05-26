@@ -62,7 +62,7 @@ class LoginViewModel @Inject constructor(
                     _uiEvent.emit(LoginUiEvent.Failure(e.message))
                 }
 
-            getCurrentSemesterUseCase.invoke()?.let {
+            getCurrentSemesterUseCase()?.let {
                 chapelRepository.fetchChapelCardData(it)
                     .onFailure { e -> Timber.e(e) }
             }

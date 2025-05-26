@@ -164,65 +164,63 @@ private fun SemesterTabsAndDetail(
 
                 HorizontalPager(state = pagerState) { pagerIndex ->
                     val chapelPagerData = chapels.getOrNull(pagerIndex) ?: return@HorizontalPager
+                    val attendances = chapelPagerData.chapelAttendances
+                    val totalAttendance = attendances.size
+                    val currentAttendance by remember {
+                        mutableIntStateOf(
+                            attendances.filter {
+                                it.attendance == "출석"
+                            }.size)
+                    }
+                    Column {
+                        ChapelSummary(
+                            chapelSimpleData = chapelPagerData.chapelSimpleData,
+                            currentAttendance = currentAttendance,
+                            totalAttendance = totalAttendance
+                        )
 
-                    chapelPagerData.let { chapelData ->
-                        val attendances = chapelData.chapelAttendances
-                        val totalAttendance = chapelData.chapelAttendances.size
-                        val currentAttendance by remember {
-                            mutableIntStateOf(
-                                chapelData.chapelAttendances.filter {
-                                    it.attendance == "출석"
-                                }.size)
-                        }
-                        Column {
-                            ChapelSummary(
-                                chapelSimpleData = chapelData.chapelSimpleData,
-                                currentAttendance = currentAttendance,
-                                totalAttendance = totalAttendance
-                            )
+                        HorizontalDivider(Modifier.padding(horizontal = 12.dp))
 
-                            HorizontalDivider(Modifier.padding(horizontal = 12.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 10.dp)
 
-                            Row(
+                        ) {
+                            Text(
+                                text = "출결 현황",
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                                    .weight(1f)
+                            )
 
-                            ) {
-                                Text(
-                                    text = "출결 현황",
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    style = MaterialTheme.typography.titleLarge.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .weight(1f)
+                            Text(
+                                text = "${chapelPagerData.chapelSimpleData.absenceTime}회 결석",
+                                color = MaterialTheme.colorScheme.tertiary,
+                                style = MaterialTheme.typography.titleSmall.copy(
+                                    fontWeight = FontWeight.Normal
+                                ),
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                            )
+                        }
+
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            attendances.forEach { attendance ->
+                                ChapelAttendanceItem(
+                                    attendanceData = attendance
                                 )
-
-                                Text(
-                                    text = "${chapelData.chapelSimpleData.absenceTime}회 결석",
-                                    color = MaterialTheme.colorScheme.tertiary,
-                                    style = MaterialTheme.typography.titleSmall.copy(
-                                        fontWeight = FontWeight.Normal
-                                    ),
-                                    modifier = Modifier
-                                        .align(Alignment.CenterVertically)
-                                )
-                            }
-
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                            ) {
-                                attendances.forEach { attendance ->
-                                    ChapelAttendanceItem(
-                                        attendanceData = attendance
-                                    )
-                                }
                             }
                         }
                     }
+
                 }
             }
         }

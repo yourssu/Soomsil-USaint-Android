@@ -77,7 +77,7 @@ class HomeViewModel @Inject constructor(
             isRefreshing = refresh
             studentDataRepository.fetchStudentData().onFailure { e -> Timber.e(e) }
             reportCardRepository.fetchReportCardSummary().onFailure { e -> Timber.e(e) }
-            getCurrentSemesterUseCase.invoke()?.let {
+            getCurrentSemesterUseCase()?.let {
                 chapelRepository.fetchChapelCardData(it)
                     .onFailure { e -> Timber.e(e) }
 

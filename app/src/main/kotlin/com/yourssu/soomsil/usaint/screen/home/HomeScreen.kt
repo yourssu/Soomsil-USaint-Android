@@ -200,21 +200,25 @@ private fun HomeScreen(
                     onReportCardClick = onReportCardClick,
                 )
 
-                Spacer(Modifier.height(8.dp))
-                val totalAttendance = chapelCardData?.chapelAttendances?.size ?: 0
-                val currentAttendance = chapelCardData?.chapelAttendances?.filter {
-                    it.attendance == "출석"
-                }?.size ?: 0
 
-                // 앱 최초 실행 후 현재 학기에 채플 정보 없으면 카드 띄우지 않음
-                // 단, 채플 카드가 뜬 적이 있다면 채플 정보가 없는 학기로 수정해서 새로고침해도 기존 카드로 유지됨
-                if(chapelCardData?.chapelSimpleData?.division != 0L && chapelCardData != null)
-                    ChapelCardItem(
-                        onChapelCardClick = onChapelCardClick,
-                        chapelData = chapelCardData,
-                        currentAttendance = currentAttendance,
-                        totalAttendance = totalAttendance,
-                    )
+                chapelCardData?.let {
+                    Spacer(Modifier.height(8.dp))
+
+                    val totalAttendance = it.chapelAttendances.size
+                    val currentAttendance = it.chapelAttendances.filter { item ->
+                        item.attendance == "출석"
+                    }.size
+
+                    // 앱 최초 실행 후 현재 학기에 채플 정보 없으면 카드 띄우지 않음
+                    // 단, 채플 카드가 뜬 적이 있다면 채플 정보가 없는 학기로 수정해서 새로고침해도 기존 카드로 유지됨
+                    if(it.chapelSimpleData.division != 0L)
+                        ChapelCardItem(
+                            onChapelCardClick = onChapelCardClick,
+                            chapelData = chapelCardData,
+                            currentAttendance = currentAttendance,
+                            totalAttendance = totalAttendance,
+                        )
+                }
 
             }
         }

@@ -61,7 +61,7 @@ class ChapelViewModel @Inject constructor(
             isFetching = true
             isRefreshing = refresh
 
-            getCurrentSemesterUseCase.invoke()?.let {
+            getCurrentSemesterUseCase()?.let {
                 chapelRepository.fetchChapelCardData(it)
                     .onFailure { e -> Timber.e(e) }
             }
