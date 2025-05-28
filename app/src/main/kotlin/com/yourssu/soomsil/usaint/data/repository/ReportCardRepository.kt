@@ -11,6 +11,7 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.LectureEntity
 import com.yourssu.soomsil.usaint.data.source.local.entity.asEntity
 import com.yourssu.soomsil.usaint.data.source.local.entity.asExternalModel
 import com.yourssu.soomsil.usaint.data.source.remote.USaintRemoteSource
+import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -21,6 +22,7 @@ class ReportCardRepository @Inject constructor(
     private val semesterDao: SemesterDao,
     private val lectureDao: LectureDao,
     private val uSaintRemoteSource: USaintRemoteSource,
+    private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
 ) {
     val reportCardSummaryData: Flow<ReportCardSummaryData> =
         reportCardSummary.reportCardSummaryData
@@ -36,6 +38,20 @@ class ReportCardRepository @Inject constructor(
         val credential = studentCredential.getStudentCredential()
         val reportCardSummaryData = uSaintRemoteSource.remoteReportCardSummaryData(credential)
         reportCardSummary.setReportCardData(reportCardSummaryData)
+    }
+
+    suspend fun fetchCurrentSemesterLectures(): Result<Unit> = runCatching {
+        val credential = studentCredential.getStudentCredential()
+        val currentSemester = getCurrentSemesterUseCase() ?: return@runCatching
+
+        val lectureDataList = uSaintRemoteSource.remoteLectureDataList(
+            credential,
+            currentSemester.first,
+            currentSemester.second
+        )
+
+        lectureDao.upsertLectures(lectureDataList.map(LectureData::asEntity))
+
     }
 
     suspend fun fetchSemesterWithLectures(): Result<Unit> = runCatching {

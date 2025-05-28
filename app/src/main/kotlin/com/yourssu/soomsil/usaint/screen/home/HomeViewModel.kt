@@ -6,7 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.model.ChapelData
+import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
+import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -30,6 +33,8 @@ sealed interface HomeUiState {
         val studentData: StudentData,
         val reportCardSummaryData: ReportCardSummaryData,
         val chapelCardData: ChapelData?,
+        val currentSemesterLectures: List<LectureData>?,
+        val currentSemesterData: SemesterData?,
     ) : HomeUiState
 }
 
@@ -46,6 +51,18 @@ class HomeViewModel @Inject constructor(
             studentDataRepository.studentData,
             reportCardRepository.reportCardSummaryData,
             chapelRepository.chapelCard,
+            reportCardRepository.semesterWithLectures.map { semesterWithLecture ->
+                val currentSemester = getCurrentSemesterUseCase()
+                semesterWithLecture[semesterWithLecture.keys.find {
+                    it.year == currentSemester?.first && it.semester == currentSemester.second
+                }]
+            },
+            reportCardRepository.semesterWithLectures.map { semesterWithLecture ->
+                val currentSemester = getCurrentSemesterUseCase()
+                semesterWithLecture.keys.find {
+                    it.year == currentSemester?.first && it.semester == currentSemester.second
+                }
+            },
             transform = HomeUiState::Home,
         )
             .stateIn(
@@ -76,11 +93,11 @@ class HomeViewModel @Inject constructor(
             isFetching = true
             isRefreshing = refresh
             studentDataRepository.fetchStudentData().onFailure { e -> Timber.e(e) }
+            reportCardRepository.fetchCurrentSemesterLectures().onFailure { e -> Timber.e(e) }
             reportCardRepository.fetchReportCardSummary().onFailure { e -> Timber.e(e) }
             getCurrentSemesterUseCase()?.let {
                 chapelRepository.fetchChapelCardData(it)
                     .onFailure { e -> Timber.e(e) }
-
             }
             isFetching = false
             isRefreshing = false

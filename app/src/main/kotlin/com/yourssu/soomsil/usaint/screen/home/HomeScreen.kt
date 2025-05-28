@@ -1,7 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.home
 
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -19,18 +20,26 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -46,6 +55,7 @@ import com.yourssu.soomsil.usaint.screen.home.components.ActionTitleItem
 import com.yourssu.soomsil.usaint.screen.home.components.ChapelCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.StudentDataItem
+import com.yourssu.soomsil.usaint.screen.reportcard.components.LectureItem
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 
 @Composable
@@ -89,6 +99,10 @@ private fun HomeScreen(
     val context = LocalContext.current
 
     val isHomeLoading = homeUiState is HomeUiState.Loading
+
+    var isVisibleGradeBottomSheet by remember { mutableStateOf(false) }
+
+    val gradeBottomSheetState = rememberModalBottomSheetState()
 
     Scaffold(
         modifier = modifier,
@@ -138,6 +152,63 @@ private fun HomeScreen(
                     if (homeUiState is HomeUiState.Home) homeUiState.reportCardSummaryData else null
                 val chapelCardData =
                     if (homeUiState is HomeUiState.Home) homeUiState.chapelCardData else null
+                val currentSemesterLectureData =
+                    if (homeUiState is HomeUiState.Home) homeUiState.currentSemesterLectures else null
+                val currentSemesterData =
+                    if (homeUiState is HomeUiState.Home) homeUiState.currentSemesterData else null
+
+                if(isVisibleGradeBottomSheet) {
+                    ModalBottomSheet(
+                        onDismissRequest = { isVisibleGradeBottomSheet = false },
+                        sheetState = gradeBottomSheetState,
+                        modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
+                    ) {
+                        if (currentSemesterData != null) {
+                            Column(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
+                                Text(text = "${currentSemesterData.year}년 ${currentSemesterData.semester.kor}학기")
+                                Row(
+                                    verticalAlignment = Alignment.Bottom,
+                                ) {
+                                    Text(
+                                        text = String.format(
+                                            "%.2f",
+                                            currentSemesterData.gradePointsAverage
+                                        ),
+                                        style = MaterialTheme.typography.displaySmall,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                    Text(
+                                        text = " / 4.50",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            }
+                            HorizontalDivider(Modifier.padding(horizontal = 12.dp))
+                        }
+
+
+                        if (currentSemesterLectureData != null) {
+                            // 바텀시트의 최대 높이를 넘어가는 데이터들에 대한 스크롤링을 위해서는 LazyColumn 사용
+                            LazyColumn {
+                                items(currentSemesterLectureData) { lecture ->
+                                    LectureItem(
+                                        lectureGrade = lecture.lectureGrade,
+                                        lectureTitle = lecture.title,
+                                        professor = lecture.professor,
+                                        credit = lecture.credit,
+                                    )
+                                }
+                            }
+                        } else {
+                            Text(
+                                modifier = Modifier.padding(12.dp),
+                                text = "현재 학기 성적 데이터가 없어요."
+                            )
+                        }
+                    }
+                }
 
                 StudentDataItem(
                     studentData = studentData,
@@ -189,7 +260,8 @@ private fun HomeScreen(
                     ActionTitleItem(
                         title = "이번 학기 성적 확인",
                         onClick = {
-                            Toast.makeText(context, "서비스 예정입니다.", Toast.LENGTH_SHORT).show()
+                            isVisibleGradeBottomSheet = true
+//                            Toast.makeText(context, "서비스 예정입니다.", Toast.LENGTH_SHORT).show()
                         },
                     )
                 }
@@ -238,6 +310,8 @@ private fun HomePreview_being() {
                 studentData = StudentData.previewData,
                 reportCardSummaryData = ReportCardSummaryData.previewData,
                 chapelCardData = ChapelData(ChapelSimpleData.previewData, listOf(ChapelAttendanceData.previewData)),
+                currentSemesterLectures = null,
+                currentSemesterData = null,
             ),
         )
     }
@@ -256,6 +330,8 @@ private fun HomePreview_leave() {
                 studentData = StudentData.previewData.copy(status = "휴학"),
                 reportCardSummaryData = ReportCardSummaryData.previewData,
                 chapelCardData = ChapelData(ChapelSimpleData.previewData, listOf(ChapelAttendanceData.previewData)),
+                currentSemesterLectures = null,
+                currentSemesterData = null,
             ),
         )
     }

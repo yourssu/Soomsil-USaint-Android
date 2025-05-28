@@ -22,7 +22,7 @@ class ChapelRepository @Inject constructor(
     private val semesterDao: SemesterDao,
     private val chapelDao: ChapelDao,
     private val uSaintRemoteSource: USaintRemoteSource,
-    private val chapelDataSource: ChapelDataSource,
+    private val chapelDataSource: ChapelDataSource
 ) {
 
     // 채플DB에서 지금까지 불러왔던 모든 채플 데이터(현재학기 + 이전학기)를 불러옵니다.
