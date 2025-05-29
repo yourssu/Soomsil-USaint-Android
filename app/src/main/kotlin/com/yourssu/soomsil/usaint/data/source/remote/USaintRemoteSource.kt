@@ -23,7 +23,7 @@ class USaintRemoteSource @Inject constructor(
         return graduationStudent.asExternalModel()
     }
 
-    suspend fun     remoteReportCardSummaryData(credential: StudentCredential): ReportCardSummaryData {
+    suspend fun remoteReportCardSummaryData(credential: StudentCredential): ReportCardSummaryData {
         val graduationStudent = rusaintApi.graduationStudentInformation(credential)
         val gradeSummary = rusaintApi.certificatedGradeSummary(credential)
         return gradeSummary.asExternalModel(

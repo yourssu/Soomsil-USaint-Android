@@ -252,6 +252,7 @@ private fun SemesterTabsAndDetail(
                                         lectureTitle = lecture.title,
                                         professor = lecture.professor,
                                         credit = lecture.credit,
+                                        detail = lecture.detail
                                     )
                                 }
                             }

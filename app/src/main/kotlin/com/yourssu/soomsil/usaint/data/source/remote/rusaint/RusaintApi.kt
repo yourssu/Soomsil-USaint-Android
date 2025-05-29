@@ -70,7 +70,7 @@ class RusaintApi @Inject constructor() {
     ): List<ClassGrade> {
         val session = getUSaintSession(credential)
         return CourseGradesApplicationBuilder().build(session)
-            .classes(CourseType.BACHELOR, year.toUInt(), semester.toRusaintSemesterType(), false)
+            .classes(CourseType.BACHELOR, year.toUInt(), semester.toRusaintSemesterType(), true)
     }
 
     // 졸업사정표 - 학생 정보
