@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -27,19 +26,21 @@ fun LectureItemDetail(
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceContainer)
     ) {
-        Row(
-            modifier = Modifier.height(IntrinsicSize.Max),
-        ) {
-            detail.keys.forEach { key ->
+
+        detail.forEach { (key, value) ->
+            Row(
+                modifier = Modifier
+                    .height(IntrinsicSize.Max)
+            ) {
                 Column(
                     modifier = Modifier
                         .border(
                             width = 1.dp,
                             color = MaterialTheme.colorScheme.surfaceContainerHighest
                         )
-                        .padding(vertical = 4.dp)
-                        .weight(1f)
-                        .fillMaxHeight(),
+                        .padding(4.dp)
+                        .fillMaxHeight()
+                        .weight(0.8f),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -49,20 +50,16 @@ fun LectureItemDetail(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
-            }
-        }
-
-        Row {
-            detail.values.forEach { value ->
                 Column(
                     modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surfaceContainerLowest)
                         .border(
                             width = 1.dp,
                             color = MaterialTheme.colorScheme.surfaceContainerHighest
                         )
-                        .padding(vertical = 2.dp)
-                        .weight(1f)
-                        .fillMaxHeight(),
+                        .padding(4.dp)
+                        .fillMaxHeight()
+                        .weight(0.2f),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -75,5 +72,4 @@ fun LectureItemDetail(
             }
         }
     }
-
 }
