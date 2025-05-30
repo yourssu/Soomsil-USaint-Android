@@ -123,15 +123,11 @@ private fun ChapelScreen(
 
                     var showPasswordIncorrectSnackbar by remember {
                         if (chapelUiState is ChapelUiState.Chapel) {
-                            println("[채플 로깅] State is Chapel")
                             chapelUiState.showPasswordIncorrectSnackbar
                         } else {
-                            println("[채플 로깅] State is Loading")
                             mutableStateOf(false)
                         }
                     }
-
-                    println("[채플 로깅] $showPasswordIncorrectSnackbar")
 
                     if(showPasswordIncorrectSnackbar) {
                         snackbarHostState.currentSnackbarData?.dismiss()
