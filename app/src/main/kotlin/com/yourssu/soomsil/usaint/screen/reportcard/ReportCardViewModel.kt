@@ -80,11 +80,7 @@ class ReportCardViewModel @Inject constructor(
         viewModelScope.launch {
             val autoFetch = userDataRepository.userData.first().autoFetch
             if (autoFetch || reportCardRepository.semesterWithLectures.first().isEmpty()) {
-                try {
-                    fetchData(refresh = false)
-                } catch(e: RusaintException) {
-                    e.localizedMessage
-                }
+                fetchData(refresh = false)
             }
         }
     }
