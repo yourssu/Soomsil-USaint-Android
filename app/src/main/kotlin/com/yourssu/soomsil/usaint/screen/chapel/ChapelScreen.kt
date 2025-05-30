@@ -74,7 +74,7 @@ private fun ChapelScreen(
     onRefresh: () -> Unit,
     onPasswordChange: (password: String) -> Unit,
 ) {
-    val isChapelCardLoading = chapelUiState is ChapelUiState.Loading
+    val isChapelLoading = chapelUiState is ChapelUiState.Loading
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -90,7 +90,7 @@ private fun ChapelScreen(
             Box {
                 TopAppBar(title = { Text(text = "채플") })
                 AnimatedVisibility(
-                    visible = isFetching || isChapelCardLoading,
+                    visible = isFetching || isChapelLoading,
                     modifier = Modifier.align(Alignment.BottomCenter),
                 ) {
                     LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -106,63 +106,11 @@ private fun ChapelScreen(
                 .padding(padding)
         ) {
 
-            var showPasswordIncorrectSnackbar by remember {
-                if (chapelUiState is ChapelUiState.Chapel)
-                    chapelUiState.showPasswordIncorrectSnackbar
-                else
-                    mutableStateOf(false)
-            }
-
-            if(showPasswordIncorrectSnackbar) {
-                snackbarHostState.currentSnackbarData?.dismiss()
-                scope.launch {
-                    val result = snackbarHostState
-                        .showSnackbar(
-                            message = "유세인트 로그인에 실패했습니다.",
-                            actionLabel = "비밀번호 변경",
-                            // Defaults to SnackbarDuration.Short
-                            duration = SnackbarDuration.Indefinite
-                        )
-                    when (result) {
-                        SnackbarResult.ActionPerformed -> {
-                            snackbarHostState.currentSnackbarData?.dismiss()
-                            showPasswordIncorrectSnackbar = false
-                            isVisiblePasswordChangeDialog = true
-                        }
-
-                        SnackbarResult.Dismissed -> {
-                            showPasswordIncorrectSnackbar = false
-                        }
-                    }
-                }
-            }
-
-            if(isVisiblePasswordChangeDialog) {
-                snackbarHostState.currentSnackbarData?.dismiss()
-                PasswordChangeDialog(
-                    onDismissRequest = {
-                        showPasswordIncorrectSnackbar = true
-                        isVisiblePasswordChangeDialog = false
-                    },
-                    onConfirmClick = {
-                        isVisiblePasswordChangeDialog = false
-                        showPasswordIncorrectSnackbar = false
-                        onPasswordChange(it)
-                        snackbarHostState.currentSnackbarData?.dismiss()
-                        scope.launch {
-                            snackbarHostState.showSnackbar(
-                                message = "앞으로 해당 비밀번호를 사용할게요. 정보를 다시 불러옵니다.",
-                                duration = SnackbarDuration.Short
-                            )
-                        }
-                    }
-                )
-            }
-
             Column(
                 Modifier.verticalScroll(rememberScrollState()),
             ) {
-                if(isChapelCardLoading) {
+
+                if(isChapelLoading) {
                     Box(
                         Modifier
                             .fillMaxWidth()
@@ -172,6 +120,65 @@ private fun ChapelScreen(
                         CircularProgressIndicator()
                     }
                 } else {
+
+                    var showPasswordIncorrectSnackbar by remember {
+                        if (chapelUiState is ChapelUiState.Chapel) {
+                            println("[채플 로깅] State is Chapel")
+                            chapelUiState.showPasswordIncorrectSnackbar
+                        } else {
+                            println("[채플 로깅] State is Loading")
+                            mutableStateOf(false)
+                        }
+                    }
+
+                    println("[채플 로깅] $showPasswordIncorrectSnackbar")
+
+                    if(showPasswordIncorrectSnackbar) {
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                        scope.launch {
+                            val result = snackbarHostState
+                                .showSnackbar(
+                                    message = "유세인트 로그인에 실패했습니다.",
+                                    actionLabel = "비밀번호 변경",
+                                    // Defaults to SnackbarDuration.Short
+                                    duration = SnackbarDuration.Indefinite
+                                )
+                            when (result) {
+                                SnackbarResult.ActionPerformed -> {
+                                    snackbarHostState.currentSnackbarData?.dismiss()
+                                    showPasswordIncorrectSnackbar = false
+                                    isVisiblePasswordChangeDialog = true
+                                }
+
+                                SnackbarResult.Dismissed -> {
+                                    showPasswordIncorrectSnackbar = false
+                                }
+                            }
+                        }
+                    }
+
+                    if(isVisiblePasswordChangeDialog) {
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                        PasswordChangeDialog(
+                            onDismissRequest = {
+                                showPasswordIncorrectSnackbar = true
+                                isVisiblePasswordChangeDialog = false
+                            },
+                            onConfirmClick = {
+                                isVisiblePasswordChangeDialog = false
+                                showPasswordIncorrectSnackbar = false
+                                onPasswordChange(it)
+                                snackbarHostState.currentSnackbarData?.dismiss()
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = "앞으로 해당 비밀번호를 사용할게요. 정보를 다시 불러옵니다.",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            }
+                        )
+                    }
+
                     SemesterTabsAndDetail(chapelUiState)
                 }
 

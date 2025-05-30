@@ -48,7 +48,7 @@ class ReportCardViewModel @Inject constructor(
     userDataRepository: UserDataRepository,
 ) : ViewModel() {
 
-    val showPasswordIncorrectSnackbar = mutableStateOf(false)
+    private var showPasswordIncorrectSnackbar = mutableStateOf(false)
 
     val reportCardUiState: StateFlow<ReportCardUiState> = combine(
         reportCardRepository.reportCardSummaryData,

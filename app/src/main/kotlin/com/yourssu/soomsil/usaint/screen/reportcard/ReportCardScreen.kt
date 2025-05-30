@@ -141,6 +141,18 @@ private fun ReportCardScreen(
                     .verticalScroll(rememberScrollState()),
             ) {
 
+                if (isReportCardLoading) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                    return@Column
+                }
+
                 var showPasswordIncorrectSnackbar by remember {
                     if (reportCardUiState is ReportCardUiState.ReportCard)
                         reportCardUiState.showPasswordIncorrectSnackbar
@@ -192,19 +204,6 @@ private fun ReportCardScreen(
                             }
                         }
                     )
-                }
-
-
-                if (isReportCardLoading) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                    return@Column
                 }
 
                 ChartSummary(reportCardUiState)
