@@ -16,15 +16,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,6 +58,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -123,6 +132,7 @@ fun SettingScreen(
         onSpecifiedCurrentSemester = viewModel::specifyCurrentSemester,
         onUnspecifiedCurrentSemester = viewModel::unspecifiedCurrentSemester,
         onAutoFetchToggleChange = viewModel::updateAutoFetchEnabled,
+        onChangePassword = viewModel::changePassword,
         onLogout = {
             viewModel.logout()
             navigateToLogin()
@@ -138,6 +148,7 @@ fun SettingScreen(
     onAutoFetchToggleChange: (Boolean) -> Unit,
     onSpecifiedCurrentSemester: (year: Int, semester: SemesterType) -> Unit,
     onUnspecifiedCurrentSemester: () -> Unit,
+    onChangePassword: (password: String) -> Unit,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onLogout: () -> Unit = {},
@@ -146,6 +157,7 @@ fun SettingScreen(
 ) {
     var showCurrentSemesterSettingDialog by rememberSaveable { mutableStateOf(false) }
     var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
+    var showPasswordChangeDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -251,6 +263,12 @@ fun SettingScreen(
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable { showPasswordChangeDialog = true },
+                headlineContent = { Text(text = "비밀번호 변경") }
+            )
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
                     .clickable { showLogoutDialog = true },
                 headlineContent = { Text(text = "로그아웃") }
             )
@@ -323,6 +341,17 @@ fun SettingScreen(
             )
         }
 
+        if (showPasswordChangeDialog) {
+            PasswordChangeDialog(
+                onDismissRequest = { showPasswordChangeDialog = false },
+                onConfirmClick = {
+                    onChangePassword(it)
+                    showPasswordChangeDialog = false
+                }
+
+            )
+        }
+
         if (showLogoutDialog) {
             AlertDialog(
                 onDismissRequest = { showLogoutDialog = false },
@@ -354,6 +383,99 @@ fun SettingScreen(
                 },
                 onDismissRequest = { showCurrentSemesterSettingDialog = false },
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PasswordChangeDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmClick: (password: String) -> Unit,
+) {
+    var showPassword by remember { mutableStateOf(false) }
+    val isLoading by remember { mutableStateOf(false) }
+    var password by remember { mutableStateOf("") }
+    BasicAlertDialog(
+        onDismissRequest = onDismissRequest,
+    ) {
+        Surface(
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight(),
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = AlertDialogDefaults.TonalElevation,
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp)
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = password,
+                    onValueChange = { password = it },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done,
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { onConfirmClick(password) }
+                    ),
+                    enabled = !isLoading,
+                    label = { Text(text = "유세인트 비밀번호") },
+                    singleLine = true,
+                    visualTransformation = if (showPassword) {
+                        VisualTransformation.None
+                    } else {
+                        PasswordVisualTransformation()
+                    },
+                    trailingIcon = {
+                        IconButton(
+                            onClick = { showPassword = !showPassword },
+                            enabled = !isLoading,
+                        ) {
+                            Icon(
+                                if (showPassword) {
+                                    Icons.Filled.Visibility
+                                } else {
+                                    Icons.Filled.VisibilityOff
+                                },
+                                contentDescription = "Toggle password visibility",
+                                modifier = Modifier
+                                    .requiredSize(48.dp)
+                                    .padding(16.dp)
+                            )
+                        }
+                    }
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { onConfirmClick(password) },
+                    enabled = !isLoading,
+                ) {
+                    Text(text = "변경")
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Info,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.saint_login_announce),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
+            }
         }
     }
 }
@@ -451,6 +573,7 @@ fun SettingScreenPreview() {
                 currentSemesterToggle = true
                 specifiedSemester = year to semester
             },
+            onChangePassword = {},
             onUnspecifiedCurrentSemester = { currentSemesterToggle = false },
             onAutoFetchToggleChange = { autoFetchToggle = it },
         )

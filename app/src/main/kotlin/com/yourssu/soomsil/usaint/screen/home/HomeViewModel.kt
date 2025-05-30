@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.home
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -14,12 +15,15 @@ import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
+import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentCredentialDataSource
 import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.eatsteak.rusaint.ffi.RusaintException
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -35,17 +39,20 @@ sealed interface HomeUiState {
         val chapelCardData: ChapelData?,
         val currentSemesterLectures: List<LectureData>?,
         val currentSemesterData: SemesterData?,
+        val showPasswordIncorrectSnackbar: MutableState<Boolean>,
     ) : HomeUiState
 }
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val studentCredential: StudentCredentialDataSource,
     private val studentDataRepository: StudentDataRepository,
     private val reportCardRepository: ReportCardRepository,
     private val userDataRepository: UserDataRepository,
     private val chapelRepository: ChapelRepository,
     private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
 ) : ViewModel() {
+    private var showPasswordIncorrectSnackbar = mutableStateOf(false)
     val homeUiState: StateFlow<HomeUiState> =
         combine(
             studentDataRepository.studentData,
@@ -63,6 +70,7 @@ class HomeViewModel @Inject constructor(
                     it.year == currentSemester?.first && it.semester == currentSemester.second
                 }
             },
+            flowOf(showPasswordIncorrectSnackbar),
             transform = HomeUiState::Home,
         )
             .stateIn(
@@ -92,15 +100,55 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             isFetching = true
             isRefreshing = refresh
-            studentDataRepository.fetchStudentData().onFailure { e -> Timber.e(e) }
-            reportCardRepository.fetchCurrentSemesterLectures().onFailure { e -> Timber.e(e) }
-            reportCardRepository.fetchReportCardSummary().onFailure { e -> Timber.e(e) }
-            getCurrentSemesterUseCase()?.let {
-                chapelRepository.fetchChapelCardData(it)
-                    .onFailure { e -> Timber.e(e) }
+            try {
+                studentDataRepository.fetchStudentData().onFailure { e ->
+                    Timber.e(e)
+                    if(e is RusaintException) throw e // 비밀번호가 중간단계부터 틀릴일은 없으니 맨 위에서 한번만 검사합니다
+                }
+                reportCardRepository.fetchCurrentSemesterLectures().onFailure { e -> Timber.e(e) }
+                reportCardRepository.fetchReportCardSummary().onFailure { e -> Timber.e(e) }
+                getCurrentSemesterUseCase()?.let {
+                    chapelRepository.fetchChapelCardData(it)
+                        .onFailure { e -> Timber.e(e) }
+                }
+            } catch(e: RusaintException) { // RusaintException이 아니면 중지할 필요 없음
+                if(e.message?.contains("비밀번호") == true) {
+                    showPasswordIncorrectSnackbar.value = true
+                }
             }
             isFetching = false
             isRefreshing = false
         }
     }
+
+    fun changePassword(password: String) {
+        viewModelScope.launch {
+            studentCredential.setPassword(password)
+            fetchData(refresh = true)
+        }
+    }
+
+    // 나중에 다른 위치로 옮겨도 좋을거같습니다
+    private inline fun <T1, T2, T3, T4, T5, T6, R> combine(
+        flow: Flow<T1>,
+        flow2: Flow<T2>,
+        flow3: Flow<T3>,
+        flow4: Flow<T4>,
+        flow5: Flow<T5>,
+        flow6: Flow<T6>,
+        crossinline transform: suspend (T1, T2, T3, T4, T5, T6) -> R
+    ): Flow<R> {
+        return kotlinx.coroutines.flow.combine(flow, flow2, flow3, flow4, flow5, flow6) { args: Array<*> ->
+            @Suppress("UNCHECKED_CAST")
+            transform(
+                args[0] as T1,
+                args[1] as T2,
+                args[2] as T3,
+                args[3] as T4,
+                args[4] as T5,
+                args[5] as T6,
+            )
+        }
+    }
+
 }

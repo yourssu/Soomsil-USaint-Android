@@ -89,6 +89,12 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    fun changePassword(password: String) {
+        viewModelScope.launch {
+            studentCredentialRepository.setPassword(password)
+        }
+    }
+
     fun unspecifiedCurrentSemester() {
         viewModelScope.launch {
             userDataRepository.setCurrentSemesterUnspecified()

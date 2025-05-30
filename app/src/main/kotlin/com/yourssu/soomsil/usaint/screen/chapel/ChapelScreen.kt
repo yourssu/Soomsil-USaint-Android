@@ -18,6 +18,10 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryScrollableTabRow
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -26,7 +30,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,20 +43,23 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yourssu.soomsil.usaint.screen.chapel.components.ChapelAttendanceItem
 import com.yourssu.soomsil.usaint.screen.chapel.components.ChapelSummary
+import com.yourssu.soomsil.usaint.screen.setting.PasswordChangeDialog
+import kotlinx.coroutines.launch
 
 @Composable
 fun ChapelScreen(
     modifier: Modifier = Modifier,
     viewModel: ChapelViewModel = hiltViewModel(),
 ) {
-    val chapelCardUiState by viewModel.chapelCardUiState.collectAsStateWithLifecycle()
+    val chapelUiState by viewModel.chapelUiState.collectAsStateWithLifecycle()
 
     ChapelScreen(
         modifier = modifier,
-        chapelCardUiState = chapelCardUiState,
+        chapelUiState = chapelUiState,
         isRefreshing = viewModel.isRefreshing,
         isFetching = viewModel.isFetching,
-        onRefresh = { viewModel.fetchData(refresh = true) }
+        onRefresh = { viewModel.fetchData(refresh = true) },
+        onPasswordChange = viewModel::changePassword
     )
 
 }
@@ -59,15 +68,24 @@ fun ChapelScreen(
 @Composable
 private fun ChapelScreen(
     modifier: Modifier = Modifier,
-    chapelCardUiState: ChapelUiState,
+    chapelUiState: ChapelUiState,
     isFetching: Boolean,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
+    onPasswordChange: (password: String) -> Unit,
 ) {
-    val isChapelCardLoading = chapelCardUiState is ChapelUiState.Loading
+    val isChapelCardLoading = chapelUiState is ChapelUiState.Loading
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    var isVisiblePasswordChangeDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         topBar = {
             Box {
                 TopAppBar(title = { Text(text = "채플") })
@@ -87,6 +105,60 @@ private fun ChapelScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
+
+            var showPasswordIncorrectSnackbar by remember {
+                if (chapelUiState is ChapelUiState.Chapel)
+                    chapelUiState.showPasswordIncorrectSnackbar
+                else
+                    mutableStateOf(false)
+            }
+
+            if(showPasswordIncorrectSnackbar) {
+                snackbarHostState.currentSnackbarData?.dismiss()
+                scope.launch {
+                    val result = snackbarHostState
+                        .showSnackbar(
+                            message = "유세인트 로그인에 실패했습니다.",
+                            actionLabel = "비밀번호 변경",
+                            // Defaults to SnackbarDuration.Short
+                            duration = SnackbarDuration.Indefinite
+                        )
+                    when (result) {
+                        SnackbarResult.ActionPerformed -> {
+                            snackbarHostState.currentSnackbarData?.dismiss()
+                            showPasswordIncorrectSnackbar = false
+                            isVisiblePasswordChangeDialog = true
+                        }
+
+                        SnackbarResult.Dismissed -> {
+                            showPasswordIncorrectSnackbar = false
+                        }
+                    }
+                }
+            }
+
+            if(isVisiblePasswordChangeDialog) {
+                snackbarHostState.currentSnackbarData?.dismiss()
+                PasswordChangeDialog(
+                    onDismissRequest = {
+                        showPasswordIncorrectSnackbar = true
+                        isVisiblePasswordChangeDialog = false
+                    },
+                    onConfirmClick = {
+                        isVisiblePasswordChangeDialog = false
+                        showPasswordIncorrectSnackbar = false
+                        onPasswordChange(it)
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "앞으로 해당 비밀번호를 사용할게요. 정보를 다시 불러옵니다.",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                    }
+                )
+            }
+
             Column(
                 Modifier.verticalScroll(rememberScrollState()),
             ) {
@@ -100,7 +172,7 @@ private fun ChapelScreen(
                         CircularProgressIndicator()
                     }
                 } else {
-                    SemesterTabsAndDetail(chapelCardUiState)
+                    SemesterTabsAndDetail(chapelUiState)
                 }
 
             }
@@ -118,7 +190,7 @@ private fun SemesterTabsAndDetail(
     when (chapelUiState) {
         is ChapelUiState.Loading -> Unit
 
-        is ChapelUiState.ChapelCard -> {
+        is ChapelUiState.Chapel -> {
 
             val chapels = chapelUiState.chapels
                 .sortedWith(compareBy({ it.chapelSimpleData.year }, { it.chapelSimpleData.semester }))

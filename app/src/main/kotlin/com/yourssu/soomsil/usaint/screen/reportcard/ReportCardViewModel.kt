@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.reportcard
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,8 +10,10 @@ import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
+import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.eatsteak.rusaint.ffi.RusaintException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +31,7 @@ sealed interface ReportCardUiState {
     data class ReportCard(
         val summary: ReportCardSummaryData,
         val semesterWithLectures: Map<SemesterData, List<LectureData>>,
+        val showPasswordIncorrectSnackbar: MutableState<Boolean>,
     ) : ReportCardUiState
 }
 
@@ -39,9 +43,13 @@ sealed interface ReportCardUiEvent {
 
 @HiltViewModel
 class ReportCardViewModel @Inject constructor(
+    private val studentCredential: StudentCredentialRepository,
     private val reportCardRepository: ReportCardRepository,
     userDataRepository: UserDataRepository,
 ) : ViewModel() {
+
+    val showPasswordIncorrectSnackbar = mutableStateOf(false)
+
     val reportCardUiState: StateFlow<ReportCardUiState> = combine(
         reportCardRepository.reportCardSummaryData,
         reportCardRepository.semesterWithLectures,
@@ -49,7 +57,7 @@ class ReportCardViewModel @Inject constructor(
         if (semesterWithLectures.isEmpty()) {
             ReportCardUiState.Loading
         } else {
-            ReportCardUiState.ReportCard(summary, semesterWithLectures)
+            ReportCardUiState.ReportCard(summary, semesterWithLectures, showPasswordIncorrectSnackbar)
         }
     }
         .stateIn(
@@ -72,7 +80,11 @@ class ReportCardViewModel @Inject constructor(
         viewModelScope.launch {
             val autoFetch = userDataRepository.userData.first().autoFetch
             if (autoFetch || reportCardRepository.semesterWithLectures.first().isEmpty()) {
-                fetchData(refresh = false)
+                try {
+                    fetchData(refresh = false)
+                } catch(e: RusaintException) {
+                    e.localizedMessage
+                }
             }
         }
     }
@@ -85,19 +97,34 @@ class ReportCardViewModel @Inject constructor(
             }
             isFetching = true
             isRefreshing = refresh
-            reportCardRepository.fetchSemesterWithLectures()
-                .onSuccess {
-                    if (!refresh) {
-                        _eventChannel.send(ReportCardUiEvent.FetchSuccess)
+            try {
+                reportCardRepository.fetchSemesterWithLectures()
+                    .onSuccess {
+                        if (!refresh) {
+                            _eventChannel.send(ReportCardUiEvent.FetchSuccess)
+                        }
                     }
+                    .onFailure { e ->
+                        // TODO 에러처리
+                        Timber.e(e)
+                        _eventChannel.send(ReportCardUiEvent.FetchFailed(e.message))
+                        if(e is RusaintException)
+                            throw e
+                    }
+            } catch(e: RusaintException) { // RusaintException이 아니면 중지할 필요 없음
+                if(e.message?.contains("비밀번호") == true) {
+                    showPasswordIncorrectSnackbar.value = true
                 }
-                .onFailure { e ->
-                    // TODO 에러처리
-                    Timber.e(e)
-                    _eventChannel.send(ReportCardUiEvent.FetchFailed(e.message))
-                }
+            }
             isFetching = false
             isRefreshing = false
+        }
+    }
+
+    fun changePassword(password: String) {
+        viewModelScope.launch {
+            studentCredential.setPassword(password)
+            fetchData(refresh = true)
         }
     }
 }
