@@ -32,7 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.LectureGrade
 import com.yourssu.soomsil.usaint.core.model.Pass
@@ -48,9 +51,29 @@ import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 @Composable
 fun ReportCardScreen(
     modifier: Modifier = Modifier,
+    reportCardSnackbarMessage: suspend (String) -> Unit = {},
     viewModel: ReportCardViewModel = hiltViewModel(),
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
     val reportCardUiState by viewModel.reportCardUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(lifecycleOwner.lifecycle) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.reportCardEventFlow.collect { uiEvent ->
+                when (uiEvent) {
+                    ReportCardUiEvent.FetchStart ->
+                        reportCardSnackbarMessage("성적 정보를 불러오고 있습니다.")
+
+                    ReportCardUiEvent.FetchSuccess ->
+                        reportCardSnackbarMessage("성적 정보를 불러왔습니다.")
+
+                    is ReportCardUiEvent.FetchFailed ->
+                        reportCardSnackbarMessage(uiEvent.message?.let { "에러 발생: $it" }
+                            ?: "문제가 발생했습니다.")
+                }
+            }
+        }
+    }
 
     ReportCardScreen(
         hasInitialized = viewModel.hasInitialized,

@@ -79,7 +79,11 @@ fun USaintNavHost(
                 snackbarHostState.showSnackbar(text)
             }
         )
-        reportCardScreen()
+        reportCardScreen(
+            reportCardSnackbarMessage = { text ->
+                snackbarHostState.showSnackbar(text)
+            }
+        )
 //        chapelScreen()
     }
 }

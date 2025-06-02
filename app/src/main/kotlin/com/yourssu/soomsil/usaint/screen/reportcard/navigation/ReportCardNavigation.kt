@@ -13,8 +13,12 @@ data object ReportCard
 fun NavHostController.navigateToReportCard(navOptions: NavOptions? = null) =
     navigate(ReportCard, navOptions)
 
-fun NavGraphBuilder.reportCardScreen() {
+fun NavGraphBuilder.reportCardScreen(
+    reportCardSnackbarMessage: suspend (String) -> Unit,
+) {
     composable<ReportCard> {
-        ReportCardScreen()
+        ReportCardScreen(
+            reportCardSnackbarMessage = reportCardSnackbarMessage
+        )
     }
 }
