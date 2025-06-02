@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -82,7 +83,11 @@ private fun ReportCardScreen(
         ) {
             LinearProgressIndicator(Modifier.fillMaxWidth())
         }
-        Column(Modifier.verticalScroll(rememberScrollState())) {
+        Column(
+            Modifier
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState()),
+        ) {
             if (isReportCardLoading) {
                 Box(
                     Modifier
@@ -92,10 +97,11 @@ private fun ReportCardScreen(
                 ) {
                     CircularProgressIndicator()
                 }
-            } else {
-                ChartSummary(reportCardUiState)
-                SemesterTabsAndDetail(reportCardUiState)
+                return@Column
             }
+
+            ChartSummary(reportCardUiState)
+            SemesterTabsAndDetail(reportCardUiState)
         }
     }
 }
@@ -105,11 +111,11 @@ private fun ChartSummary(
     reportCardUiState: ReportCardUiState,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier) {
-        when (reportCardUiState) {
-            is ReportCardUiState.Loading -> Unit
+    when (reportCardUiState) {
+        is ReportCardUiState.Loading -> Unit
 
-            is ReportCardUiState.ReportCard -> {
+        is ReportCardUiState.ReportCard -> {
+            Column(modifier) {
                 val semesters = reportCardUiState.semesterWithLectures.keys.toList()
                     .sortedWith(compareBy({ it.year }, { it.semester }))
                 val summary = reportCardUiState.summary
@@ -177,7 +183,10 @@ private fun SemesterTabsAndDetail(
                     }
                 }
 
-                HorizontalPager(state = pagerState) { pagerIndex ->
+                HorizontalPager(
+                    state = pagerState,
+                    verticalAlignment = Alignment.Top,
+                ) { pagerIndex ->
                     val semester = semesters.getOrNull(pagerIndex) ?: return@HorizontalPager
 
                     semesterWithLecturesMap[semester]?.let { lectureDataList ->
