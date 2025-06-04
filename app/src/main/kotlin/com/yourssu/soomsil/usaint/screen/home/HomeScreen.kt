@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,15 +14,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,36 +37,36 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    onSemesterGradeClick: suspend (String) -> Unit = {},
     onProfileClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
     onReportCardClick: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
     val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
 
     HomeScreen(
-        isFetching = viewModel.isFetching,
+        hasInitialized = viewModel.hasInitialized,
         isRefreshing = viewModel.isRefreshing,
         onRefresh = { viewModel.fetchData(refresh = true) },
         homeUiState = homeUiState,
         onProfileClick = onProfileClick,
         onSettingClick = onSettingClick,
         onReportCardClick = onReportCardClick,
+        onSemesterGradeClick = onSemesterGradeClick,
         modifier = modifier,
-        snackbarHostState = snackbarHostState,
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
-    isFetching: Boolean,
+    hasInitialized: Boolean,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     homeUiState: HomeUiState,
     modifier: Modifier = Modifier,
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    onSemesterGradeClick: suspend (String) -> Unit = {},
     onProfileClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
     onReportCardClick: () -> Unit = {},
@@ -82,87 +76,76 @@ private fun HomeScreen(
 
     val isHomeLoading = homeUiState is HomeUiState.Loading
 
-    Scaffold(
-        modifier = modifier,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = {
-            Box {
-                TopAppBar(title = { Text(text = "유세인트") })
-                AnimatedVisibility(
-                    visible = isFetching,
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                ) {
-                    LinearProgressIndicator(Modifier.fillMaxWidth())
-                }
-            }
-        }
-    ) { padding ->
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            Modifier
-                .padding(padding)
-                .fillMaxSize()
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        AnimatedVisibility(
+            visible = !hasInitialized,
+            modifier = Modifier.align(Alignment.TopCenter),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .verticalScroll(rememberScrollState())
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp,
-                    ),
-            ) {
-                if (isHomeLoading) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                    return@Column
+            LinearProgressIndicator(Modifier.fillMaxWidth())
+        }
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 12.dp,
+                ),
+        ) {
+
+            if (isHomeLoading) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
+                return@Column
+            }
 
-                val studentData =
-                    if (homeUiState is HomeUiState.Home) homeUiState.studentData else null
-                val reportCardSummaryData =
-                    if (homeUiState is HomeUiState.Home) homeUiState.reportCardSummaryData else null
+            val studentData =
+                if (homeUiState is HomeUiState.Home) homeUiState.studentData else null
+            val reportCardSummaryData =
+                if (homeUiState is HomeUiState.Home) homeUiState.reportCardSummaryData else null
 
-                StudentDataItem(
-                    studentData = studentData,
-                    onProfileClick = onProfileClick,
-                    onSettingClick = onSettingClick,
-                )
+            StudentDataItem(
+                studentData = studentData,
+                onProfileClick = onProfileClick,
+                onSettingClick = onSettingClick,
+            )
 
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "내 성적",
+                modifier = Modifier.padding(vertical = 4.dp),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            if (studentData?.status == "재학") {
                 Spacer(Modifier.height(8.dp))
-                Text(
-                    text = "내 성적",
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-
-                if (studentData?.status == "재학") {
-                    Spacer(Modifier.height(8.dp))
-                    ActionTitleItem(
-                        title = "이번 학기 성적 확인",
-                        onClick = {
-                            scope.launch {
-                                snackbarHostState.showSnackbar("준비 중입니다.")
-                            }
-                        },
-                    )
-                }
-
-                Spacer(Modifier.height(8.dp))
-                ReportCardItem(
-                    reportCardSummary = reportCardSummaryData,
-                    onReportCardClick = onReportCardClick,
+                ActionTitleItem(
+                    title = "이번 학기 성적 확인",
+                    onClick = {
+                        scope.launch {
+                            onSemesterGradeClick("준비 중입니다.")
+                        }
+                    },
                 )
             }
+
+            Spacer(Modifier.height(8.dp))
+            ReportCardItem(
+                reportCardSummary = reportCardSummaryData,
+                onReportCardClick = onReportCardClick,
+            )
         }
     }
 }
@@ -173,7 +156,7 @@ private fun HomePreview_being() {
     // 재학 상태
     SoomsilUSaintTheme {
         HomeScreen(
-            isFetching = false,
+            hasInitialized = false,
             isRefreshing = false,
             onRefresh = {},
             homeUiState = HomeUiState.Home(
@@ -190,7 +173,7 @@ private fun HomePreview_leave() {
     // 휴학 상태
     SoomsilUSaintTheme {
         HomeScreen(
-            isFetching = false,
+            hasInitialized = false,
             isRefreshing = false,
             onRefresh = {},
             homeUiState = HomeUiState.Home(
@@ -206,7 +189,7 @@ private fun HomePreview_leave() {
 private fun HomePreview_loading() {
     SoomsilUSaintTheme {
         HomeScreen(
-            isFetching = false,
+            hasInitialized = false,
             isRefreshing = false,
             onRefresh = {},
             homeUiState = HomeUiState.Loading,

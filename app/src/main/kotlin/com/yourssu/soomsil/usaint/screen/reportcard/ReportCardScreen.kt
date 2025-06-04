@@ -17,19 +17,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryScrollableTabRow
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,10 +51,10 @@ import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 @Composable
 fun ReportCardScreen(
     modifier: Modifier = Modifier,
+    reportCardSnackbarMessage: suspend (String) -> Unit = {},
     viewModel: ReportCardViewModel = hiltViewModel(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val snackbarHostState = remember { SnackbarHostState() }
     val reportCardUiState by viewModel.reportCardUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(lifecycleOwner.lifecycle) {
@@ -67,13 +62,13 @@ fun ReportCardScreen(
             viewModel.reportCardEventFlow.collect { uiEvent ->
                 when (uiEvent) {
                     ReportCardUiEvent.FetchStart ->
-                        snackbarHostState.showSnackbar("성적 정보를 불러오고 있습니다.")
+                        reportCardSnackbarMessage("성적 정보를 불러오고 있습니다.")
 
                     ReportCardUiEvent.FetchSuccess ->
-                        snackbarHostState.showSnackbar("성적 정보를 불러왔습니다.")
+                        reportCardSnackbarMessage("성적 정보를 불러왔습니다.")
 
                     is ReportCardUiEvent.FetchFailed ->
-                        snackbarHostState.showSnackbar(uiEvent.message?.let { "에러 발생: $it" }
+                        reportCardSnackbarMessage(uiEvent.message?.let { "에러 발생: $it" }
                             ?: "문제가 발생했습니다.")
                 }
             }
@@ -81,69 +76,55 @@ fun ReportCardScreen(
     }
 
     ReportCardScreen(
-        isFetching = viewModel.isFetching,
+        hasInitialized = viewModel.hasInitialized,
         isRefreshing = viewModel.isRefreshing,
         onRefresh = { viewModel.fetchData(refresh = true) },
         reportCardUiState = reportCardUiState,
         modifier = modifier,
-        snackbarHostState = snackbarHostState,
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ReportCardScreen(
-    isFetching: Boolean,
+    hasInitialized: Boolean,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     reportCardUiState: ReportCardUiState,
     modifier: Modifier = Modifier,
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val isReportCardLoading = reportCardUiState is ReportCardUiState.Loading
 
-    Scaffold(
-        modifier = modifier,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = {
-            Box {
-                TopAppBar(title = { Text(text = "성적") })
-                AnimatedVisibility(
-                    visible = isFetching,
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                ) {
-                    LinearProgressIndicator(Modifier.fillMaxWidth())
-                }
-            }
-        }
-    ) { padding ->
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            Modifier
-                .fillMaxSize()
-                .padding(padding)
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = modifier.fillMaxSize()
+    ) {
+        AnimatedVisibility(
+            visible = !hasInitialized,
+            modifier = Modifier.align(Alignment.TopCenter),
         ) {
-            Column(
-                Modifier
-                    .fillMaxHeight()
-                    .verticalScroll(rememberScrollState()),
-            ) {
-                if (isReportCardLoading) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                    return@Column
+            LinearProgressIndicator(Modifier.fillMaxWidth())
+        }
+        Column(
+            Modifier
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState()),
+        ) {
+            if (isReportCardLoading) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
-
-                ChartSummary(reportCardUiState)
-                SemesterTabsAndDetail(reportCardUiState)
+                return@Column
             }
+
+            ChartSummary(reportCardUiState)
+            SemesterTabsAndDetail(reportCardUiState)
         }
     }
 }
@@ -291,7 +272,7 @@ private fun ReportCardScreenPreview() {
 
     SoomsilUSaintTheme {
         ReportCardScreen(
-            isFetching = false,
+            hasInitialized = false,
             isRefreshing = false,
             onRefresh = {},
             reportCardUiState = ReportCardUiState.ReportCard(
@@ -307,7 +288,7 @@ private fun ReportCardScreenPreview() {
 private fun ReportCardScreenPreview_loading() {
     SoomsilUSaintTheme {
         ReportCardScreen(
-            isFetching = false,
+            hasInitialized = false,
             isRefreshing = false,
             onRefresh = {},
             reportCardUiState = ReportCardUiState.Loading,

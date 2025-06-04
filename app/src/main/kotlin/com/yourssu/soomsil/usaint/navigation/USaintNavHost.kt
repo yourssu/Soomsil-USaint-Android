@@ -1,7 +1,7 @@
 package com.yourssu.soomsil.usaint.navigation
 
-import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,6 +21,7 @@ import androidx.core.net.toUri
 fun USaintNavHost(
     navController: NavHostController,
     startDestination: Any,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -74,8 +75,15 @@ fun USaintNavHost(
                     TopLevelDestination.REPORT_CARD
                 )
             },
+            onSemesterGradeClick = { text ->
+                snackbarHostState.showSnackbar(text)
+            }
         )
-        reportCardScreen()
+        reportCardScreen(
+            reportCardSnackbarMessage = { text ->
+                snackbarHostState.showSnackbar(text)
+            }
+        )
 //        chapelScreen()
     }
 }

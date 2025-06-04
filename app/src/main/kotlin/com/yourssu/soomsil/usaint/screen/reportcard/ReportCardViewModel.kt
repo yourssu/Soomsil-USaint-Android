@@ -61,11 +61,11 @@ class ReportCardViewModel @Inject constructor(
     private val _eventChannel = Channel<ReportCardUiEvent>(Channel.BUFFERED)
     val reportCardEventFlow = _eventChannel.receiveAsFlow()
 
-    var isFetching by mutableStateOf(false)
-        private set
-
     // 사용자가 직접 pull to refresh를 했을 경우에만 true
     var isRefreshing by mutableStateOf(false)
+        private set
+
+    var hasInitialized by mutableStateOf(false)
         private set
 
     init {
@@ -73,17 +73,16 @@ class ReportCardViewModel @Inject constructor(
             val autoFetch = userDataRepository.userData.first().autoFetch
             if (autoFetch || reportCardRepository.semesterWithLectures.first().isEmpty()) {
                 fetchData(refresh = false)
-            }
+            } else hasInitialized = true
         }
     }
 
     fun fetchData(refresh: Boolean) {
-        if (isFetching || isRefreshing) return
+        if (isRefreshing || (!hasInitialized && refresh)) return
         viewModelScope.launch {
             if (!refresh) {
                 _eventChannel.send(ReportCardUiEvent.FetchStart)
             }
-            isFetching = true
             isRefreshing = refresh
             reportCardRepository.fetchSemesterWithLectures()
                 .onSuccess {
@@ -96,7 +95,7 @@ class ReportCardViewModel @Inject constructor(
                     Timber.e(e)
                     _eventChannel.send(ReportCardUiEvent.FetchFailed(e.message))
                 }
-            isFetching = false
+            hasInitialized = true
             isRefreshing = false
         }
     }
