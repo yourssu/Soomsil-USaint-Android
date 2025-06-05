@@ -22,7 +22,9 @@ import kotlin.math.ceil
 fun ChapelCardItem(
     modifier: Modifier = Modifier,
     onChapelCardClick: () -> Unit,
-    chapelData: ChapelData
+    chapelData: ChapelData,
+    totalAttendance: Int,
+    currentAttendance: Int
 ) {
     ElevatedCard(
         modifier = modifier,
@@ -48,18 +50,32 @@ fun ChapelCardItem(
                 color = MaterialTheme.colorScheme.onSurface,
             )
 
+
             Text(
-                text = buildAnnotatedString {
-                    append("Pass까지 ")
-                    withStyle(
-                        SpanStyle(color = MaterialTheme.colorScheme.primary)
-                    ) {
-                        append(
-                            "${ceil(chapelData.totalAttendance * (2F / 3F)).toInt() - chapelData.currentAttendance}회 "
-                        )
-                    }
-                    append("남았어요")
-                },
+                text =
+                    buildAnnotatedString {
+                        if(chapelData.chapelSimpleData.result == "P" || currentAttendance >= ceil(totalAttendance * (2 / 3F))) {
+                            append("${chapelData.chapelSimpleData.year % 100}년도 ${chapelData.chapelSimpleData.semester.kor}학기 채플을 ")
+                            withStyle(
+                                SpanStyle(color = MaterialTheme.colorScheme.primary)
+                            ) {
+                                append(
+                                    "Pass"
+                                )
+                            }
+                            append("했어요!")
+                        } else {
+                            append("Pass까지 ")
+                            withStyle(
+                                SpanStyle(color = MaterialTheme.colorScheme.primary)
+                            ) {
+                                append(
+                                    "${ceil(totalAttendance * (2 / 3.0)) - currentAttendance}회 "
+                                )
+                            }
+                            append("남았어요.")
+                        }
+                    },
                 modifier = Modifier
                     .padding(
                         bottom = 4.dp,
@@ -73,7 +89,7 @@ fun ChapelCardItem(
             )
 
             LinearProgressIndicator(
-                progress = { chapelData.currentAttendance.toFloat() / chapelData.totalAttendance.toFloat() },
+                progress = { currentAttendance / totalAttendance.toFloat() },
                 modifier
                     .fillMaxWidth()
                     .padding(
@@ -85,7 +101,7 @@ fun ChapelCardItem(
 
             Row {
                 Text(
-                    text = "${chapelData.currentAttendance}회",
+                    text = "${currentAttendance}회",
                     modifier = Modifier
                         .weight(1f)
                         .padding(
@@ -100,7 +116,7 @@ fun ChapelCardItem(
                 )
 
                 Text(
-                    text = "${chapelData.totalAttendance}회",
+                    text = "${totalAttendance}회",
                     modifier = Modifier
                         .padding(
                             bottom = 4.dp,
@@ -136,7 +152,7 @@ fun ChapelCardItem(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = chapelData.time,
+                        text = chapelData.chapelSimpleData.chapelTime,
                         modifier = Modifier
                             .padding(
                                 bottom = 4.dp,
@@ -165,7 +181,7 @@ fun ChapelCardItem(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = chapelData.seat,
+                        text = chapelData.chapelSimpleData.seatNumber,
                         modifier = Modifier
                             .padding(
                                 bottom = 4.dp,

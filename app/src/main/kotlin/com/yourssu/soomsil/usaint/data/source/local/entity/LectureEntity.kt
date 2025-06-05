@@ -19,7 +19,7 @@ import com.yourssu.soomsil.usaint.core.types.SemesterType
         onDelete = ForeignKey.CASCADE,
     )],
     indices = [
-        Index(value = ["year", "semester", "code"], unique = true) // code 컬럼에 고유 인덱스를 추가
+        Index(value = ["year", "semester", "code"], unique = true),
     ]
 )
 data class LectureEntity(

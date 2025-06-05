@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.reportcard.navigation
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
@@ -14,11 +15,11 @@ fun NavHostController.navigateToReportCard(navOptions: NavOptions? = null) =
     navigate(ReportCard, navOptions)
 
 fun NavGraphBuilder.reportCardScreen(
-    reportCardSnackbarMessage: suspend (String) -> Unit,
+    snackbarHostState: SnackbarHostState,
 ) {
     composable<ReportCard> {
         ReportCardScreen(
-            reportCardSnackbarMessage = reportCardSnackbarMessage
+            snackbarHostState = snackbarHostState
         )
     }
 }

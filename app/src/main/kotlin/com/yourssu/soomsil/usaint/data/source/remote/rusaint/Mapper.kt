@@ -1,5 +1,8 @@
 package com.yourssu.soomsil.usaint.data.source.remote.rusaint
 
+import com.yourssu.soomsil.usaint.core.model.ChapelAttendanceData
+import com.yourssu.soomsil.usaint.core.model.ChapelData
+import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.model.Fail
 import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.LectureGrade
@@ -10,6 +13,8 @@ import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.core.model.Unknown
 import com.yourssu.soomsil.usaint.core.types.SemesterType
+import dev.eatsteak.rusaint.core.ChapelAttendance
+import dev.eatsteak.rusaint.core.ChapelInformation
 import dev.eatsteak.rusaint.core.ClassGrade
 import dev.eatsteak.rusaint.core.ClassScore
 import dev.eatsteak.rusaint.core.GradeSummary
@@ -35,7 +40,7 @@ internal fun GradeSummary.asExternalModel(
     attemptedCredits = attemptedCredits,
     earnedCredits = earnedCredits,
     gradePointsSum = gradePointsSum,
-    gradePointsAverage = gradePointsAvarage,
+    gradePointsAverage = gradePointsAverage,
     arithmeticMean = arithmeticMean,
     pfEarnedCredits = pfEarnedCredits,
     graduationPoints = graduationPoints,
@@ -45,7 +50,7 @@ internal fun GradeSummary.asExternalModel(
 internal fun SemesterGrade.asExternalModel() = SemesterData(
     year = year.toInt(),
     semester = semester.toSemesterType(),
-    gradePointsAverage = gradePointsAvarage,
+    gradePointsAverage = gradePointsAverage,
     attemptedCredit = attemptedCredits,
     earnedCredit = earnedCredits,
     pfEarnedCredit = pfEarnedCredits,
@@ -65,6 +70,35 @@ internal fun ClassGrade.asExternalModel(year: Int, semester: SemesterType) = Lec
     detail = detail?.mapValues { (_, value) -> value.toString() } ?: emptyMap()
 )
 
+internal fun ChapelInformation.asExternalModel(year: Int, semester: SemesterType) = ChapelData(
+    chapelSimpleData = ChapelSimpleData(
+        year = year,
+        semester = semester,
+        division = generalInformation.division.toLong(),
+        chapelTime = generalInformation.chapelTime,
+        chapelRoom = generalInformation.chapelRoom,
+        floorLevel = generalInformation.floorLevel.toInt(),
+        seatNumber = generalInformation.seatNumber,
+        absenceTime = generalInformation.absenceTime.toInt(),
+        result = generalInformation.result,
+    ),
+    chapelAttendances = attendances.map((ChapelAttendance::asExternalModel))
+
+)
+
+internal fun ChapelAttendance.asExternalModel() = ChapelAttendanceData(
+    division = division.toLong(),
+    classDate = classDate,
+    category = category,
+    instructor = instructor,
+    instructorDepartment = instructorDepartment,
+    title = title,
+    attendance = attendance,
+    result = result,
+    note = note
+)
+
+
 private fun ClassScore.toLectureScore(): LectureScore = when (this) {
     is ClassScore.Pass -> Pass
     is ClassScore.Failed -> Fail
@@ -79,6 +113,14 @@ internal fun String.toSemesterType(): SemesterType = when {
     contains("겨울") || uppercase().contains("WINTER") -> SemesterType.Winter
     else -> throw Exception("undefined semester string: $this")
 }
+
+internal fun dev.eatsteak.rusaint.core.SemesterType.toSemesterType(): SemesterType = when (this) {
+    dev.eatsteak.rusaint.core.SemesterType.ONE -> SemesterType.One
+    dev.eatsteak.rusaint.core.SemesterType.SUMMER -> SemesterType.Summer
+    dev.eatsteak.rusaint.core.SemesterType.TWO -> SemesterType.Two
+    dev.eatsteak.rusaint.core.SemesterType.WINTER -> SemesterType.Winter
+}
+
 
 typealias RusaintSemesterType = dev.eatsteak.rusaint.core.SemesterType
 

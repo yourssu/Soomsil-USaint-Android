@@ -35,6 +35,18 @@ class StudentCredentialDataSource @Inject constructor(
         }
     }
 
+    suspend fun setPassword(password: String) {
+        try {
+            studentCredentialDataStore.updateData {
+                it.copy {
+                    setPassword(password)
+                }
+            }
+        } catch (e: IOException) {
+            Timber.e("Failed to update password", e)
+        }
+    }
+
     suspend fun setStudentCredential(credential: StudentCredential) {
         try {
             studentCredentialDataStore.updateData {

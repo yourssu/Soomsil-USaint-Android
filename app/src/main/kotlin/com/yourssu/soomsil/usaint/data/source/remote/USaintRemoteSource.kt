@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.data.source.remote
 
+import com.yourssu.soomsil.usaint.core.model.ChapelData
 import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.SemesterData
@@ -43,5 +44,14 @@ class USaintRemoteSource @Inject constructor(
     ): List<LectureData> {
         val classGradeList = rusaintApi.classGradeList(credential, year, semester)
         return classGradeList.map { it.asExternalModel(year, semester) }
+    }
+
+    suspend fun remoteChapelData(
+        credential: StudentCredential,
+        year: Int,
+        semester: SemesterType,
+    ): ChapelData {
+        val chapelInformation = rusaintApi.chapelInformation(credential, year, semester)
+        return chapelInformation.asExternalModel(year,semester)
     }
 }

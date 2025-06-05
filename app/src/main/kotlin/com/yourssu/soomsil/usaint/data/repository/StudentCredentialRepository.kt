@@ -15,5 +15,8 @@ class StudentCredentialRepository @Inject constructor(
     suspend fun setStudentCredential(credential: StudentCredential) =
         studentCredential.setStudentCredential(credential)
 
+    suspend fun setPassword(password: String) =
+        studentCredential.setPassword(password)
+
     suspend fun clear() = studentCredential.clear()
 }
