@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.chapel.navigation
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
@@ -13,8 +14,12 @@ data object Chapel
 fun NavHostController.navigateToChapel(navOptions: NavOptions? = null) =
     navigate(Chapel, navOptions)
 
-fun NavGraphBuilder.chapelScreen() {
+fun NavGraphBuilder.chapelScreen(
+    snackbarHostState: SnackbarHostState,
+) {
     composable<Chapel> {
-        ChapelScreen()
+        ChapelScreen(
+            snackbarHostState = snackbarHostState,
+        )
     }
 }

@@ -52,7 +52,7 @@ class ChapelViewModel @Inject constructor(
 
         )
 
-    var isFetching by mutableStateOf(false)
+    var hasInitialized by mutableStateOf(false)
         private set
 
     // 사용자가 직접 pull to refresh를 했을 경우에만 true
@@ -65,9 +65,8 @@ class ChapelViewModel @Inject constructor(
     }
 
     fun fetchData(refresh: Boolean) {
-        if (isFetching || isRefreshing) return
+        if (isRefreshing || (!hasInitialized && refresh)) return
         viewModelScope.launch {
-            isFetching = true
             isRefreshing = refresh
             try {
                 getCurrentSemesterUseCase()?.let {
@@ -83,8 +82,7 @@ class ChapelViewModel @Inject constructor(
                     showPasswordIncorrectSnackbar.value = true
                 }
             }
-
-            isFetching = false
+            hasInitialized = true
             isRefreshing = false
         }
     }

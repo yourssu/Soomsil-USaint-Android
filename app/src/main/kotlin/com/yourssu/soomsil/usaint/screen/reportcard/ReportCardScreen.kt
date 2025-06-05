@@ -107,9 +107,6 @@ private fun ReportCardScreen(
 ) {
     val isReportCardLoading = reportCardUiState is ReportCardUiState.Loading
 
-    var isVisiblePasswordChangeDialog by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
@@ -145,9 +142,11 @@ private fun ReportCardScreen(
                     mutableStateOf(false)
             }
 
+            var isVisiblePasswordChangeDialog by remember { mutableStateOf(false) }
+            val scope = rememberCoroutineScope()
             if(showPasswordIncorrectSnackbar) {
                 snackbarHostState.currentSnackbarData?.dismiss()
-                scope.launch {
+                LaunchedEffect(Unit) {
                     val result = snackbarHostState
                         .showSnackbar(
                             message = "유세인트 로그인에 실패했습니다.",

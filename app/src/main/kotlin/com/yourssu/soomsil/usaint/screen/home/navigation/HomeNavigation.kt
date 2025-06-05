@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.home.navigation
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
@@ -15,7 +16,7 @@ fun NavHostController.navigateToHome(navOptions: NavOptions? = null) = navigate(
 fun NavGraphBuilder.homeScreen(
     navigateToSetting: () -> Unit,
     navigateToSemesterList: () -> Unit,
-    onSemesterGradeClick: suspend (String) -> Unit,
+    snackbarHostState: SnackbarHostState,
     navigateToChapel: () -> Unit,
 ) {
     composable<Home> {
@@ -23,7 +24,7 @@ fun NavGraphBuilder.homeScreen(
             onProfileClick = navigateToSetting,
             onSettingClick = navigateToSetting,
             onReportCardClick = navigateToSemesterList,
-            onSemesterGradeClick = onSemesterGradeClick,
+            snackbarHostState = snackbarHostState,
             onChapelCardClick = navigateToChapel,
         )
     }

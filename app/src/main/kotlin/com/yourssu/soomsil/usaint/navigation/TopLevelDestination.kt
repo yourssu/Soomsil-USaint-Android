@@ -45,6 +45,7 @@ enum class TopLevelDestination(
         unselectedIcon = Icons.Outlined.Church,
         label = "채플",
         route = Chapel::class,
+        title = "채플",
     )
 }
 

@@ -86,6 +86,8 @@ fun USaintNavHost(
         reportCardScreen(
             snackbarHostState = snackbarHostState
         )
-        chapelScreen()
+        chapelScreen(
+            snackbarHostState = snackbarHostState
+        )
     }
 }
