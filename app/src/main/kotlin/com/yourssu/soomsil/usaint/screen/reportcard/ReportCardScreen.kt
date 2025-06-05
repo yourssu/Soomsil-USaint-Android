@@ -17,15 +17,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -61,11 +58,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ReportCardScreen(
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     viewModel: ReportCardViewModel = hiltViewModel(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val snackbarHostState = remember { SnackbarHostState() }
     val reportCardUiState by viewModel.reportCardUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(lifecycleOwner.lifecycle) {
@@ -87,7 +84,7 @@ fun ReportCardScreen(
     }
 
     ReportCardScreen(
-        isFetching = viewModel.isFetching,
+        hasInitialized = viewModel.hasInitialized,
         isRefreshing = viewModel.isRefreshing,
         onRefresh = { viewModel.fetchData(refresh = true) },
         reportCardUiState = reportCardUiState,
@@ -100,115 +97,101 @@ fun ReportCardScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ReportCardScreen(
-    isFetching: Boolean,
+    hasInitialized: Boolean,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     onPasswordChange: (password: String) -> Unit,
     reportCardUiState: ReportCardUiState,
     modifier: Modifier = Modifier,
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val isReportCardLoading = reportCardUiState is ReportCardUiState.Loading
 
     var isVisiblePasswordChangeDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    Scaffold(
-        modifier = modifier,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = {
-            Box {
-                TopAppBar(title = { Text(text = "성적") })
-                AnimatedVisibility(
-                    visible = isFetching,
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                ) {
-                    LinearProgressIndicator(Modifier.fillMaxWidth())
-                }
-            }
-        }
-    ) { padding ->
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            Modifier
-                .fillMaxSize()
-                .padding(padding)
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = modifier.fillMaxSize()
+    ) {
+        AnimatedVisibility(
+            visible = !hasInitialized,
+            modifier = Modifier.align(Alignment.TopCenter),
         ) {
-            Column(
-                Modifier
-                    .fillMaxHeight()
-                    .verticalScroll(rememberScrollState()),
-            ) {
-
-                if (isReportCardLoading) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                    return@Column
+            LinearProgressIndicator(Modifier.fillMaxWidth())
+        }
+        Column(
+            Modifier
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState()),
+        ) {
+            if (isReportCardLoading) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
-
-                var showPasswordIncorrectSnackbar by remember {
-                    if (reportCardUiState is ReportCardUiState.ReportCard)
-                        reportCardUiState.showPasswordIncorrectSnackbar
-                    else
-                        mutableStateOf(false)
-                }
-
-                if(showPasswordIncorrectSnackbar) {
-                    snackbarHostState.currentSnackbarData?.dismiss()
-                    scope.launch {
-                        val result = snackbarHostState
-                            .showSnackbar(
-                                message = "유세인트 로그인에 실패했습니다.",
-                                actionLabel = "비밀번호 변경",
-                                // Defaults to SnackbarDuration.Short
-                                duration = SnackbarDuration.Indefinite
-                            )
-                        when (result) {
-                            SnackbarResult.ActionPerformed -> {
-                                snackbarHostState.currentSnackbarData?.dismiss()
-                                showPasswordIncorrectSnackbar = false
-                                isVisiblePasswordChangeDialog = true
-                            }
-
-                            SnackbarResult.Dismissed -> {
-                                showPasswordIncorrectSnackbar = false
-                            }
-                        }
-                    }
-                }
-
-                if(isVisiblePasswordChangeDialog) {
-                    snackbarHostState.currentSnackbarData?.dismiss()
-                    PasswordChangeDialog(
-                        onDismissRequest = {
-                            showPasswordIncorrectSnackbar = true
-                            isVisiblePasswordChangeDialog = false
-                        },
-                        onConfirmClick = {
-                            isVisiblePasswordChangeDialog = false
-                            showPasswordIncorrectSnackbar = false
-                            onPasswordChange(it)
-                            snackbarHostState.currentSnackbarData?.dismiss()
-                            scope.launch {
-                                snackbarHostState.showSnackbar(
-                                    message = "앞으로 해당 비밀번호를 사용할게요. 정보를 다시 불러옵니다.",
-                                    duration = SnackbarDuration.Short
-                                )
-                            }
-                        }
-                    )
-                }
-
-                ChartSummary(reportCardUiState)
-                SemesterTabsAndDetail(reportCardUiState)
+                return@Column
             }
+
+            var showPasswordIncorrectSnackbar by remember {
+                if (reportCardUiState is ReportCardUiState.ReportCard)
+                    reportCardUiState.showPasswordIncorrectSnackbar
+                else
+                    mutableStateOf(false)
+            }
+
+            if(showPasswordIncorrectSnackbar) {
+                snackbarHostState.currentSnackbarData?.dismiss()
+                scope.launch {
+                    val result = snackbarHostState
+                        .showSnackbar(
+                            message = "유세인트 로그인에 실패했습니다.",
+                            actionLabel = "비밀번호 변경",
+                            // Defaults to SnackbarDuration.Short
+                            duration = SnackbarDuration.Indefinite
+                        )
+                    when (result) {
+                        SnackbarResult.ActionPerformed -> {
+                            snackbarHostState.currentSnackbarData?.dismiss()
+                            showPasswordIncorrectSnackbar = false
+                            isVisiblePasswordChangeDialog = true
+                        }
+
+                        SnackbarResult.Dismissed -> {
+                            showPasswordIncorrectSnackbar = false
+                        }
+                    }
+                }
+            }
+
+            if(isVisiblePasswordChangeDialog) {
+                snackbarHostState.currentSnackbarData?.dismiss()
+                PasswordChangeDialog(
+                    onDismissRequest = {
+                        showPasswordIncorrectSnackbar = true
+                        isVisiblePasswordChangeDialog = false
+                    },
+                    onConfirmClick = {
+                        isVisiblePasswordChangeDialog = false
+                        showPasswordIncorrectSnackbar = false
+                        onPasswordChange(it)
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "앞으로 해당 비밀번호를 사용할게요. 정보를 다시 불러옵니다.",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                    }
+                )
+            }
+            ChartSummary(reportCardUiState)
+            SemesterTabsAndDetail(reportCardUiState)
         }
     }
 }
@@ -218,11 +201,11 @@ private fun ChartSummary(
     reportCardUiState: ReportCardUiState,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier) {
-        when (reportCardUiState) {
-            is ReportCardUiState.Loading -> Unit
+    when (reportCardUiState) {
+        is ReportCardUiState.Loading -> Unit
 
-            is ReportCardUiState.ReportCard -> {
+        is ReportCardUiState.ReportCard -> {
+            Column(modifier) {
                 val semesters = reportCardUiState.semesterWithLectures.keys.toList()
                     .sortedWith(compareBy({ it.year }, { it.semester }))
                 val summary = reportCardUiState.summary
@@ -290,7 +273,10 @@ private fun SemesterTabsAndDetail(
                     }
                 }
 
-                HorizontalPager(state = pagerState) { pagerIndex ->
+                HorizontalPager(
+                    state = pagerState,
+                    verticalAlignment = Alignment.Top,
+                ) { pagerIndex ->
                     val semester = semesters.getOrNull(pagerIndex) ?: return@HorizontalPager
 
                     semesterWithLecturesMap[semester]?.let { lectureDataList ->
@@ -354,10 +340,11 @@ private fun ReportCardScreenPreview() {
 
     SoomsilUSaintTheme {
         ReportCardScreen(
-            isFetching = false,
+            hasInitialized = false,
             isRefreshing = false,
             onRefresh = {},
             onPasswordChange = {},
+            snackbarHostState = remember { SnackbarHostState() },
             reportCardUiState = ReportCardUiState.ReportCard(
                 summary = ReportCardSummaryData.previewData,
                 semesterWithLectures = semesters.zip(lectures).toMap(),
@@ -372,9 +359,10 @@ private fun ReportCardScreenPreview() {
 private fun ReportCardScreenPreview_loading() {
     SoomsilUSaintTheme {
         ReportCardScreen(
-            isFetching = false,
+            hasInitialized = false,
             isRefreshing = false,
             onRefresh = {},
+            snackbarHostState = remember { SnackbarHostState() },
             onPasswordChange = {},
             reportCardUiState = ReportCardUiState.Loading,
         )

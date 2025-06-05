@@ -24,18 +24,21 @@ enum class TopLevelDestination(
     val unselectedIcon: ImageVector,
     val label: String,
     val route: KClass<*>,
+    val title: String,
 ) {
     HOME(
         selectedIcon = Icons.Filled.Home,
         unselectedIcon = Icons.Outlined.Home,
         label = "홈",
         route = Home::class,
+        title = "유세인트",
     ),
     REPORT_CARD(
         selectedIcon = Icons.Filled.School,
         unselectedIcon = Icons.Outlined.School,
         label = "성적",
         route = ReportCard::class,
+        title = "성적",
     ),
     CHAPEL(
         selectedIcon = Icons.Filled.Church,

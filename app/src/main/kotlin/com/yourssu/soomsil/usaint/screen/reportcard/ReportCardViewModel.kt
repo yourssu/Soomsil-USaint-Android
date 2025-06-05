@@ -57,7 +57,11 @@ class ReportCardViewModel @Inject constructor(
         if (semesterWithLectures.isEmpty()) {
             ReportCardUiState.Loading
         } else {
-            ReportCardUiState.ReportCard(summary, semesterWithLectures, showPasswordIncorrectSnackbar)
+            ReportCardUiState.ReportCard(
+                summary,
+                semesterWithLectures,
+                showPasswordIncorrectSnackbar
+            )
         }
     }
         .stateIn(
@@ -69,11 +73,11 @@ class ReportCardViewModel @Inject constructor(
     private val _eventChannel = Channel<ReportCardUiEvent>(Channel.BUFFERED)
     val reportCardEventFlow = _eventChannel.receiveAsFlow()
 
-    var isFetching by mutableStateOf(false)
-        private set
-
     // 사용자가 직접 pull to refresh를 했을 경우에만 true
     var isRefreshing by mutableStateOf(false)
+        private set
+
+    var hasInitialized by mutableStateOf(false)
         private set
 
     init {
@@ -81,17 +85,16 @@ class ReportCardViewModel @Inject constructor(
             val autoFetch = userDataRepository.userData.first().autoFetch
             if (autoFetch || reportCardRepository.semesterWithLectures.first().isEmpty()) {
                 fetchData(refresh = false)
-            }
+            } else hasInitialized = true
         }
     }
 
     fun fetchData(refresh: Boolean) {
-        if (isFetching || isRefreshing) return
+        if (isRefreshing || (!hasInitialized && refresh)) return
         viewModelScope.launch {
             if (!refresh) {
                 _eventChannel.send(ReportCardUiEvent.FetchStart)
             }
-            isFetching = true
             isRefreshing = refresh
             try {
                 reportCardRepository.fetchSemesterWithLectures()
@@ -104,15 +107,15 @@ class ReportCardViewModel @Inject constructor(
                         // TODO 에러처리
                         Timber.e(e)
                         _eventChannel.send(ReportCardUiEvent.FetchFailed(e.message))
-                        if(e is RusaintException)
+                        if (e is RusaintException)
                             throw e
                     }
-            } catch(e: RusaintException) { // RusaintException이 아니면 중지할 필요 없음
-                if(e.message?.contains("비밀번호") == true) {
+            } catch (e: RusaintException) { // RusaintException이 아니면 중지할 필요 없음
+                if (e.message?.contains("비밀번호") == true) {
                     showPasswordIncorrectSnackbar.value = true
                 }
             }
-            isFetching = false
+            hasInitialized = true
             isRefreshing = false
         }
     }

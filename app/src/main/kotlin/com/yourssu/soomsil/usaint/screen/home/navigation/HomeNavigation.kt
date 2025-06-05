@@ -15,6 +15,7 @@ fun NavHostController.navigateToHome(navOptions: NavOptions? = null) = navigate(
 fun NavGraphBuilder.homeScreen(
     navigateToSetting: () -> Unit,
     navigateToSemesterList: () -> Unit,
+    onSemesterGradeClick: suspend (String) -> Unit,
     navigateToChapel: () -> Unit,
 ) {
     composable<Home> {
@@ -22,6 +23,7 @@ fun NavGraphBuilder.homeScreen(
             onProfileClick = navigateToSetting,
             onSettingClick = navigateToSetting,
             onReportCardClick = navigateToSemesterList,
+            onSemesterGradeClick = onSemesterGradeClick,
             onChapelCardClick = navigateToChapel,
         )
     }

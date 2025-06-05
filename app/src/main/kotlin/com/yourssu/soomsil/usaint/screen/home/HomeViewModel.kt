@@ -79,11 +79,11 @@ class HomeViewModel @Inject constructor(
                 initialValue = HomeUiState.Loading,
             )
 
-    var isFetching by mutableStateOf(false)
-        private set
-
     // 사용자가 직접 pull to refresh를 했을 경우에만 true
     var isRefreshing by mutableStateOf(false)
+        private set
+
+    var hasInitialized by mutableStateOf(false)
         private set
 
     init {
@@ -91,14 +91,13 @@ class HomeViewModel @Inject constructor(
             val autoFetch = userDataRepository.userData.first().autoFetch
             if (autoFetch) {
                 fetchData(refresh = false)
-            }
+            } else hasInitialized = true
         }
     }
 
     fun fetchData(refresh: Boolean) {
-        if (isFetching || isRefreshing) return
+        if (isRefreshing || (!hasInitialized && refresh)) return
         viewModelScope.launch {
-            isFetching = true
             isRefreshing = refresh
             try {
                 studentDataRepository.fetchStudentData().onFailure { e ->
@@ -116,8 +115,8 @@ class HomeViewModel @Inject constructor(
                     showPasswordIncorrectSnackbar.value = true
                 }
             }
-            isFetching = false
             isRefreshing = false
+            hasInitialized = true
         }
     }
 
