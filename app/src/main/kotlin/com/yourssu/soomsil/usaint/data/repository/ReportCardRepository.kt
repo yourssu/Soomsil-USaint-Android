@@ -14,6 +14,7 @@ import com.yourssu.soomsil.usaint.data.source.remote.USaintRemoteSource
 import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 
 class ReportCardRepository @Inject constructor(
@@ -60,6 +61,7 @@ class ReportCardRepository @Inject constructor(
         semesterDao.upsertSemesters(semesterDataList.map(SemesterData::asEntity))
 
         for (semesterData in semesterDataList) {
+            Timber.d("semesterData: $semesterData")
             val lectureDataList = uSaintRemoteSource.remoteLectureDataList(
                 credential,
                 semesterData.year,

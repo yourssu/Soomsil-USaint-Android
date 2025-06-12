@@ -38,4 +38,12 @@ interface LectureDao {
     // 연도와 학기에 해당하는 LectureEntity를 모두 삭제합니다
     @Query("DELETE FROM Lecture WHERE year = :year AND semester = :semesterName")
     suspend fun deleteLectureEntitiesWithYearSemester(year: Int, semesterName: String)
+
+    @Query(
+        """
+    SELECT * FROM Lecture 
+    WHERE year = :year AND semester = :semesterName
+    """
+    )
+    suspend fun getLectureEntitiesForSemester(year: Int, semesterName: String): List<LectureEntity>
 }
