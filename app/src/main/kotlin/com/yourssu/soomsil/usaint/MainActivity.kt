@@ -22,7 +22,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
+        val request = OneTimeWorkRequestBuilder<UpdateWorker>().build()
+        WorkManager.getInstance(this).enqueue(request)
         setContent {
             val mainUiState by viewModel.mainUiState.collectAsStateWithLifecycle()
             SoomsilUSaintTheme {

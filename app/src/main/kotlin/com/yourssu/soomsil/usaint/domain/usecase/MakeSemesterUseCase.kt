@@ -7,6 +7,7 @@ import com.yourssu.soomsil.usaint.core.model.Pass
 import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.core.model.Unknown
 import com.yourssu.soomsil.usaint.core.types.SemesterType
+import com.yourssu.soomsil.usaint.core.types.toGrade
 import javax.inject.Inject
 
 class MakeSemesterUseCase @Inject constructor() {
@@ -17,20 +18,17 @@ class MakeSemesterUseCase @Inject constructor() {
 
         val gpaLectures = lectures
             .filter { it.lectureScore is LectureScore.Score && it.lectureGrade !is Pass }
-
         val gradePointsSum = gpaLectures.sumOf {
-            (it.lectureScore as LectureScore.Score).score * it.credit.toDouble()
+            it.lectureGrade.toString().toGrade().point * it.credit.toDouble()
         }
-
         val gpaCredits = gpaLectures.sumOf { it.credit.toDouble() }
-
         val gradePointsAverage = if (gpaCredits > 0) {
             (gradePointsSum / gpaCredits).toFloat()
         } else {
             0f
         }
 
-        return SemesterData(
+        val x = SemesterData(
             year = currentSemester.first,
             semester = currentSemester.second,
             gradePointsAverage = gradePointsAverage,
@@ -44,5 +42,6 @@ class MakeSemesterUseCase @Inject constructor() {
             semesterRank = 0 to 0,
             generalRank = 0 to 0,
         )
+        return x
     }
 }

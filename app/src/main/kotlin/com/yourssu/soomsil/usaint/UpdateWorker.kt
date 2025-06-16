@@ -41,6 +41,7 @@ class UpdateWorker @AssistedInject constructor(
             return Result.failure()
         }
 
+        val newCurrentSemester = makeSemesterUseCase(currentSemester, newLectures)
         if(oldLectures.isNotEmpty()) {
             val diffList = lecturesDiffUseCase(oldLectures, newLectures)
 
@@ -60,7 +61,7 @@ class UpdateWorker @AssistedInject constructor(
 
 //         fixme #44
 //         학기 정보 업데이트
-        val newCurrentSemester = makeSemesterUseCase(currentSemester, newLectures)
+        //val newCurrentSemester = makeSemesterUseCase(currentSemester, newLectures)
         semesterRepository.storeSemesters(newCurrentSemester).onFailure { e ->
             Timber.e(e)
             return Result.failure()

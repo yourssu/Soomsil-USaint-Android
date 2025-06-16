@@ -1,7 +1,6 @@
 package com.yourssu.soomsil.usaint.data.repository
 
 import com.yourssu.soomsil.usaint.core.model.LectureData
-import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.core.types.SemesterType
 import com.yourssu.soomsil.usaint.data.source.local.dao.LectureDao
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentCredentialDataSource
