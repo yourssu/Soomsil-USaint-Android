@@ -28,7 +28,7 @@ class MakeSemesterUseCase @Inject constructor() {
             0f
         }
 
-        val x = SemesterData(
+        return SemesterData(
             year = currentSemester.first,
             semester = currentSemester.second,
             gradePointsAverage = gradePointsAverage,
@@ -42,6 +42,5 @@ class MakeSemesterUseCase @Inject constructor() {
             semesterRank = 0 to 0,
             generalRank = 0 to 0,
         )
-        return x
     }
 }
