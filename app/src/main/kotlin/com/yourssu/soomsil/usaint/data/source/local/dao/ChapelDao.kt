@@ -38,4 +38,10 @@ interface ChapelDao {
 
     @Query("DELETE FROM ChapelAttendance WHERE division = :division")
     suspend fun deleteChapelAttendancesEntitiesWithDivision(division: Int)
+
+    @Query("DELETE FROM Chapel")
+    suspend fun deleteAllChapel()
+
+    @Query("DELETE FROM ChapelAttendance")
+    suspend fun deleteAllAttendance()
 }

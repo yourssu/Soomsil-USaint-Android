@@ -82,4 +82,10 @@ class ChapelRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun deleteAll() {
+        chapelDao.deleteAllChapel()
+        chapelDao.deleteAllAttendance()
+        chapelDataSource.clear()
+    }
 }

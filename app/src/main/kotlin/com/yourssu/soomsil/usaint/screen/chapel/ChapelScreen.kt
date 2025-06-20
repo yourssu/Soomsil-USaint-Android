@@ -82,85 +82,86 @@ private fun ChapelScreen(
         modifier = modifier
             .fillMaxSize()
     ) {
-
-        AnimatedVisibility(
-            visible = !hasInitialized,
-            modifier = Modifier.align(Alignment.TopCenter),
-        ) {
-            LinearProgressIndicator(Modifier.fillMaxWidth())
-        }
-        Column(
-            Modifier.verticalScroll(rememberScrollState()),
-        ) {
-
-            if (isChapelLoading) {
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                var showPasswordIncorrectSnackbar by remember {
-                    if (chapelUiState is ChapelUiState.Chapel) {
-                        chapelUiState.showPasswordIncorrectSnackbar
-                    } else {
-                        mutableStateOf(false)
-                    }
-                }
-
-                val scope = rememberCoroutineScope()
-                var isVisiblePasswordChangeDialog by remember { mutableStateOf(false) }
-
-                if (showPasswordIncorrectSnackbar) {
-                    LaunchedEffect(Unit) {
-                        snackbarHostState.currentSnackbarData?.dismiss()
-                        val result = snackbarHostState.showSnackbar(
-                            message = "유세인트 로그인에 실패했습니다.",
-                            actionLabel = "비밀번호 변경",
-                            duration = SnackbarDuration.Indefinite
-                        )
-                        when (result) {
-                            SnackbarResult.ActionPerformed -> {
-                                snackbarHostState.currentSnackbarData?.dismiss()
-                                showPasswordIncorrectSnackbar = false
-                                isVisiblePasswordChangeDialog = true
-                            }
-
-                            SnackbarResult.Dismissed -> {
-                                showPasswordIncorrectSnackbar = false
-                            }
-                        }
-                    }
-                }
-
-                if (isVisiblePasswordChangeDialog) {
-                    snackbarHostState.currentSnackbarData?.dismiss()
-                    PasswordChangeDialog(
-                        onDismissRequest = {
-                            showPasswordIncorrectSnackbar = true
-                            isVisiblePasswordChangeDialog = false
-                        },
-                        onConfirmClick = {
-                            isVisiblePasswordChangeDialog = false
-                            showPasswordIncorrectSnackbar = false
-                            onPasswordChange(it)
-                            snackbarHostState.currentSnackbarData?.dismiss()
-                            scope.launch {
-                                snackbarHostState.showSnackbar(
-                                    message = "앞으로 해당 비밀번호를 사용할게요. 정보를 다시 불러옵니다.",
-                                    duration = SnackbarDuration.Short
-                                )
-                            }
-                        }
-                    )
-                }
-
-                SemesterTabsAndDetail(chapelUiState)
+        Column {
+            AnimatedVisibility(
+                visible = !hasInitialized,
+//                modifier = Modifier.align(Alignment.TopCenter),
+            ) {
+                LinearProgressIndicator(Modifier.fillMaxWidth())
             }
+            Column(
+                Modifier.verticalScroll(rememberScrollState()),
+            ) {
 
+                if (isChapelLoading) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    var showPasswordIncorrectSnackbar by remember {
+                        if (chapelUiState is ChapelUiState.Chapel) {
+                            chapelUiState.showPasswordIncorrectSnackbar
+                        } else {
+                            mutableStateOf(false)
+                        }
+                    }
+
+                    val scope = rememberCoroutineScope()
+                    var isVisiblePasswordChangeDialog by remember { mutableStateOf(false) }
+
+                    if (showPasswordIncorrectSnackbar) {
+                        LaunchedEffect(Unit) {
+                            snackbarHostState.currentSnackbarData?.dismiss()
+                            val result = snackbarHostState.showSnackbar(
+                                message = "유세인트 로그인에 실패했습니다.",
+                                actionLabel = "비밀번호 변경",
+                                duration = SnackbarDuration.Indefinite
+                            )
+                            when (result) {
+                                SnackbarResult.ActionPerformed -> {
+                                    snackbarHostState.currentSnackbarData?.dismiss()
+                                    showPasswordIncorrectSnackbar = false
+                                    isVisiblePasswordChangeDialog = true
+                                }
+
+                                SnackbarResult.Dismissed -> {
+                                    showPasswordIncorrectSnackbar = false
+                                }
+                            }
+                        }
+                    }
+
+                    if (isVisiblePasswordChangeDialog) {
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                        PasswordChangeDialog(
+                            onDismissRequest = {
+                                showPasswordIncorrectSnackbar = true
+                                isVisiblePasswordChangeDialog = false
+                            },
+                            onConfirmClick = {
+                                isVisiblePasswordChangeDialog = false
+                                showPasswordIncorrectSnackbar = false
+                                onPasswordChange(it)
+                                snackbarHostState.currentSnackbarData?.dismiss()
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = "앞으로 해당 비밀번호를 사용할게요. 정보를 다시 불러옵니다.",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            }
+                        )
+                    }
+
+                    SemesterTabsAndDetail(chapelUiState)
+                }
+
+            }
         }
     }
 }
@@ -197,7 +198,9 @@ private fun SemesterTabsAndDetail(
 
             Column(modifier) {
                 if (chapels.isNotEmpty()) {
-                    SecondaryScrollableTabRow(selectedTabIndex = pagerState.currentPage) {
+                    SecondaryScrollableTabRow(
+                        selectedTabIndex = pagerState.currentPage
+                    ) {
 
 
                         chapels.forEachIndexed { index, chapelData ->

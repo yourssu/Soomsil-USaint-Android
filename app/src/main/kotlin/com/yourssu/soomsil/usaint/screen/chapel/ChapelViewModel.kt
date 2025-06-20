@@ -76,11 +76,16 @@ class ChapelViewModel @Inject constructor(
                             if(e is RusaintException) throw e
                         }
                 }
-                chapelRepository.fetchSemesterWithChapels().onFailure { e -> Timber.e(e) }
             } catch(e: RusaintException) {
                 if(e.message?.contains("비밀번호") == true) {
                     showPasswordIncorrectSnackbar.value = true
                 }
+            } finally {
+                // RusaintException catch에서 무조건 비밀번호 관련이 아닐 수 있습니다
+                // 현재 학기가 존재하지 않는데 채플 정보를 불러오려고 하면 그때도 RusaintException이 발생하는거 같습니다
+                // finally 구문에서 비밀번호 관련 에러로 catch된게 아니면 불러오도록 하겠습니다
+                if(!showPasswordIncorrectSnackbar.value)
+                    chapelRepository.fetchSemesterWithChapels().onFailure { e -> Timber.e(e) }
             }
             hasInitialized = true
             isRefreshing = false

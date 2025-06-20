@@ -3,6 +3,7 @@ package com.yourssu.soomsil.usaint.screen.setting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.types.SemesterType
+import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
@@ -33,6 +34,7 @@ class SettingViewModel @Inject constructor(
     private val studentCredentialRepository: StudentCredentialRepository,
     private val studentDataRepository: StudentDataRepository,
     private val userDataRepository: UserDataRepository,
+    private val chapelRepository: ChapelRepository,
     private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
 //    private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
@@ -78,7 +80,7 @@ class SettingViewModel @Inject constructor(
             studentCredentialRepository.clear()
             studentDataRepository.clear()
             userDataRepository.clear()
-
+            chapelRepository.deleteAll()
             // TODO dequeue workmanager
         }
     }
