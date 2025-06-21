@@ -1,0 +1,356 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 5,
+    "identityHash": "c3dc361c825c22c82f42b3f02a23e023",
+    "entities": [
+      {
+        "tableName": "Semester",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`year` INTEGER NOT NULL, `semester` TEXT NOT NULL, `semesterRank` INTEGER NOT NULL, `semesterStudentCount` INTEGER NOT NULL, `overallRank` INTEGER NOT NULL, `overallStudentCount` INTEGER NOT NULL, `earnedCredit` REAL NOT NULL, `gpa` REAL NOT NULL, PRIMARY KEY(`year`, `semester`))",
+        "fields": [
+          {
+            "fieldPath": "year",
+            "columnName": "year",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "semester",
+            "columnName": "semester",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "semesterRank",
+            "columnName": "semesterRank",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "semesterStudentCount",
+            "columnName": "semesterStudentCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "overallRank",
+            "columnName": "overallRank",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "overallStudentCount",
+            "columnName": "overallStudentCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "earnedCredit",
+            "columnName": "earnedCredit",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gpa",
+            "columnName": "gpa",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "year",
+            "semester"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Semester_year_semester",
+            "unique": true,
+            "columnNames": [
+              "year",
+              "semester"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Semester_year_semester` ON `${TABLE_NAME}` (`year`, `semester`)"
+          }
+        ]
+      },
+      {
+        "tableName": "Lecture",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`year` INTEGER NOT NULL DEFAULT 0, `semester` TEXT NOT NULL DEFAULT 'One', `title` TEXT NOT NULL, `code` TEXT NOT NULL, `credit` REAL NOT NULL, `grade` TEXT NOT NULL, `score` TEXT NOT NULL, `professorName` TEXT NOT NULL, `detail` TEXT, PRIMARY KEY(`year`, `semester`, `code`), FOREIGN KEY(`year`, `semester`) REFERENCES `Semester`(`year`, `semester`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "year",
+            "columnName": "year",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "semester",
+            "columnName": "semester",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'One'"
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "code",
+            "columnName": "code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "credit",
+            "columnName": "credit",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "grade",
+            "columnName": "grade",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "score",
+            "columnName": "score",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "professorName",
+            "columnName": "professorName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "detail",
+            "columnName": "detail",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "year",
+            "semester",
+            "code"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Lecture_year_semester_code",
+            "unique": true,
+            "columnNames": [
+              "year",
+              "semester",
+              "code"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Lecture_year_semester_code` ON `${TABLE_NAME}` (`year`, `semester`, `code`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Semester",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "year",
+              "semester"
+            ],
+            "referencedColumns": [
+              "year",
+              "semester"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Chapel",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`year` INTEGER NOT NULL DEFAULT 0, `semester` TEXT NOT NULL DEFAULT 'One', `division` INTEGER NOT NULL DEFAULT 0, `chapelTime` TEXT NOT NULL, `chapelRoom` TEXT NOT NULL, `floorLevel` INTEGER NOT NULL, `seatNumber` TEXT NOT NULL, `absenceTime` INTEGER NOT NULL, `result` TEXT NOT NULL, PRIMARY KEY(`division`))",
+        "fields": [
+          {
+            "fieldPath": "year",
+            "columnName": "year",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "semester",
+            "columnName": "semester",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'One'"
+          },
+          {
+            "fieldPath": "division",
+            "columnName": "division",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "chapelTime",
+            "columnName": "chapelTime",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chapelRoom",
+            "columnName": "chapelRoom",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "floorLevel",
+            "columnName": "floorLevel",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "seatNumber",
+            "columnName": "seatNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "absenceTime",
+            "columnName": "absenceTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "result",
+            "columnName": "result",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "division"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Chapel_division",
+            "unique": true,
+            "columnNames": [
+              "division"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Chapel_division` ON `${TABLE_NAME}` (`division`)"
+          }
+        ]
+      },
+      {
+        "tableName": "ChapelAttendance",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`division` INTEGER NOT NULL DEFAULT 0, `classDate` TEXT NOT NULL, `category` TEXT NOT NULL, `instructor` TEXT NOT NULL, `instructorDepartment` TEXT NOT NULL, `title` TEXT NOT NULL, `attendance` TEXT NOT NULL, `result` TEXT NOT NULL, `note` TEXT NOT NULL, PRIMARY KEY(`division`, `classDate`), FOREIGN KEY(`division`) REFERENCES `Chapel`(`division`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "division",
+            "columnName": "division",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "classDate",
+            "columnName": "classDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "instructor",
+            "columnName": "instructor",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "instructorDepartment",
+            "columnName": "instructorDepartment",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "attendance",
+            "columnName": "attendance",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "result",
+            "columnName": "result",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "note",
+            "columnName": "note",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "division",
+            "classDate"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ChapelAttendance_division_classDate",
+            "unique": true,
+            "columnNames": [
+              "division",
+              "classDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_ChapelAttendance_division_classDate` ON `${TABLE_NAME}` (`division`, `classDate`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Chapel",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "division"
+            ],
+            "referencedColumns": [
+              "division"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c3dc361c825c22c82f42b3f02a23e023')"
+    ]
+  }
+}
