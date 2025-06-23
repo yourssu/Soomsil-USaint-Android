@@ -13,6 +13,7 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2025.03.01"
+mixpanelAndroid = "8.2.0"
 protobufJavalite = "4.29.2"
 room = "2.7.0"
 rusaint = "0.10.0"
@@ -53,6 +54,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
+mixpanel-android = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanelAndroid" }
 protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobufJavalite" }
 rusaint = { module = "dev.eatsteak:rusaint", version.ref = "rusaint" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

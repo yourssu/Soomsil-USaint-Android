@@ -3,6 +3,7 @@ package com.yourssu.soomsil.usaint.screen.setting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.types.SemesterType
+import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
@@ -36,6 +37,7 @@ class SettingViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val chapelRepository: ChapelRepository,
     private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
+    private val mixpanelTracker: MixpanelTracker,
 //    private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<SettingUiState> =
@@ -76,6 +78,7 @@ class SettingViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
+            mixpanelTracker.trackLogout()
             reportCardRepository.deleteAll()
             studentCredentialRepository.clear()
             studentDataRepository.clear()

@@ -95,6 +95,9 @@ dependencies {
     // worker (Kotlin + coroutines)
     implementation(libs.androidx.work.runtime.ktx)
 
+    // MixPanel
+    implementation(libs.mixpanel.android)
+
     implementation(libs.androidx.viewpager2)
     implementation(libs.compose.navigation)
     implementation(libs.kotlinx.serialization.json)

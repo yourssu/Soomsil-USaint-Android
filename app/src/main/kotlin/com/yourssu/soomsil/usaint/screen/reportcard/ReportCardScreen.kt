@@ -91,6 +91,8 @@ fun ReportCardScreen(
         onPasswordChange = viewModel::changePassword,
         modifier = modifier,
         snackbarHostState = snackbarHostState,
+        onLectureItemClick = viewModel::onCheckLectureItemClicked,
+        onSemesterItemClick = viewModel::onCheckSemesterItemClicked,
     )
 }
 
@@ -104,6 +106,8 @@ private fun ReportCardScreen(
     onPasswordChange: (password: String) -> Unit,
     reportCardUiState: ReportCardUiState,
     modifier: Modifier = Modifier,
+    onLectureItemClick: (String) -> Unit = {},
+    onSemesterItemClick: (SemesterData) -> Unit = {},
 ) {
     val isReportCardLoading = reportCardUiState is ReportCardUiState.Loading
 
@@ -144,7 +148,7 @@ private fun ReportCardScreen(
 
             var isVisiblePasswordChangeDialog by remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()
-            if(showPasswordIncorrectSnackbar) {
+            if (showPasswordIncorrectSnackbar) {
                 snackbarHostState.currentSnackbarData?.dismiss()
                 LaunchedEffect(Unit) {
                     val result = snackbarHostState
@@ -168,7 +172,7 @@ private fun ReportCardScreen(
                 }
             }
 
-            if(isVisiblePasswordChangeDialog) {
+            if (isVisiblePasswordChangeDialog) {
                 snackbarHostState.currentSnackbarData?.dismiss()
                 PasswordChangeDialog(
                     onDismissRequest = {
@@ -190,7 +194,11 @@ private fun ReportCardScreen(
                 )
             }
             ChartSummary(reportCardUiState)
-            SemesterTabsAndDetail(reportCardUiState)
+            SemesterTabsAndDetail(
+                reportCardUiState = reportCardUiState,
+                onLectureItemClick = onLectureItemClick,
+                onSemesterItemClick = onSemesterItemClick,
+            )
         }
     }
 }
@@ -238,6 +246,8 @@ private fun ChartSummary(
 private fun SemesterTabsAndDetail(
     reportCardUiState: ReportCardUiState,
     modifier: Modifier = Modifier,
+    onLectureItemClick: (String) -> Unit = {},
+    onSemesterItemClick: (SemesterData) -> Unit = {},
 ) {
     when (reportCardUiState) {
         is ReportCardUiState.Loading -> Unit
@@ -263,7 +273,10 @@ private fun SemesterTabsAndDetail(
                         semesters.forEachIndexed { index, semester ->
                             Tab(
                                 selected = pagerState.currentPage == index,
-                                onClick = { selectedTabIndex = index },
+                                onClick = {
+                                    selectedTabIndex = index
+                                    onSemesterItemClick(semester)
+                                },
                                 text = {
                                     Text(text = "${semester.year % 100}년 ${semester.semester.kor}학기")
                                 }
@@ -302,7 +315,8 @@ private fun SemesterTabsAndDetail(
                                         lectureTitle = lecture.title,
                                         professor = lecture.professor,
                                         credit = lecture.credit,
-                                        detail = lecture.detail
+                                        detail = lecture.detail,
+                                        onClick = { onLectureItemClick(lecture.title) }
                                     )
                                 }
                             }

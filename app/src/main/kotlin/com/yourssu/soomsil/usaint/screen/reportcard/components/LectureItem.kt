@@ -50,16 +50,20 @@ fun LectureItem(
     lectureTitle: String,
     professor: String,
     credit: Float,
+    detail: Map<String, String>,
     modifier: Modifier = Modifier,
     captureFlag: CaptureFlag = CaptureFlag.None,
-    detail: Map<String, String>
+    onClick: () -> Unit = {},
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clickable { isExpanded = !isExpanded },
+            .clickable {
+                if(!isExpanded) onClick
+                isExpanded = !isExpanded
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -98,7 +102,7 @@ fun LectureItem(
             }
         }
         Spacer(modifier = modifier.weight(1f))
-        if(detail.isNotEmpty()) {
+        if (detail.isNotEmpty()) {
             Icon(
                 modifier = Modifier.size(24.dp),
                 imageVector = if (isExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
