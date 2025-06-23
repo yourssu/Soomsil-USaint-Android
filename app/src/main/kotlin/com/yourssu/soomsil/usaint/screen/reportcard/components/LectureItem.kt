@@ -61,7 +61,7 @@ fun LectureItem(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .clickable {
-                if(!isExpanded) onClick
+                if(!isExpanded) onClick()
                 isExpanded = !isExpanded
             },
         verticalAlignment = Alignment.CenterVertically,
