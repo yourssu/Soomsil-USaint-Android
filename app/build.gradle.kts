@@ -1,4 +1,6 @@
 import com.google.protobuf.gradle.GenerateProtoTask
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -10,6 +12,9 @@ plugins {
     alias(libs.plugins.androidx.room)
     id("com.google.protobuf") version "0.9.4"
 }
+
+val properties = Properties()
+properties.load(FileInputStream(rootProject.file("local.properties")))
 
 android {
     namespace = "com.yourssu.soomsil.usaint"
@@ -23,6 +28,8 @@ android {
         versionName = "0.2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "MIXPANEL_TOKEN", "\"${properties.getProperty("mixpanel_token")}\"")
     }
 
     buildTypes {
