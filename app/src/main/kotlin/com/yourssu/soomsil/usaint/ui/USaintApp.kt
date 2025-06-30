@@ -15,20 +15,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.rememberNavController
+import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
 import com.yourssu.soomsil.usaint.navigation.TopLevelDestination
 import com.yourssu.soomsil.usaint.navigation.USaintNavHost
 import com.yourssu.soomsil.usaint.navigation.navigateToTopLevelDestination
+import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun USaintApp(
     startDestination: Any,
+    mixpanelTracker: MixpanelTracker,
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
@@ -40,6 +44,7 @@ fun USaintApp(
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = modifier,
@@ -63,7 +68,16 @@ fun USaintApp(
                             },
                             label = { Text(destination.label) },
                             selected = selected,
-                            onClick = { navController.navigateToTopLevelDestination(destination) },
+                            onClick = {
+                                coroutineScope.launch {
+                                    if (destination == TopLevelDestination.REPORT_CARD) {
+                                        mixpanelTracker.trackNavigate("BOTTOM_NAV", false)
+                                    } else if (destination == TopLevelDestination.CHAPEL) {
+                                        mixpanelTracker.trackNavigate("BOTTOM_NAV", true)
+                                    }
+                                }
+                                navController.navigateToTopLevelDestination(destination)
+                            },
                         )
                     }
                 }

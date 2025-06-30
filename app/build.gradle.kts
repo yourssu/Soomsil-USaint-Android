@@ -1,4 +1,6 @@
 import com.google.protobuf.gradle.GenerateProtoTask
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -11,6 +13,9 @@ plugins {
     id("com.google.protobuf") version "0.9.4"
 }
 
+val properties = Properties()
+properties.load(FileInputStream(rootProject.file("local.properties")))
+
 android {
     namespace = "com.yourssu.soomsil.usaint"
     compileSdk = 35
@@ -19,10 +24,12 @@ android {
         applicationId = "com.yourssu.soomsil.usaint"
         minSdk = 26
         targetSdk = 35
-        versionCode = 15
-        versionName = "0.2.2"
+        versionCode = 17
+        versionName = "0.2.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "MIXPANEL_TOKEN", "\"${properties.getProperty("mixpanel_token")}\"")
     }
 
     buildTypes {
@@ -87,6 +94,9 @@ dependencies {
 
     // worker (Kotlin + coroutines)
     implementation(libs.androidx.work.runtime.ktx)
+
+    // MixPanel
+    implementation(libs.mixpanel.android)
 
     implementation(libs.androidx.viewpager2)
     implementation(libs.compose.navigation)
