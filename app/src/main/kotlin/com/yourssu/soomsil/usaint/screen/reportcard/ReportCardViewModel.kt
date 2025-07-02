@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.SemesterData
+import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
@@ -45,6 +46,7 @@ sealed interface ReportCardUiEvent {
 class ReportCardViewModel @Inject constructor(
     private val studentCredential: StudentCredentialRepository,
     private val reportCardRepository: ReportCardRepository,
+    private val mixpanelTracker: MixpanelTracker,
     userDataRepository: UserDataRepository,
 ) : ViewModel() {
 
@@ -124,6 +126,18 @@ class ReportCardViewModel @Inject constructor(
         viewModelScope.launch {
             studentCredential.setPassword(password)
             fetchData(refresh = true)
+        }
+    }
+
+    fun onCheckLectureItemClicked(lectureTitle: String) {
+        viewModelScope.launch {
+            mixpanelTracker.trackLectureDetail(lectureTitle)
+        }
+    }
+
+    fun onCheckSemesterItemClicked(semester: SemesterData) {
+        viewModelScope.launch {
+            mixpanelTracker.trackSemester(semester)
         }
     }
 }

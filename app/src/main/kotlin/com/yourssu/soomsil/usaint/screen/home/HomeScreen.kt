@@ -74,10 +74,18 @@ fun HomeScreen(
         homeUiState = homeUiState,
         onProfileClick = onProfileClick,
         onSettingClick = onSettingClick,
-        onReportCardClick = onReportCardClick,
-        onChapelCardClick = onChapelCardClick,
+        onReportCardClick = {
+            viewModel.onCheckReportCardClicked()
+            onReportCardClick()
+        },
+        onChapelCardClick = {
+            viewModel.onCheckChapelCardClicked()
+            onChapelCardClick()
+        },
         onPasswordChange = viewModel::changePassword,
         snackbarHostState = snackbarHostState,
+        onCheckCurrentSemesterClicked = viewModel::onCheckCurrentSemesterClicked,
+        onLectureItemClick = viewModel::onCheckLectureItemClicked,
         modifier = modifier,
     )
 }
@@ -96,6 +104,8 @@ private fun HomeScreen(
     onReportCardClick: () -> Unit = {},
     onChapelCardClick: () -> Unit = {},
     onPasswordChange: (password: String) -> Unit = {},
+    onCheckCurrentSemesterClicked: () -> Unit = {},
+    onLectureItemClick: (String) -> Unit = {},
 ) {
 
     val isHomeLoading = homeUiState is HomeUiState.Loading
@@ -243,7 +253,8 @@ private fun HomeScreen(
                                     lectureTitle = lecture.title,
                                     professor = lecture.professor,
                                     credit = lecture.credit,
-                                    detail = lecture.detail
+                                    detail = lecture.detail,
+                                    onClick = { onLectureItemClick(lecture.title) }
                                 )
                             }
                         }
@@ -277,7 +288,7 @@ private fun HomeScreen(
                     title = "이번 학기 성적 확인",
                     onClick = {
                         isVisibleGradeBottomSheet = true
-//                            Toast.makeText(context, "서비스 예정입니다.", Toast.LENGTH_SHORT).show()
+                        onCheckCurrentSemesterClicked()
                     },
                 )
             }
@@ -287,8 +298,6 @@ private fun HomeScreen(
                 reportCardSummary = reportCardSummaryData,
                 onReportCardClick = onReportCardClick,
             )
-            
-
 
             chapelCardData?.let {
                 Spacer(Modifier.height(8.dp))
@@ -326,7 +335,10 @@ private fun HomePreview_being() {
             homeUiState = HomeUiState.Home(
                 studentData = StudentData.previewData,
                 reportCardSummaryData = ReportCardSummaryData.previewData,
-                chapelCardData = ChapelData(ChapelSimpleData.previewData, listOf(ChapelAttendanceData.previewData)),
+                chapelCardData = ChapelData(
+                    ChapelSimpleData.previewData,
+                    listOf(ChapelAttendanceData.previewData)
+                ),
                 currentSemesterLectures = null,
                 currentSemesterData = null,
                 showPasswordIncorrectSnackbar = remember { mutableStateOf(false) }
@@ -348,7 +360,10 @@ private fun HomePreview_leave() {
             homeUiState = HomeUiState.Home(
                 studentData = StudentData.previewData.copy(status = "휴학"),
                 reportCardSummaryData = ReportCardSummaryData.previewData,
-                chapelCardData = ChapelData(ChapelSimpleData.previewData, listOf(ChapelAttendanceData.previewData)),
+                chapelCardData = ChapelData(
+                    ChapelSimpleData.previewData,
+                    listOf(ChapelAttendanceData.previewData)
+                ),
                 currentSemesterLectures = null,
                 currentSemesterData = null,
                 showPasswordIncorrectSnackbar = remember { mutableStateOf(false) }
