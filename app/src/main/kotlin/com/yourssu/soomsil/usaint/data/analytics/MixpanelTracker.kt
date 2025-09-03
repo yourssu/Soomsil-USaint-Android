@@ -71,7 +71,7 @@ class MixpanelTracker @Inject constructor(
                 put("schoolYear", it.grade)
                 put("semester", "${semester.year}년 ${semester.semester.kor}학기")
             }
-            mixpanelAPI.track("GRADE_CHECK_SEMESTER_CLICK", props)
+            mixpanelAPI.track("GRADE_CHECK_SEMESTER_${semester.semester.kor}_CLICK", props)
         }
     }
 
@@ -83,6 +83,17 @@ class MixpanelTracker @Inject constructor(
                 put("schoolYear", it.grade)
             }
             mixpanelAPI.track("USER_LOGOUT", props)
+        }
+    }
+
+    suspend fun trackAutoLoadClick() {
+        studentDataRepository.studentData.first().let {
+            val props = JSONObject().apply {
+                put("department", it.department)
+                put("schoolId", it.id)
+                put("schoolYear", it.grade)
+            }
+            mixpanelAPI.track("LATEST_ACADEMIC_INFO_AUTOLOAD_CLICK", props)
         }
     }
 

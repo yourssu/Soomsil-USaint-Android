@@ -3,9 +3,6 @@ package com.yourssu.soomsil.usaint.ui
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -24,8 +21,6 @@ import androidx.navigation.compose.rememberNavController
 import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
 import com.yourssu.soomsil.usaint.navigation.TopLevelDestination
 import com.yourssu.soomsil.usaint.navigation.USaintNavHost
-import com.yourssu.soomsil.usaint.navigation.navigateToTopLevelDestination
-import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,35 +49,35 @@ fun USaintApp(
                 TopAppBar(title = { Text(text = it.title) })
             }
         },
-        bottomBar = {
-            if (currentTopLevelDestination != null) {
-                NavigationBar {
-                    TopLevelDestination.entries.forEach { destination ->
-                        val selected = currentDestination.isRouteInHierarchy(destination.route)
-                        NavigationBarItem(
-                            icon = {
-                                Icon(
-                                    if (selected) destination.selectedIcon else destination.unselectedIcon,
-                                    contentDescription = destination.label,
-                                )
-                            },
-                            label = { Text(destination.label) },
-                            selected = selected,
-                            onClick = {
-                                coroutineScope.launch {
-                                    if (destination == TopLevelDestination.REPORT_CARD) {
-                                        mixpanelTracker.trackNavigate("BOTTOM_NAV", false)
-                                    } else if (destination == TopLevelDestination.CHAPEL) {
-                                        mixpanelTracker.trackNavigate("BOTTOM_NAV", true)
-                                    }
-                                }
-                                navController.navigateToTopLevelDestination(destination)
-                            },
-                        )
-                    }
-                }
-            }
-        },
+//        bottomBar = {
+//            if (currentTopLevelDestination != null) {
+//                NavigationBar {
+//                    TopLevelDestination.entries.forEach { destination ->
+//                        val selected = currentDestination.isRouteInHierarchy(destination.route)
+//                        NavigationBarItem(
+//                            icon = {
+//                                Icon(
+//                                    if (selected) destination.selectedIcon else destination.unselectedIcon,
+//                                    contentDescription = destination.label,
+//                                )
+//                            },
+//                            label = { Text(destination.label) },
+//                            selected = selected,
+//                            onClick = {
+//                                coroutineScope.launch {
+//                                    if (destination == TopLevelDestination.REPORT_CARD) {
+//                                        mixpanelTracker.trackNavigate("BOTTOM_NAV", false)
+//                                    } else if (destination == TopLevelDestination.CHAPEL) {
+//                                        mixpanelTracker.trackNavigate("BOTTOM_NAV", true)
+//                                    }
+//                                }
+//                                navController.navigateToTopLevelDestination(destination)
+//                            },
+//                        )
+//                    }
+//                }
+//            }
+//        },
     ) { padding ->
         USaintNavHost(
             navController = navController,
