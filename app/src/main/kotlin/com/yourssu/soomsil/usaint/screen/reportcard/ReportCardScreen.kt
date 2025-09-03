@@ -149,8 +149,8 @@ private fun ReportCardScreen(
             var isVisiblePasswordChangeDialog by remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()
             if (showPasswordIncorrectSnackbar) {
-                snackbarHostState.currentSnackbarData?.dismiss()
                 LaunchedEffect(Unit) {
+                    snackbarHostState.currentSnackbarData?.dismiss()
                     val result = snackbarHostState
                         .showSnackbar(
                             message = "유세인트 로그인에 실패했습니다.",

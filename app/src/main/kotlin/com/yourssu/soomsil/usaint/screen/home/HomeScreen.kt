@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.screen.home
 
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,10 +36,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yourssu.soomsil.usaint.core.model.ChapelAttendanceData
@@ -54,7 +57,6 @@ import com.yourssu.soomsil.usaint.screen.reportcard.components.LectureItem
 import com.yourssu.soomsil.usaint.screen.setting.PasswordChangeDialog
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import kotlinx.coroutines.launch
-
 @Composable
 fun HomeScreen(
     snackbarHostState: SnackbarHostState,
@@ -66,6 +68,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     HomeScreen(
         hasInitialized = viewModel.hasInitialized,
@@ -81,6 +84,14 @@ fun HomeScreen(
         onChapelCardClick = {
             viewModel.onCheckChapelCardClicked()
             onChapelCardClick()
+        },
+        onPromotionClicked = { studentData ->
+            val intent = Intent(
+                Intent.ACTION_VIEW,
+                "https://lottery-one.vercel.app?major=${studentData.majors[0]}&name=${studentData.name}&schoolNumber=${studentData.id}".toUri()
+            )
+            context.startActivity(intent)
+
         },
         onPasswordChange = viewModel::changePassword,
         snackbarHostState = snackbarHostState,
@@ -103,6 +114,7 @@ private fun HomeScreen(
     onSettingClick: () -> Unit = {},
     onReportCardClick: () -> Unit = {},
     onChapelCardClick: () -> Unit = {},
+    onPromotionClicked: (studentData: StudentData) -> Unit = {},
     onPasswordChange: (password: String) -> Unit = {},
     onCheckCurrentSemesterClicked: () -> Unit = {},
     onLectureItemClick: (String) -> Unit = {},
@@ -165,10 +177,36 @@ private fun HomeScreen(
                 else
                     mutableStateOf(false)
             }
+            var showFailedLoadToStudentDataSnackbar by remember {
+                if (homeUiState is HomeUiState.Home)
+                    homeUiState.showFailedLoadToStudentDataSnackbar
+                else
+                    mutableStateOf(false)
+            }
+
+
+            if (showFailedLoadToStudentDataSnackbar) {
+                LaunchedEffect(Unit) {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    val result = snackbarHostState.showSnackbar(
+                            message = "학적 정보를 불러오지 못했어요..",
+                            duration = SnackbarDuration.Short
+                        )
+                    when (result) {
+                        SnackbarResult.ActionPerformed -> {
+                            showFailedLoadToStudentDataSnackbar = false
+                        }
+
+                        SnackbarResult.Dismissed -> {
+                            showFailedLoadToStudentDataSnackbar = false
+                        }
+                    }
+                }
+            }
 
             if (showPasswordIncorrectSnackbar) {
-                snackbarHostState.currentSnackbarData?.dismiss()
                 LaunchedEffect(Unit) {
+                    snackbarHostState.currentSnackbarData?.dismiss()
                     val result = snackbarHostState
                         .showSnackbar(
                             message = "유세인트 로그인에 실패했습니다.",
@@ -267,6 +305,8 @@ private fun HomeScreen(
                 }
             }
 
+
+
             StudentDataItem(
                 studentData = studentData,
                 onProfileClick = onProfileClick,
@@ -282,16 +322,28 @@ private fun HomeScreen(
                 color = MaterialTheme.colorScheme.onSurface,
             )
 
-            if (studentData?.status == "재학") {
-                Spacer(Modifier.height(8.dp))
-                ActionTitleItem(
-                    title = "이번 학기 성적 확인",
-                    onClick = {
-                        isVisibleGradeBottomSheet = true
-                        onCheckCurrentSemesterClicked()
-                    },
-                )
-            }
+            ActionTitleItem(
+                title = "\uD83C\uDF81 개강 선물 도착, 복권 뽑으러 가기!",
+                onClick = {
+                    if(studentData != null) {
+                        onPromotionClicked(studentData)
+                    } else {
+                        showFailedLoadToStudentDataSnackbar = true
+                    }
+                },
+            )
+
+            //나중에 성적시즌이 되면 주석 풀어주세요
+//            if (studentData?.status == "재학") {
+//                Spacer(Modifier.height(8.dp))
+//                ActionTitleItem(
+//                    title = "이번 학기 성적 확인",
+//                    onClick = {
+//                        isVisibleGradeBottomSheet = true
+//                        onCheckCurrentSemesterClicked()
+//                    },
+//                )
+//            }
 
             Spacer(Modifier.height(8.dp))
             ReportCardItem(
@@ -341,7 +393,8 @@ private fun HomePreview_being() {
                 ),
                 currentSemesterLectures = null,
                 currentSemesterData = null,
-                showPasswordIncorrectSnackbar = remember { mutableStateOf(false) }
+                showPasswordIncorrectSnackbar = remember { mutableStateOf(false) },
+                showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) }
             ),
         )
     }
@@ -366,7 +419,8 @@ private fun HomePreview_leave() {
                 ),
                 currentSemesterLectures = null,
                 currentSemesterData = null,
-                showPasswordIncorrectSnackbar = remember { mutableStateOf(false) }
+                showPasswordIncorrectSnackbar = remember { mutableStateOf(false) },
+                showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) }
             ),
         )
     }

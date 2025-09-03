@@ -73,7 +73,9 @@ class SettingViewModel @Inject constructor(
     fun updateAutoFetchEnabled(enable: Boolean) {
         viewModelScope.launch {
             userDataRepository.setAutoFetch(enable)
+            mixpanelTracker.trackAutoLoadClick()
         }
+        //
     }
 
     fun logout() {
