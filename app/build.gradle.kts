@@ -24,12 +24,17 @@ android {
         applicationId = "com.yourssu.soomsil.usaint"
         minSdk = 26
         targetSdk = 35
-        versionCode = 19
-        versionName = "0.2.6"
+        versionCode = 20
+        versionName = "0.2.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "MIXPANEL_TOKEN", "\"${properties.getProperty("mixpanel_token")}\"")
+        externalNativeBuild {
+            cmake {
+                arguments += listOf("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
+            }
+        }
     }
 
     buildTypes {
