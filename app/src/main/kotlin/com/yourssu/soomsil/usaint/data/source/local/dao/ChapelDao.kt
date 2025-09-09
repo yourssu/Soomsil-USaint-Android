@@ -36,8 +36,17 @@ interface ChapelDao {
     @Query("DELETE FROM Chapel WHERE year = :year AND semester = :semesterName")
     suspend fun deleteChapelEntitiesWithYearSemester(year: Int, semesterName: String)
 
+    /**
+     * @param division (division * 100000) + (year * 10) + semester.ordinal의 값으로 넣어주세요.
+     */
+    @Query("DELETE FROM Chapel WHERE division = :division")
+    suspend fun deleteChapelEntityWithDivision(division: Long)
+
+    /**
+     * @param division (division * 100000) + (year * 10) + semester.ordinal의 값으로 넣어주세요.
+     */
     @Query("DELETE FROM ChapelAttendance WHERE division = :division")
-    suspend fun deleteChapelAttendancesEntitiesWithDivision(division: Int)
+    suspend fun deleteChapelAttendancesEntitiesWithDivision(division: Long)
 
     @Query("DELETE FROM Chapel")
     suspend fun deleteAllChapel()

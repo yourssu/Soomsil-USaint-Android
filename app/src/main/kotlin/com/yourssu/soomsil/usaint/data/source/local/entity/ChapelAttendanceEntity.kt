@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import com.yourssu.soomsil.usaint.core.model.ChapelAttendanceData
+import com.yourssu.soomsil.usaint.core.types.SemesterType
 
 
 @Entity(
@@ -34,7 +35,7 @@ data class ChapelAttendanceEntity(
 )
 
 fun ChapelAttendanceEntity.asExternalModel() = ChapelAttendanceData(
-    division = division,
+    division = division / 100000,
     classDate = classDate,
     category = category,
     instructor = instructor,
@@ -45,8 +46,8 @@ fun ChapelAttendanceEntity.asExternalModel() = ChapelAttendanceData(
     note = note
 )
 
-fun ChapelAttendanceData.asEntity() = ChapelAttendanceEntity(
-    division = division,
+fun ChapelAttendanceData.asEntity(year: Int, semester: SemesterType) = ChapelAttendanceEntity(
+    division = (division * 100000) + (year * 10) + semester.ordinal,
     classDate = classDate,
     category = category,
     instructor = instructor,

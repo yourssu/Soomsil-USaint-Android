@@ -32,7 +32,7 @@ data class ChapelEntity(
 fun ChapelEntity.asExternalModel() = ChapelSimpleData(
     year = year,
     semester = enumValueOf<SemesterType>(semester),
-    division = division,
+    division = division / 100000,
     chapelTime = chapelTime,
     chapelRoom = chapelRoom,
     floorLevel = floorLevel,
@@ -45,7 +45,7 @@ fun ChapelEntity.asExternalModel() = ChapelSimpleData(
 fun ChapelSimpleData.asEntity() = ChapelEntity(
     year = year,
     semester = semester.name,
-    division = division,
+    division = (division * 100000) + (year * 10) + semester.ordinal,
     chapelTime = chapelTime,
     chapelRoom = chapelRoom,
     floorLevel = floorLevel,

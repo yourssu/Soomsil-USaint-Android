@@ -17,7 +17,7 @@ class ChapelDataSource @Inject constructor (
         .map {
             ChapelSimpleData(
                 year = it.year,
-                semester = SemesterType.One,
+                semester = SemesterType.valueOf(it.semester),
                 division = it.division,
                 chapelRoom = it.chapelRoom,
                 chapelTime = it.chapelTime,
