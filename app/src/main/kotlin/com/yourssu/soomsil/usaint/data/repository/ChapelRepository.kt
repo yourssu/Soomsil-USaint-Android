@@ -13,6 +13,7 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.asEntity
 import com.yourssu.soomsil.usaint.data.source.local.entity.asExternalModel
 import com.yourssu.soomsil.usaint.data.source.remote.USaintRemoteSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -27,14 +28,21 @@ class ChapelRepository @Inject constructor(
 
     // 채플DB에서 지금까지 불러왔던 모든 채플 데이터(현재학기 + 이전학기)를 불러옵니다.
     val chapels: Flow<List<ChapelData>> = // 전체 채플 정보
-        chapelDao.getChapels().map { chapelList ->
-            chapelList
-                .map {
-                    ChapelData(
-                        it.chapel.asExternalModel(),
-                        it.attendances.map(ChapelAttendanceEntity::asExternalModel)
-                    )
-                }
+        combine(
+            chapelDao.getAllChapels(),
+            chapelDao.getAllAttendances()
+        ) { chapels, attendances ->
+            val attendancesMap = attendances.groupBy {
+                Triple(it.year, it.semester, it.division)
+            }
+
+            chapels.map { chapel ->
+                val compositeKey = Triple(chapel.year, chapel.semester, chapel.division)
+                ChapelData(
+                    chapelSimpleData = chapel.asExternalModel(),
+                    chapelAttendances = attendancesMap[compositeKey]?.map(ChapelAttendanceEntity::asExternalModel) ?: emptyList()
+                )
+            }
         }
 
     // getCurrentSemesterUseCase를 사용하기가 어려워서
