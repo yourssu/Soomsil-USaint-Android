@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 5,
-    "identityHash": "ec6cbb7d308ae4f82cee1ed6a649324c",
+    "version": 6,
+    "identityHash": "c1bef6991fee1496cba58aab2fbf79b1",
     "entities": [
       {
         "tableName": "Semester",
@@ -176,7 +176,7 @@
       },
       {
         "tableName": "Chapel",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`year` INTEGER NOT NULL DEFAULT 0, `semester` TEXT NOT NULL DEFAULT 'One', `division` INTEGER NOT NULL DEFAULT 0, `chapelTime` TEXT NOT NULL, `chapelRoom` TEXT NOT NULL, `floorLevel` INTEGER NOT NULL, `seatNumber` TEXT NOT NULL, `absenceTime` INTEGER NOT NULL, `result` TEXT NOT NULL, PRIMARY KEY(`division`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`year` INTEGER NOT NULL DEFAULT 0, `semester` TEXT NOT NULL DEFAULT 'One', `division` INTEGER NOT NULL DEFAULT 0, `chapelTime` TEXT NOT NULL, `chapelRoom` TEXT NOT NULL, `floorLevel` INTEGER NOT NULL, `seatNumber` TEXT NOT NULL, `absenceTime` INTEGER NOT NULL, `result` TEXT NOT NULL, PRIMARY KEY(`year`, `semester`, `division`))",
         "fields": [
           {
             "fieldPath": "year",
@@ -239,24 +239,28 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
+            "year",
+            "semester",
             "division"
           ]
         },
         "indices": [
           {
-            "name": "index_Chapel_division",
+            "name": "index_Chapel_year_semester_division",
             "unique": true,
             "columnNames": [
+              "year",
+              "semester",
               "division"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Chapel_division` ON `${TABLE_NAME}` (`division`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Chapel_year_semester_division` ON `${TABLE_NAME}` (`year`, `semester`, `division`)"
           }
         ]
       },
       {
         "tableName": "ChapelAttendance",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`year` INTEGER NOT NULL DEFAULT 0, `semester` TEXT NOT NULL DEFAULT 'One', `division` INTEGER NOT NULL DEFAULT 0, `classDate` TEXT NOT NULL, `category` TEXT NOT NULL, `instructor` TEXT NOT NULL, `instructorDepartment` TEXT NOT NULL, `title` TEXT NOT NULL, `attendance` TEXT NOT NULL, `result` TEXT NOT NULL, `note` TEXT NOT NULL, PRIMARY KEY(`year`, `semester`, `classDate`), FOREIGN KEY(`division`) REFERENCES `Chapel`(`division`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`year` INTEGER NOT NULL DEFAULT 0, `semester` TEXT NOT NULL DEFAULT 'One', `division` INTEGER NOT NULL DEFAULT 0, `classDate` TEXT NOT NULL, `category` TEXT NOT NULL, `instructor` TEXT NOT NULL, `instructorDepartment` TEXT NOT NULL, `title` TEXT NOT NULL, `attendance` TEXT NOT NULL, `result` TEXT NOT NULL, `note` TEXT NOT NULL, PRIMARY KEY(`year`, `semester`, `classDate`), FOREIGN KEY(`year`, `semester`, `division`) REFERENCES `Chapel`(`year`, `semester`, `division`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "year",
@@ -355,9 +359,13 @@
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
+              "year",
+              "semester",
               "division"
             ],
             "referencedColumns": [
+              "year",
+              "semester",
               "division"
             ]
           }
@@ -366,7 +374,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ec6cbb7d308ae4f82cee1ed6a649324c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c1bef6991fee1496cba58aab2fbf79b1')"
     ]
   }
 }

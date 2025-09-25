@@ -1,6 +1,10 @@
 package com.yourssu.soomsil.usaint.core.model
 
+import com.yourssu.soomsil.usaint.core.types.SemesterType
+
 data class ChapelAttendanceData(
+    val year: Int,
+    val semester: SemesterType,
     val division: Long,
     val classDate: String,
     val category: String,
@@ -13,6 +17,8 @@ data class ChapelAttendanceData(
 ) {
     companion object {
         val previewData = ChapelAttendanceData(
+            year = 2025,
+            semester = SemesterType.One,
             division = 100012345,
             classDate = "2024-3-29",
             category = "메세지 채플",
