@@ -53,24 +53,24 @@ object DatabaseMigrations {
             """)
 
             // 1-2. Chapel: 기존 테이블에서 데이터 복사 및 변환
-            db.execSQL("""
-                INSERT INTO Chapel_temp (
-                    year, semester, division, chapelTime, chapelRoom,
-                    floorLevel, seatNumber, absenceTime, result
-                )
-                SELECT
-                    (division % 100000) / 10 AS year,
-                    CASE (division % 100000) % 10
-                        WHEN 0 THEN 'One'
-                        WHEN 1 THEN 'Two'
-                        WHEN 2 THEN 'Summer'
-                        WHEN 3 THEN 'Winter'
-                        ELSE 'One'
-                    END AS semester,
-                    division / 100000 AS division,
-                    chapelTime, chapelRoom, floorLevel, seatNumber, absenceTime, result
-                FROM Chapel
-            """)
+//            db.execSQL("""
+//                INSERT INTO Chapel_temp (
+//                    year, semester, division, chapelTime, chapelRoom,
+//                    floorLevel, seatNumber, absenceTime, result
+//                )
+//                SELECT
+//                    (division % 100000) / 10 AS year,
+//                    CASE (division % 100000) % 10
+//                        WHEN 0 THEN 'One'
+//                        WHEN 1 THEN 'Two'
+//                        WHEN 2 THEN 'Summer'
+//                        WHEN 3 THEN 'Winter'
+//                        ELSE 'One'
+//                    END AS semester,
+//                    division / 100000 AS division,
+//                    chapelTime, chapelRoom, floorLevel, seatNumber, absenceTime, result
+//                FROM Chapel
+//            """)
 
             // 1-3. Chapel: 기존 테이블 삭제
             db.execSQL("DROP TABLE Chapel")
@@ -108,25 +108,25 @@ object DatabaseMigrations {
 
 
             // 2. 기존 테이블에서 데이터 복사 (이전과 동일)
-            db.execSQL("""
-                INSERT INTO ChapelAttendance_temp (
-                    year, semester, division, classDate, category, instructor,
-                    instructorDepartment, title, attendance, result, note
-                )
-                SELECT
-                    (division % 100000) / 10 AS year,
-                    CASE (division % 100000) % 10
-                        WHEN 0 THEN 'One'
-                        WHEN 1 THEN 'Two'
-                        WHEN 2 THEN 'Summer'
-                        WHEN 3 THEN 'Winter'
-                        ELSE 'One'
-                    END AS semester,
-                    division / 100000 AS division,
-                    classDate, category, instructor, instructorDepartment,
-                    title, attendance, result, note
-                FROM ChapelAttendance
-            """)
+//            db.execSQL("""
+//                INSERT INTO ChapelAttendance_temp (
+//                    year, semester, division, classDate, category, instructor,
+//                    instructorDepartment, title, attendance, result, note
+//                )
+//                SELECT
+//                    (division % 100000) / 10 AS year,
+//                    CASE (division % 100000) % 10
+//                        WHEN 0 THEN 'One'
+//                        WHEN 1 THEN 'Two'
+//                        WHEN 2 THEN 'Summer'
+//                        WHEN 3 THEN 'Winter'
+//                        ELSE 'One'
+//                    END AS semester,
+//                    division / 100000 AS division,
+//                    classDate, category, instructor, instructorDepartment,
+//                    title, attendance, result, note
+//                FROM ChapelAttendance
+//            """)
 
             // 3. 기존 테이블 삭제
             db.execSQL("DROP TABLE ChapelAttendance")

@@ -2,10 +2,8 @@ package com.yourssu.soomsil.usaint.data.source.local.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Upsert
 import com.yourssu.soomsil.usaint.data.source.local.entity.ChapelAttendanceEntity
-import com.yourssu.soomsil.usaint.data.source.local.entity.ChapelDataWithAttendance
 import com.yourssu.soomsil.usaint.data.source.local.entity.ChapelEntity
 import kotlinx.coroutines.flow.Flow
 
