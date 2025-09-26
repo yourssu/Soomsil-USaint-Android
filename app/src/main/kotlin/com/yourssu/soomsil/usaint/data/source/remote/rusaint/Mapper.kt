@@ -82,11 +82,15 @@ internal fun ChapelInformation.asExternalModel(year: Int, semester: SemesterType
         absenceTime = generalInformation.absenceTime.toInt(),
         result = generalInformation.result,
     ),
-    chapelAttendances = attendances.map((ChapelAttendance::asExternalModel))
+    chapelAttendances = attendances.map {
+        it.asExternalModel(year, semester)
+    }
 
 )
 
-internal fun ChapelAttendance.asExternalModel() = ChapelAttendanceData(
+internal fun ChapelAttendance.asExternalModel(year: Int, semester: SemesterType) = ChapelAttendanceData(
+    year = year,
+    semester = semester,
     division = division.toLong(),
     classDate = classDate,
     category = category,

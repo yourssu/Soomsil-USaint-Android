@@ -3,6 +3,7 @@ package com.yourssu.soomsil.usaint.di
 import android.content.Context
 import androidx.room.Room
 import com.yourssu.soomsil.usaint.data.source.local.AppDatabase
+import com.yourssu.soomsil.usaint.data.source.local.DatabaseMigrations
 import com.yourssu.soomsil.usaint.data.source.local.dao.ChapelDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.LectureDao
 import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
@@ -23,7 +24,9 @@ object DataBaseModule {
             context,
             AppDatabase::class.java,
             "my_database"
-        ).build()
+        )
+            .addMigrations(DatabaseMigrations.MIGRATION_5_6)
+            .build()
     }
 
     @Provides

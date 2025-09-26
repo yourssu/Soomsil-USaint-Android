@@ -70,7 +70,7 @@ fun ChapelCardItem(
                                 SpanStyle(color = MaterialTheme.colorScheme.primary)
                             ) {
                                 append(
-                                    "${ceil(totalAttendance * (2 / 3.0)) - currentAttendance}회 "
+                                    "${ceil(totalAttendance * (2 / 3.0)).toInt() - currentAttendance}회 "
                                 )
                             }
                             append("남았어요.")

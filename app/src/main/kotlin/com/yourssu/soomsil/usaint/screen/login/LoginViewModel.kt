@@ -55,6 +55,10 @@ class LoginViewModel @Inject constructor(
             // id/pw 저장
             studentCredentialRepository.setStudentCredential(credential)
             // 저장된 id/pw로 학생 데이터 가져오기 시도
+            getCurrentSemesterUseCase()?.let {
+                chapelRepository.fetchChapelCardData(it)
+                    .onFailure { e -> Timber.e(e) }
+            }
             studentDataRepository.fetchStudentData()
                 .onSuccess {
                     studentCredentialRepository.setLoggedIn(true)
@@ -64,11 +68,6 @@ class LoginViewModel @Inject constructor(
                 .onFailure { e ->
                     _uiEvent.emit(LoginUiEvent.Failure(e.message))
                 }
-
-            getCurrentSemesterUseCase()?.let {
-                chapelRepository.fetchChapelCardData(it)
-                    .onFailure { e -> Timber.e(e) }
-            }
 
             isLoading = false
         }

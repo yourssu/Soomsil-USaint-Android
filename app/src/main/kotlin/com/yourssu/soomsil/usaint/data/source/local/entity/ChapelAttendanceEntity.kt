@@ -5,22 +5,27 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import com.yourssu.soomsil.usaint.core.model.ChapelAttendanceData
+import com.yourssu.soomsil.usaint.core.types.SemesterType
 
 
 @Entity(
     tableName = "ChapelAttendance",
-    primaryKeys = ["division", "classDate"],
+    primaryKeys = ["year", "semester", "classDate"],
     foreignKeys = [ForeignKey(
         entity = ChapelEntity::class,
-        parentColumns = ["division"],
-        childColumns = ["division"],
+        parentColumns = ["year", "semester", "division"],
+        childColumns = ["year", "semester", "division"],
         onDelete = ForeignKey.CASCADE,
     )],
     indices = [
-        Index(value = ["division", "classDate"], unique = true)
+        Index(value = ["year", "semester", "classDate"], unique = true)
     ]
 )
 data class ChapelAttendanceEntity(
+    @ColumnInfo(defaultValue = "0")
+    val year: Int,
+    @ColumnInfo(defaultValue = "One")
+    val semester: String,
     @ColumnInfo(defaultValue = "0")
     val division: Long,
     val classDate: String,
@@ -34,6 +39,8 @@ data class ChapelAttendanceEntity(
 )
 
 fun ChapelAttendanceEntity.asExternalModel() = ChapelAttendanceData(
+    year = year,
+    semester = SemesterType.valueOf(semester),
     division = division,
     classDate = classDate,
     category = category,
@@ -46,6 +53,8 @@ fun ChapelAttendanceEntity.asExternalModel() = ChapelAttendanceData(
 )
 
 fun ChapelAttendanceData.asEntity() = ChapelAttendanceEntity(
+    year = year,
+    semester = semester.name,
     division = division,
     classDate = classDate,
     category = category,

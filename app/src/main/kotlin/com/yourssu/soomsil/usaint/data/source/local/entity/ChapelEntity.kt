@@ -3,14 +3,14 @@ package com.yourssu.soomsil.usaint.data.source.local.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
-import androidx.room.PrimaryKey
 import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.types.SemesterType
 
 @Entity(
     tableName = "Chapel",
+    primaryKeys = ["year", "semester", "division"],
     indices = [
-        Index(value = ["division"], unique = true)
+        Index(value = ["year", "semester", "division"], unique = true)
     ]
 )
 data class ChapelEntity(
@@ -19,7 +19,6 @@ data class ChapelEntity(
     @ColumnInfo(defaultValue = "One")
     val semester: String,
     @ColumnInfo(defaultValue = "0")
-    @PrimaryKey(autoGenerate = false)
     val division: Long,          // primary key
     val chapelTime: String,
     val chapelRoom: String,
