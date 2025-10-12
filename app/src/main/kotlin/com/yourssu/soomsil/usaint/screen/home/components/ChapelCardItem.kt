@@ -1,6 +1,7 @@
 package com.yourssu.soomsil.usaint.screen.home.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -181,7 +182,9 @@ fun ChapelCardItem(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
-                Row {
+                Row(
+                    modifier = Modifier.clickable { seatExpanded = !seatExpanded }
+                ) {
                     Text(
                         text = "좌석",
                         modifier = Modifier
@@ -215,8 +218,8 @@ fun ChapelCardItem(
                     )
                 }
                 AnimatedVisibility(visible = seatExpanded) {
-                    ChapelSeatItem(
-                        seatNumer = chapelData.chapelSimpleData.seatNumber,
+                    ChapelSeatLayout(
+                        seatNumber = chapelData.chapelSimpleData.seatNumber,
                     )
                 }
             }
