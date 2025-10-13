@@ -61,7 +61,7 @@ fun ChapelSeatLayout(
 ) {
     var zoomLevel by remember { mutableStateOf(ZoomLevel.LEVEL2) }
     val (sector, row, column) = seatNumber.split("-")
-    val mySeat = SeatId(sector, row.toInt(), column.toInt())
+    val mySeat = SeatId(sector.trim(), row.trim().toInt(), column.trim().toInt())
 
     ChapelSeatRoot(
         mySeat = mySeat,
@@ -534,7 +534,7 @@ fun ChapelSeatSection(
                         val id = "$sectionName-$actualRowIndex-$seatNumber"
                         ChapelSeatItem(
                             id = id,
-                            isMine = id.split(" ")[0].equals(mySeatId, ignoreCase = true),
+                            isMine = id.equals(mySeatId, ignoreCase = true),
                             modifier = Modifier.padding(horizontal = seatSpacing),
                             seatSize = seatSize,
                             fontSize = fontSize
