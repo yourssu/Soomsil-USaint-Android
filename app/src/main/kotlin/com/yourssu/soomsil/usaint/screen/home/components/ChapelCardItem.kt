@@ -1,31 +1,48 @@
 package com.yourssu.soomsil.usaint.screen.home.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.yourssu.soomsil.usaint.core.model.ChapelAttendanceData
 import com.yourssu.soomsil.usaint.core.model.ChapelData
+import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
+import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import kotlin.math.ceil
 
 @Composable
 fun ChapelCardItem(
-    modifier: Modifier = Modifier,
     onChapelCardClick: () -> Unit,
     chapelData: ChapelData,
     totalAttendance: Int,
-    currentAttendance: Int
+    currentAttendance: Int,
+    modifier: Modifier = Modifier,
 ) {
+
+    var seatExpanded by remember { mutableStateOf(false) }
+
     ElevatedCard(
         modifier = modifier,
         onClick = onChapelCardClick,
@@ -165,7 +182,9 @@ fun ChapelCardItem(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
-                Row {
+                Row(
+                    modifier = Modifier.clickable { seatExpanded = !seatExpanded }
+                ) {
                     Text(
                         text = "좌석",
                         modifier = Modifier
@@ -186,17 +205,40 @@ fun ChapelCardItem(
                             .padding(
                                 bottom = 4.dp,
                                 start = 16.dp,
-                                end = 16.dp,
                             ),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold
                         ),
                         color = MaterialTheme.colorScheme.onSurface,
                     )
+                    Icon(
+                        imageVector = if (seatExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 12.dp)
+                    )
+                }
+                AnimatedVisibility(visible = seatExpanded) {
+                    ChapelSeatLayout(
+                        seatNumber = chapelData.chapelSimpleData.seatNumber,
+                    )
                 }
             }
-
-
         }
+    }
+}
+
+@Preview
+@Composable
+fun ChapelCardItemPreview() {
+    SoomsilUSaintTheme {
+        ChapelCardItem(
+            chapelData = ChapelData(
+                ChapelSimpleData.previewData,
+                listOf(ChapelAttendanceData.previewData)
+            ),
+            onChapelCardClick = {},
+            totalAttendance = 10,
+            currentAttendance = 5,
+        )
     }
 }
