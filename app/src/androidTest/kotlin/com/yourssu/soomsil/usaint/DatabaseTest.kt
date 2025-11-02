@@ -12,9 +12,9 @@ import org.junit.After
 import org.junit.Before
 
 abstract class DatabaseTest {
-    private lateinit var db: AppDatabase
-    lateinit var semesterDao: SemesterDao
-    lateinit var lectureDao: LectureDao
+    private lateinit var db: com.yourssu.soomsil.usaint.data.source.local.AppDatabase
+    lateinit var semesterDao: com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
+    lateinit var lectureDao: com.yourssu.soomsil.usaint.data.source.local.dao.LectureDao
 
     @Before
     fun setup() {

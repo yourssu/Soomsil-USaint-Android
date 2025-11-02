@@ -9,8 +9,6 @@ plugins {
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.androidx.room)
-    id("com.google.protobuf") version "0.9.4"
 }
 
 val properties = Properties()
@@ -57,25 +55,13 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    room {
-        schemaDirectory("$projectDir/schemas")
-    }
 }
 
 dependencies {
-    // rusaint
-    implementation(libs.rusaint)
-
-    // room dependencies
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.gson)
-
-    // DataStore
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.datastore)
-    implementation(libs.protobuf.javalite)
+    // 내부 모듈 의존성 추가
+    implementation(project(":core"))
+    implementation(project(":data"))
+    implementation(project(":domain"))
 
     // webview
     implementation(libs.androidx.browser)
@@ -103,6 +89,9 @@ dependencies {
     // MixPanel
     implementation(libs.mixpanel.android)
 
+    // rusaint (ViewModels에서 사용)
+    implementation(libs.rusaint)
+
     implementation(libs.androidx.viewpager2)
     implementation(libs.compose.navigation)
     implementation(libs.kotlinx.serialization.json)
@@ -115,6 +104,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
+
+    // Test 의존성
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -122,40 +113,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-}
-
-// Setup protobuf configuration, generating lite Java and Kotlin classes
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:4.29.2"
-    }
-
-    // Generates the java Protobuf-lite code for the Protobufs in this project. See
-    // https://github.com/google/protobuf-gradle-plugin#customizing-protobuf-compilation
-    // for more information.
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                create("java") {
-                    option("lite")
-                }
-            }
-        }
-    }
-}
-
-// https://github.com/google/ksp/issues/1590#issuecomment-1826387452
-androidComponents {
-    onVariants(selector().all()) { variant ->
-        afterEvaluate {
-            val protoTask =
-                project.tasks.getByName("generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto") as GenerateProtoTask
-            project.tasks.getByName("ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin") {
-                dependsOn(protoTask)
-                (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*>).setSource(
-                    protoTask.outputBaseDir
-                )
-            }
-        }
-    }
 }
