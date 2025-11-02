@@ -22,4 +22,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "Soomsil-USaint"
 include(":app")
- 
+include(":core")
+include(":data")
+include(":domain")
