@@ -26,5 +26,5 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation("androidx.compose.foundation:foundation") // BOM에서 버전 관리
+    implementation(libs.androidx.foundation) // BOM에서 버전 관리
 }
