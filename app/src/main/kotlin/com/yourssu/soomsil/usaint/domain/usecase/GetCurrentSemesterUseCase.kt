@@ -35,10 +35,10 @@ class GetCurrentSemesterUseCase @Inject constructor(
             in LocalDate.of(year, 9, 1)..LocalDate.of(year, 12, 31) ->
                 Pair(year, SemesterType.Two)
 
-            in LocalDate.of(year, 1, 1)..LocalDate.of(year, 1, 7) ->
+            in LocalDate.of(year, 1, 1)..LocalDate.of(year, 1, 10) ->
                 Pair(year-1, SemesterType.Two)
 
-            in LocalDate.of(year, 1, 8)..LocalDate.of(year, 1, 31) ->
+            in LocalDate.of(year, 1, 10)..LocalDate.of(year, 1, 31) ->
                 Pair(year-1, SemesterType.Winter)
 
             else -> null

@@ -66,6 +66,7 @@ class LoginViewModel @Inject constructor(
                     mixpanelTracker.trackLogin(credential.id)
                 }
                 .onFailure { e ->
+                    e.printStackTrace()
                     _uiEvent.emit(LoginUiEvent.Failure(e.message))
                 }
 

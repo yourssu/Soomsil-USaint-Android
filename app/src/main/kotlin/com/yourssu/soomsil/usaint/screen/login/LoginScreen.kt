@@ -42,9 +42,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -115,7 +120,7 @@ fun LoginScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 private fun LoginScreen(
     isLoading: Boolean,
@@ -130,7 +135,9 @@ private fun LoginScreen(
     var showPassword by remember { mutableStateOf(false) }
 
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.semantics {
+            testTagsAsResourceId = true
+        },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Box {
@@ -154,7 +161,7 @@ private fun LoginScreen(
                 .fillMaxSize(),
         ) {
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("LOGIN_ID"),
                 value = studentId,
                 onValueChange = onStudentIdChange,
                 keyboardOptions = KeyboardOptions(
@@ -169,7 +176,7 @@ private fun LoginScreen(
             Spacer(Modifier.height(8.dp))
 
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("LOGIN_PW"),
                 value = password,
                 onValueChange = onPasswordChange,
                 keyboardOptions = KeyboardOptions(

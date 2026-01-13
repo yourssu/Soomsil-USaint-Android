@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.androidx.room)
     id("com.google.protobuf") version "0.9.4"
+    alias(libs.plugins.baselineprofile)
 }
 
 val properties = Properties()
@@ -39,7 +40,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -62,12 +64,18 @@ android {
     }
 }
 
+baselineProfile {
+    dexLayoutOptimization = true
+}
+
 dependencies {
     // rusaint
     implementation(libs.rusaint)
 
     // room dependencies
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.profileinstaller)
+    "baselineProfile"(project(":baselineprofile"))
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.gson)
@@ -120,6 +128,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    androidTestImplementation(libs.androidx.uiautomator)
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

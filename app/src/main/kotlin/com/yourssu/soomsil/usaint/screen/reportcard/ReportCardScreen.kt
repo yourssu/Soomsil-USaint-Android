@@ -35,6 +35,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -120,7 +122,9 @@ private fun ReportCardScreen(
             visible = !hasInitialized,
             modifier = Modifier.align(Alignment.TopCenter),
         ) {
-            LinearProgressIndicator(Modifier.fillMaxWidth())
+            LinearProgressIndicator(Modifier.fillMaxWidth().semantics {
+                contentDescription = "선형로딩" // baseline-Profile
+            })
         }
         Column(
             Modifier
@@ -131,7 +135,10 @@ private fun ReportCardScreen(
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .weight(1f),
+                        .weight(1f)
+                        .semantics {
+                            contentDescription = "로딩" // baseline-Profile에서 감지하기 위한 desc
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
