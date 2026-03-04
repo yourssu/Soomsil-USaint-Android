@@ -49,8 +49,8 @@ import com.yourssu.soomsil.usaint.core.model.ChapelData
 import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentData
-import com.yourssu.soomsil.usaint.screen.home.components.ActionTitleItem
 import com.yourssu.soomsil.usaint.screen.home.components.ChapelCardItem
+import com.yourssu.soomsil.usaint.screen.home.components.EmptyChapelCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.StudentDataItem
 import com.yourssu.soomsil.usaint.screen.reportcard.components.LectureItem
@@ -322,18 +322,18 @@ private fun HomeScreen(
                 color = MaterialTheme.colorScheme.onSurface,
             )
 
-            ActionTitleItem(
-                title = "\uD83C\uDF81 개강 선물 도착, 복권 뽑으러 가기!",
-                onClick = {
-                    if(studentData != null) {
-                        onPromotionClicked(studentData)
-                    } else {
-                        showFailedLoadToStudentDataSnackbar = true
-                    }
-                },
-            )
+//            ActionTitleItem(
+//                title = "\uD83C\uDF81 개강 선물 도착, 복권 뽑으러 가기!",
+//                onClick = {
+//                    if(studentData != null) {
+//                        onPromotionClicked(studentData)
+//                    } else {
+//                        showFailedLoadToStudentDataSnackbar = true
+//                    }
+//                },
+//            )
 
-            //나중에 성적시즌이 되면 주석 풀어주세요
+//            나중에 성적시즌이 되면 주석 풀어주세요
 //            if (studentData?.status == "재학") {
 //                Spacer(Modifier.height(8.dp))
 //                ActionTitleItem(
@@ -350,24 +350,27 @@ private fun HomeScreen(
                 reportCardSummary = reportCardSummaryData,
                 onReportCardClick = onReportCardClick,
             )
-
-            chapelCardData?.let {
-                Spacer(Modifier.height(8.dp))
-
-                val totalAttendance = it.chapelAttendances.size
-                val currentAttendance = it.chapelAttendances.filter { item ->
+            Spacer(Modifier.height(8.dp))
+            if(chapelCardData != null) {
+                val totalAttendance = chapelCardData.chapelAttendances.size
+                val currentAttendance = chapelCardData.chapelAttendances.filter { item ->
                     item.attendance == "출석"
                 }.size
 
-                // 앱 최초 실행 후 현재 학기에 채플 정보 없으면 카드 띄우지 않음
-                // 단, 채플 카드가 뜬 적이 있다면 채플 정보가 없는 학기로 수정해서 새로고침해도 기존 카드로 유지됨
-                if (it.chapelSimpleData.division != 0L)
+                // 과목코드(분반)이 0이면 해당 학기에는 채플 정보가 없는 상태입니다.
+                // fetch 과정에서 "No chapel information provided"에러가 발생했으면 0이 저장되어 있습니다
+                if (chapelCardData.chapelSimpleData.division != 0L) {
                     ChapelCardItem(
                         onChapelCardClick = onChapelCardClick,
                         chapelData = chapelCardData,
                         currentAttendance = currentAttendance,
                         totalAttendance = totalAttendance,
                     )
+                } else {
+                    EmptyChapelCardItem(onChapelCardClick = onChapelCardClick)
+                }
+            } else {
+                EmptyChapelCardItem(onChapelCardClick = onChapelCardClick)
             }
 
         }

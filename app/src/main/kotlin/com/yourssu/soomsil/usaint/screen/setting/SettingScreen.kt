@@ -375,7 +375,7 @@ fun SettingScreen(
 
         if (showCurrentSemesterSettingDialog && settingUiState is SettingUiState.UserEditableSettings) {
             CurrentSemesterSettingDialog(
-                year = settingUiState.specifiedCurrentSemester?.first ?: 2025,
+                year = settingUiState.specifiedCurrentSemester?.first ?: 2026,
                 semester = settingUiState.specifiedCurrentSemester?.second ?: SemesterType.One,
                 onConfirmClick = { year, semester ->
                     onSpecifiedCurrentSemester(year, semester)

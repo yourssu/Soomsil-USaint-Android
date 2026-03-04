@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -29,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.yourssu.soomsil.usaint.core.model.ChapelAttendanceData
 import com.yourssu.soomsil.usaint.core.model.ChapelData
 import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
+import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import kotlin.math.ceil
 
@@ -227,6 +231,85 @@ fun ChapelCardItem(
     }
 }
 
+@Composable
+fun EmptyChapelCardItem(
+    onChapelCardClick: () -> Unit,
+    currentSemester: SemesterData? = null,
+    modifier: Modifier = Modifier,
+) {
+
+    var seatExpanded by remember { mutableStateOf(false) }
+
+    ElevatedCard(
+        modifier = modifier,
+        onClick = onChapelCardClick,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    vertical = 20.dp,
+                ),
+        ) {
+            Text(
+                text = "채플",
+                modifier = Modifier
+                    .padding(
+                        bottom = 4.dp,
+                        start = 16.dp,
+                        end = 16.dp,
+                    ),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            if(currentSemester != null) {
+                Text(
+                    modifier = Modifier
+                        .padding(
+                            bottom = 4.dp,
+                            start = 16.dp,
+                            end = 16.dp,
+                        ),
+                    text = "${currentSemester.year}년 ${currentSemester.semester}학기의 채플 데이터를 받아오지 못했어요."
+                )
+            } else {
+                Text(
+                    modifier = Modifier
+                        .padding(
+                            bottom = 4.dp,
+                            start = 16.dp,
+                            end = 16.dp,
+                        ),
+                    text = "이번 학기의 채플 데이터를 받아오지 못했어요."
+                )
+            }
+            HorizontalDivider(Modifier.padding(horizontal = 12.dp))
+            Row(
+                modifier = Modifier
+                    .padding(
+                        top = 4.dp,
+                        bottom = 4.dp,
+                        start = 16.dp,
+                        end = 16.dp,
+                        )
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = "과거 채플 수강기록 확인하러 가기"
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+
+        }
+    }
+}
+
 @Preview
 @Composable
 fun ChapelCardItemPreview() {
@@ -239,6 +322,17 @@ fun ChapelCardItemPreview() {
             onChapelCardClick = {},
             totalAttendance = 10,
             currentAttendance = 5,
+        )
+    }
+}
+
+@Preview
+@Composable
+fun EmptyChapelCardItemPreview() {
+    SoomsilUSaintTheme {
+        EmptyChapelCardItem(
+            onChapelCardClick = {},
+            currentSemester = null
         )
     }
 }
