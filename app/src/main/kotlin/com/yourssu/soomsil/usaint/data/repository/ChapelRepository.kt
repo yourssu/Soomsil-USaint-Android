@@ -2,6 +2,7 @@ package com.yourssu.soomsil.usaint.data.repository
 
 import com.yourssu.soomsil.usaint.core.model.ChapelAttendanceData
 import com.yourssu.soomsil.usaint.core.model.ChapelData
+import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.core.types.SemesterType
 import com.yourssu.soomsil.usaint.data.source.local.dao.ChapelDao
@@ -72,6 +73,19 @@ class ChapelRepository @Inject constructor(
                     ChapelAttendanceData::asEntity
                 )
             )
+        }.onFailure { // No chapel information provided
+            val tmpChapelCardData = ChapelSimpleData(
+                year = specifiedCurrentSemester.first,
+                semester = specifiedCurrentSemester.second,
+                division = 0, // <-- 0인거 중요!
+                chapelRoom = "",
+                chapelTime = "",
+                floorLevel = 0,
+                seatNumber = "",
+                absenceTime = 0,
+                result = ""
+            )
+            chapelDataSource.setChapelCardData(chapelSimpleData = tmpChapelCardData)
         }
 
     // 현재 학기를 제외한 이수한 학기의 채플 정보를 모두 불러옵니다.
