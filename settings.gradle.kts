@@ -25,4 +25,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Soomsil-USaint"
 include(":app")
- 
+include(":baselineprofile")

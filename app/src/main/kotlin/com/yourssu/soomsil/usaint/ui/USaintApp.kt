@@ -4,7 +4,7 @@ import android.content.Intent
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -61,6 +61,7 @@ fun USaintApp(
         floatingActionButton = {
             FloatingActionButton(
                 contentColor = Color.White,
+                containerColor = Color.Blue,
                 onClick = {
                     val intent = Intent(
                         Intent.ACTION_VIEW,
@@ -70,7 +71,7 @@ fun USaintApp(
                 }
             ) {
                 Icon(
-                    imageVector = Icons.Default.Call,
+                    imageVector = Icons.Default.SupportAgent,
                     contentDescription = "채널톡 이동"
                 )
             }

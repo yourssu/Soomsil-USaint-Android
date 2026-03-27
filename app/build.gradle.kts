@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.androidx.room)
     id("com.google.protobuf") version "0.9.4"
+    alias(libs.plugins.baselineprofile)
 }
 
 val properties = Properties()
@@ -22,10 +23,10 @@ android {
 
     defaultConfig {
         applicationId = "com.yourssu.soomsil.usaint"
-        minSdk = 26
+        minSdk = 28
         targetSdk = 35
-        versionCode = 20
-        versionName = "0.2.7"
+        versionCode = 21
+        versionName = "0.2.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -41,7 +42,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -50,12 +52,10 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+
     buildFeatures {
         buildConfig = true
     }
@@ -64,12 +64,22 @@ android {
     }
 }
 
+baselineProfile {
+    dexLayoutOptimization = true
+}
+
 dependencies {
+    constraints {
+        implementation(libs.jna)
+    }
+
     // rusaint
     implementation(libs.rusaint)
 
     // room dependencies
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.profileinstaller)
+    "baselineProfile"(project(":baselineprofile"))
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.gson)
@@ -122,6 +132,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    androidTestImplementation(libs.androidx.uiautomator)
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
@@ -150,13 +163,21 @@ protobuf {
 androidComponents {
     onVariants(selector().all()) { variant ->
         afterEvaluate {
-            val protoTask =
-                project.tasks.getByName("generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto") as GenerateProtoTask
-            project.tasks.getByName("ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin") {
+            val variantName = variant.name.replaceFirstChar { it.uppercaseChar() }
+            val protoTask = project.tasks.getByName("generate${variantName}Proto") as GenerateProtoTask
+            val generatedProtoJavaDir = file("${protoTask.outputBaseDir}/java")
+
+            project.tasks.getByName("ksp${variantName}Kotlin") {
                 dependsOn(protoTask)
-                (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*>).setSource(
-                    protoTask.outputBaseDir
-                )
+                when (this) {
+                    is com.google.devtools.ksp.gradle.KspAATask -> {
+                        kspConfig.javaSourceRoots.from(generatedProtoJavaDir)
+                    }
+
+                    is org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*> -> {
+                        setSource(generatedProtoJavaDir)
+                    }
+                }
             }
         }
     }
