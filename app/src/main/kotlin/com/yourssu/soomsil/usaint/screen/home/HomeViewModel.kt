@@ -11,7 +11,7 @@ import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.core.model.StudentData
-import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
+import com.yourssu.soomsil.usaint.data.analytics.PosthogTracker
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
@@ -53,7 +53,7 @@ class HomeViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val chapelRepository: ChapelRepository,
     private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
-    private val mixpanelTracker: MixpanelTracker,
+    private val posthogTracker: PosthogTracker,
 ) : ViewModel() {
     private var showPasswordIncorrectSnackbar = mutableStateOf(false)
     private var showFailedLoadToStudentDataSnackbar = mutableStateOf(false)
@@ -134,25 +134,25 @@ class HomeViewModel @Inject constructor(
 
     fun onCheckCurrentSemesterClicked() {
         viewModelScope.launch {
-            mixpanelTracker.trackCurrentSemesterClick()
+            posthogTracker.trackCurrentSemesterClick()
         }
     }
 
     fun onCheckReportCardClicked() {
         viewModelScope.launch {
-            mixpanelTracker.trackNavigate("HOME", false)
+            posthogTracker.trackNavigate("HOME", false)
         }
     }
 
     fun onCheckChapelCardClicked() {
         viewModelScope.launch {
-            mixpanelTracker.trackNavigate("HOME", true)
+            posthogTracker.trackNavigate("HOME", true)
         }
     }
 
     fun onCheckLectureItemClicked(lectureTitle: String) {
         viewModelScope.launch {
-            mixpanelTracker.trackLectureDetail(lectureTitle)
+            posthogTracker.trackLectureDetail(lectureTitle)
         }
     }
 

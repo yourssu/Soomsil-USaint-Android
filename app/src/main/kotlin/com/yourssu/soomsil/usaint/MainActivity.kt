@@ -7,9 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
+import com.posthog.android.PostHogAndroid
+import com.posthog.android.PostHogAndroidConfig
+import com.yourssu.soomsil.usaint.data.analytics.PosthogTracker
 import com.yourssu.soomsil.usaint.screen.home.navigation.Home
 import com.yourssu.soomsil.usaint.screen.login.navigation.Login
 import com.yourssu.soomsil.usaint.ui.USaintApp
@@ -22,11 +22,18 @@ class MainActivity : ComponentActivity() {
     private val viewModel by viewModels<MainViewModel>()
 
     @Inject
-    lateinit var mixpanelTracker: MixpanelTracker
+    lateinit var posthogTracker: PosthogTracker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val config = PostHogAndroidConfig(
+            apiKey = if (BuildConfig.DEBUG) { BuildConfig.POSTHOG_TOKEN } else { BuildConfig.POSTHOG_TOKEN } ,
+            host = "https://us.i.posthog.com"
+        )
+
+        PostHogAndroid.setup(this, config)
 
         setContent {
             val mainUiState by viewModel.mainUiState.collectAsStateWithLifecycle()
@@ -37,7 +44,7 @@ class MainActivity : ComponentActivity() {
                     val credentialExist = mainUiState is MainUiState.Success
                     USaintApp(
                         startDestination = if (credentialExist) Home else Login,
-                        mixpanelTracker = mixpanelTracker,
+                        posthogTracker = posthogTracker,
                     )
                 }
             }
