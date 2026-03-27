@@ -30,7 +30,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "MIXPANEL_TOKEN", "\"${properties.getProperty("mixpanel_token")}\"")
+        buildConfigField("String", "POSTHOG_TOKEN", "\"${properties.getProperty("posthog_token")}\"")
+        buildConfigField("String", "POSTHOG_DEV_TOKEN", "\"${properties.getProperty("posthog_dev_token")}\"")
+
         externalNativeBuild {
             cmake {
                 arguments += listOf("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
@@ -109,7 +111,7 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
 
     // MixPanel
-    implementation(libs.mixpanel.android)
+    implementation(libs.posthog.android)
 
     implementation(libs.androidx.viewpager2)
     implementation(libs.compose.navigation)

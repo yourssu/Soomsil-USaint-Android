@@ -19,26 +19,26 @@ class GetCurrentSemesterUseCase @Inject constructor(
         val now = LocalDate.now()
         val year = now.year
 
-        // 2025년도 학기 개강 ~ 종강
+        // 2026년도 학기 개강 ~ 종강
         // https://ssu.ac.kr/%ED%95%99%EC%82%AC/%ED%95%99%EC%82%AC%EC%9D%BC%EC%A0%95/
-        // 1학기: 3/4 ~ 6/23 (성적 처리기간 ~7.7)
-        // 여름학기: 6/24 ~ 7/14 (성적 처리기간 ~7.31)
-        // 2학기: 9/1 ~ 12/20 (성적 처리기간 ~1.7)
-        // 겨울학기: 12/22 ~ 1/15 (성적 처리기간 ~1.31)
+        // 1학기: 3/1 ~ 6/22 (성적 처리기간 ~7.2)
+        // 여름학기: 6/23 ~ 7/13 (성적 처리기간 ~7.31)
+        // 2학기: 9/1 ~ 12/21 (성적 처리기간 ~1.3)
+        // 겨울학기: 12/22 ~ 1/14 (성적 처리기간 ~1.31)
         return when (now) {
-            in LocalDate.of(year, 3, 4)..LocalDate.of(year, 7, 7) ->
+            in LocalDate.of(year, 3, 1)..LocalDate.of(year, 7, 2) ->
                 Pair(year, SemesterType.One)
 
-            in LocalDate.of(year, 7, 8)..LocalDate.of(year, 7, 14) ->
+            in LocalDate.of(year, 7, 3)..LocalDate.of(year, 7, 13) ->
                 Pair(year, SemesterType.Summer)
 
             in LocalDate.of(year, 9, 1)..LocalDate.of(year, 12, 31) ->
                 Pair(year, SemesterType.Two)
 
-            in LocalDate.of(year, 1, 1)..LocalDate.of(year, 1, 10) ->
+            in LocalDate.of(year, 1, 1)..LocalDate.of(year, 1, 3) ->
                 Pair(year-1, SemesterType.Two)
 
-            in LocalDate.of(year, 1, 10)..LocalDate.of(year, 1, 31) ->
+            in LocalDate.of(year, 1, 4)..LocalDate.of(year, 1, 31) ->
                 Pair(year-1, SemesterType.Winter)
 
             else -> null

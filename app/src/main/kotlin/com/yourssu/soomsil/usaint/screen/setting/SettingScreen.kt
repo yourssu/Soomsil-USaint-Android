@@ -93,9 +93,11 @@ fun SettingScreen(
         settingUiState = settingUiState,
         onBackClick = onBackClick,
         onClickTermsOfService = {
+            viewModel.trackViewTermsOfUse()
             navigateToWebView(context.resources.getString(R.string.terms_of_service_url))
         },
         onClickTermsOfPrivacy = {
+            viewModel.trackViewPrivacy()
             navigateToWebView(context.resources.getString(R.string.terms_of_privacy_info_url))
         },
         onNotificationToggleChange = a@{ isChecked ->
@@ -375,7 +377,7 @@ fun SettingScreen(
 
         if (showCurrentSemesterSettingDialog && settingUiState is SettingUiState.UserEditableSettings) {
             CurrentSemesterSettingDialog(
-                year = settingUiState.specifiedCurrentSemester?.first ?: 2025,
+                year = settingUiState.specifiedCurrentSemester?.first ?: 2026,
                 semester = settingUiState.specifiedCurrentSemester?.second ?: SemesterType.One,
                 onConfirmClick = { year, semester ->
                     onSpecifiedCurrentSemester(year, semester)

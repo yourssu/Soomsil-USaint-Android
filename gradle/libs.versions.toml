@@ -29,6 +29,7 @@ uiautomator = "2.4.0-alpha05"
 benchmarkMacroJunit4 = "1.4.1"
 baselineprofile = "1.2.4"
 profileinstaller = "1.4.1"
+posthogAndroid = "3.+"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -58,7 +59,8 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
-mixpanel-android = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanelAndroid" }
+#mixpanel-android = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanelAndroid" }
+posthog-android = {module = "com.posthog:posthog-android", version.ref = "posthogAndroid"}
 protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobufJavalite" }
 rusaint = { module = "dev.eatsteak:rusaint", version.ref = "rusaint" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
