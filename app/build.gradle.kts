@@ -23,10 +23,10 @@ android {
 
     defaultConfig {
         applicationId = "com.yourssu.soomsil.usaint"
-        minSdk = 26
+        minSdk = 28
         targetSdk = 35
-        versionCode = 20
-        versionName = "0.2.7"
+        versionCode = 21
+        versionName = "0.2.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -52,12 +52,10 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+
     buildFeatures {
         buildConfig = true
     }
@@ -71,6 +69,10 @@ baselineProfile {
 }
 
 dependencies {
+    constraints {
+        implementation(libs.jna)
+    }
+
     // rusaint
     implementation(libs.rusaint)
 
@@ -161,13 +163,21 @@ protobuf {
 androidComponents {
     onVariants(selector().all()) { variant ->
         afterEvaluate {
-            val protoTask =
-                project.tasks.getByName("generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto") as GenerateProtoTask
-            project.tasks.getByName("ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin") {
+            val variantName = variant.name.replaceFirstChar { it.uppercaseChar() }
+            val protoTask = project.tasks.getByName("generate${variantName}Proto") as GenerateProtoTask
+            val generatedProtoJavaDir = file("${protoTask.outputBaseDir}/java")
+
+            project.tasks.getByName("ksp${variantName}Kotlin") {
                 dependsOn(protoTask)
-                (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*>).setSource(
-                    protoTask.outputBaseDir
-                )
+                when (this) {
+                    is com.google.devtools.ksp.gradle.KspAATask -> {
+                        kspConfig.javaSourceRoots.from(generatedProtoJavaDir)
+                    }
+
+                    is org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*> -> {
+                        setSource(generatedProtoJavaDir)
+                    }
+                }
             }
         }
     }

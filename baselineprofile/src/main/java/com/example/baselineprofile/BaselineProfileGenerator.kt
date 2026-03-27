@@ -4,9 +4,6 @@ import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.Direction
-import androidx.test.uiautomator.Until
 import androidx.test.uiautomator.textAsString
 import androidx.test.uiautomator.uiAutomator
 import androidx.test.uiautomator.watcher.PermissionDialog
@@ -80,10 +77,10 @@ class BaselineProfileGenerator {
                 }
 
                 onElement(30000) { textAsString() == "평균학점" }.click()
-                onElement(60000) {textAsString() == "22년 1학기"}.click()
+                onElement(100000) {textAsString() == "22년 2학기"}.click()
                 pressBack()
                 onElement(30000) { textAsString() == "채플" }.click()
-                onElement(60000) {textAsString() == "22년 1학기"}.click()
+                onElement(100000) {textAsString() == "22년 2학기"}.click()
             }
 
             // TODO Write more interactions to optimize advanced journeys of your app.

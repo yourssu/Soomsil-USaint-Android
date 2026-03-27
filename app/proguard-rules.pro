@@ -54,6 +54,9 @@
 -keep class dev.eatsteak.rusaint.** { *; }
 -keepclassmembers class dev.eatsteak.rusaint.** { *; }
 
+# rustls-platform-verifier Android 초기화/연결 클래스 보존
+-keep, includedescriptorclasses class org.rustls.platformverifier.** { *; }
+
 # --------------------------------------------------------
 # 3. Protobuf & DataStore 관련 (H2.f, isLoggedIn_ 에러 해결)
 # --------------------------------------------------------

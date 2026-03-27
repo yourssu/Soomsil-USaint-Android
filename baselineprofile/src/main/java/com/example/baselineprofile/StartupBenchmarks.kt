@@ -1,24 +1,18 @@
 package com.example.baselineprofile
 
-import android.os.Trace
 import android.util.Log
 import androidx.benchmark.macro.BaselineProfileMode
 import androidx.benchmark.macro.CompilationMode
 import androidx.benchmark.macro.ExperimentalMetricApi
-import androidx.benchmark.macro.FrameTimingMetric
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.StartupTimingMetric
-import androidx.benchmark.macro.TraceSectionMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.Until
 import androidx.test.uiautomator.textAsString
 import androidx.test.uiautomator.uiAutomator
 import androidx.test.uiautomator.watcher.PermissionDialog
-import androidx.test.uiautomator.watcher.PermissionDialog.Scope.clickAllow
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -93,10 +87,10 @@ class StartupBenchmarks {
                     }
                     val elapsed = measureTimeMillis {
                         onElement(30000) { textAsString() == "평균학점" }.click()
-                        onElement(60000) { textAsString() == "22년 1학기" }.click()
+                        onElement(60000) { textAsString() == "22년 2학기" }.click()
                         pressBack()
                         onElement(30000) { textAsString() == "채플" }.click()
-                        onElement(60000) { textAsString() == "22년 1학기" }.click()
+                        onElement(60000) { textAsString() == "22년 2학기" }.click()
                     }
                     println("[Bench Common] ${elapsed}ms 걸렸습니다")
                     Log.i("[Bench Common]", "${elapsed}ms 걸렸습니다")
