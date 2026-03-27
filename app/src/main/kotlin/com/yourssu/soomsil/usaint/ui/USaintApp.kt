@@ -1,5 +1,6 @@
 package com.yourssu.soomsil.usaint.ui
 
+import android.content.Intent
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -19,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -36,6 +39,7 @@ fun USaintApp(
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
+    val context = LocalContext.current
     val currentEntry by navController.currentBackStackEntryFlow.collectAsState(initial = null)
     val currentDestination = currentEntry?.destination
 
@@ -58,7 +62,11 @@ fun USaintApp(
             FloatingActionButton(
                 contentColor = Color.White,
                 onClick = {
-                    // TODO 채널톡 이동 코드 추가 요망
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        "https://873jp.channel.io".toUri()
+                    )
+                    context.startActivity(intent)
                 }
             ) {
                 Icon(
