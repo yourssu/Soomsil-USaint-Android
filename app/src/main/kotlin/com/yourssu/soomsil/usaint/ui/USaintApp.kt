@@ -2,7 +2,11 @@ package com.yourssu.soomsil.usaint.ui
 
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -14,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -47,6 +52,19 @@ fun USaintApp(
         topBar = {
             currentTopLevelDestination?.let {
                 TopAppBar(title = { Text(text = it.title) })
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                contentColor = Color.White,
+                onClick = {
+                    // TODO 채널톡 이동 코드 추가 요망
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Call,
+                    contentDescription = "채널톡 이동"
+                )
             }
         },
 //        bottomBar = {
