@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -75,9 +76,11 @@ fun ReportCardScreen(
                     ReportCardUiEvent.FetchSuccess ->
                         snackbarHostState.showSnackbar("성적 정보를 불러왔습니다.")
 
-                    is ReportCardUiEvent.FetchFailed ->
+                    is ReportCardUiEvent.FetchFailed -> {
                         snackbarHostState.showSnackbar(uiEvent.message?.let { "에러 발생: $it" }
                             ?: "문제가 발생했습니다.")
+
+                    }
                 }
             }
         }
@@ -88,6 +91,7 @@ fun ReportCardScreen(
         isRefreshing = viewModel.isRefreshing,
         onRefresh = { viewModel.fetchData(refresh = true) },
         reportCardUiState = reportCardUiState,
+        showPasswordIncorrectSnackbarState = viewModel.showPasswordIncorrectSnackbar,
         onPasswordChange = viewModel::changePassword,
         modifier = modifier,
         snackbarHostState = snackbarHostState,
@@ -105,6 +109,7 @@ private fun ReportCardScreen(
     snackbarHostState: SnackbarHostState,
     onPasswordChange: (password: String) -> Unit,
     reportCardUiState: ReportCardUiState,
+    showPasswordIncorrectSnackbarState: MutableState<Boolean>,
     modifier: Modifier = Modifier,
     onLectureItemClick: (String) -> Unit = {},
     onSemesterItemClick: (SemesterData) -> Unit = {},
@@ -127,37 +132,18 @@ private fun ReportCardScreen(
                 .fillMaxHeight()
                 .verticalScroll(rememberScrollState()),
         ) {
-            if (isReportCardLoading) {
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-                return@Column
-            }
-
-            var showPasswordIncorrectSnackbar by remember {
-                if (reportCardUiState is ReportCardUiState.ReportCard)
-                    reportCardUiState.showPasswordIncorrectSnackbar
-                else
-                    mutableStateOf(false)
-            }
-
+            var showPasswordIncorrectSnackbar by showPasswordIncorrectSnackbarState
             var isVisiblePasswordChangeDialog by remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()
+
             if (showPasswordIncorrectSnackbar) {
                 LaunchedEffect(Unit) {
                     snackbarHostState.currentSnackbarData?.dismiss()
-                    val result = snackbarHostState
-                        .showSnackbar(
-                            message = "유세인트 로그인에 실패했습니다.",
-                            actionLabel = "비밀번호 변경",
-                            // Defaults to SnackbarDuration.Short
-                            duration = SnackbarDuration.Indefinite
-                        )
+                    val result = snackbarHostState.showSnackbar(
+                        message = "유세인트 로그인에 실패했습니다.",
+                        actionLabel = "비밀번호 변경",
+                        duration = SnackbarDuration.Indefinite
+                    )
                     when (result) {
                         SnackbarResult.ActionPerformed -> {
                             snackbarHostState.currentSnackbarData?.dismiss()
@@ -192,6 +178,18 @@ private fun ReportCardScreen(
                         }
                     }
                 )
+            }
+
+            if (isReportCardLoading) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+                return@Column
             }
             ChartSummary(reportCardUiState)
             SemesterTabsAndDetail(
@@ -358,10 +356,10 @@ private fun ReportCardScreenPreview() {
             onRefresh = {},
             onPasswordChange = {},
             snackbarHostState = remember { SnackbarHostState() },
+            showPasswordIncorrectSnackbarState = remember { mutableStateOf(false) },
             reportCardUiState = ReportCardUiState.ReportCard(
                 summary = ReportCardSummaryData.previewData,
                 semesterWithLectures = semesters.zip(lectures).toMap(),
-                showPasswordIncorrectSnackbar = remember { mutableStateOf(false) }
             )
         )
     }
@@ -377,6 +375,7 @@ private fun ReportCardScreenPreview_loading() {
             onRefresh = {},
             snackbarHostState = remember { SnackbarHostState() },
             onPasswordChange = {},
+            showPasswordIncorrectSnackbarState = remember { mutableStateOf(false) },
             reportCardUiState = ReportCardUiState.Loading,
         )
     }

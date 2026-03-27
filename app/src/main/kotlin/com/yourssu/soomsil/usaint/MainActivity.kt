@@ -7,9 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
+import com.yourssu.soomsil.usaint.data.analytics.PostHogTracker
 import com.yourssu.soomsil.usaint.screen.home.navigation.Home
 import com.yourssu.soomsil.usaint.screen.login.navigation.Login
 import com.yourssu.soomsil.usaint.ui.USaintApp
@@ -22,7 +20,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel by viewModels<MainViewModel>()
 
     @Inject
-    lateinit var mixpanelTracker: MixpanelTracker
+    lateinit var posthogTracker: PostHogTracker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     val credentialExist = mainUiState is MainUiState.Success
                     USaintApp(
                         startDestination = if (credentialExist) Home else Login,
-                        mixpanelTracker = mixpanelTracker,
+                        posthogTracker = posthogTracker,
                     )
                 }
             }
