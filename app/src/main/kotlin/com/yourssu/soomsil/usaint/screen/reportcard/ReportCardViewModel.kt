@@ -1,6 +1,5 @@
 package com.yourssu.soomsil.usaint.screen.reportcard
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.SemesterData
-import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
+import com.yourssu.soomsil.usaint.data.analytics.PostHogTracker
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
 import com.yourssu.soomsil.usaint.data.repository.UserDataRepository
@@ -32,7 +31,6 @@ sealed interface ReportCardUiState {
     data class ReportCard(
         val summary: ReportCardSummaryData,
         val semesterWithLectures: Map<SemesterData, List<LectureData>>,
-        val showPasswordIncorrectSnackbar: MutableState<Boolean>,
     ) : ReportCardUiState
 }
 
@@ -46,11 +44,11 @@ sealed interface ReportCardUiEvent {
 class ReportCardViewModel @Inject constructor(
     private val studentCredential: StudentCredentialRepository,
     private val reportCardRepository: ReportCardRepository,
-    private val mixpanelTracker: MixpanelTracker,
+    private val posthogTracker: PostHogTracker,
     userDataRepository: UserDataRepository,
 ) : ViewModel() {
 
-    private var showPasswordIncorrectSnackbar = mutableStateOf(false)
+    val showPasswordIncorrectSnackbar = mutableStateOf(false)
 
     val reportCardUiState: StateFlow<ReportCardUiState> = combine(
         reportCardRepository.reportCardSummaryData,
@@ -62,7 +60,6 @@ class ReportCardViewModel @Inject constructor(
             ReportCardUiState.ReportCard(
                 summary,
                 semesterWithLectures,
-                showPasswordIncorrectSnackbar
             )
         }
     }
@@ -98,25 +95,26 @@ class ReportCardViewModel @Inject constructor(
                 _eventChannel.send(ReportCardUiEvent.FetchStart)
             }
             isRefreshing = refresh
-            try {
-                reportCardRepository.fetchSemesterWithLectures()
-                    .onSuccess {
-                        if (!refresh) {
-                            _eventChannel.send(ReportCardUiEvent.FetchSuccess)
+
+            reportCardRepository.fetchSemesterWithLectures()
+                .onSuccess {
+                    if (!refresh) {
+                        _eventChannel.send(ReportCardUiEvent.FetchSuccess)
+                    }
+                }
+                .onFailure { e ->
+                    Timber.e(e)
+                    if (e is RusaintException) {
+                        if (e.message?.contains("비밀번호") == true) {
+                            // TODO 이 지점에서 비밀번호 틀려서 로그인에 실패한걸 트래커에 보낼 필요가 있을까?
+                            //posthogTracker.trackLoginFailed(e)
+                            showPasswordIncorrectSnackbar.value = true
+                            return@onFailure
                         }
                     }
-                    .onFailure { e ->
-                        // TODO 에러처리
-                        Timber.e(e)
-                        _eventChannel.send(ReportCardUiEvent.FetchFailed(e.message))
-                        if (e is RusaintException)
-                            throw e
-                    }
-            } catch (e: RusaintException) { // RusaintException이 아니면 중지할 필요 없음
-                if (e.message?.contains("비밀번호") == true) {
-                    showPasswordIncorrectSnackbar.value = true
+                    _eventChannel.send(ReportCardUiEvent.FetchFailed(e.message))
+
                 }
-            }
             hasInitialized = true
             isRefreshing = false
         }
@@ -131,13 +129,13 @@ class ReportCardViewModel @Inject constructor(
 
     fun onCheckLectureItemClicked(lectureTitle: String) {
         viewModelScope.launch {
-            mixpanelTracker.trackLectureDetail(lectureTitle)
+            posthogTracker.trackLectureDetail(lectureTitle)
         }
     }
 
     fun onCheckSemesterItemClicked(semester: SemesterData) {
         viewModelScope.launch {
-            mixpanelTracker.trackSemester(semester)
+            posthogTracker.trackSemester(semester)
         }
     }
 }

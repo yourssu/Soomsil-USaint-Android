@@ -3,7 +3,9 @@ package com.yourssu.soomsil.usaint
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
+import com.posthog.android.PostHogAndroid
+import com.posthog.android.PostHogAndroidConfig
+import com.yourssu.soomsil.usaint.data.analytics.PostHogTracker
 import com.yourssu.soomsil.usaint.domain.usecase.UpdateWorkerUseCase
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
@@ -19,7 +21,7 @@ class SoomsilUSaintApplication : Application(), Configuration.Provider {
     lateinit var updateWorkerUseCase: UpdateWorkerUseCase
 
     @Inject
-    lateinit var mixpanelTracker: MixpanelTracker
+    lateinit var posthogTracker: PostHogTracker
 
     override fun onCreate() {
         super.onCreate()
@@ -27,8 +29,15 @@ class SoomsilUSaintApplication : Application(), Configuration.Provider {
             Timber.plant(Timber.DebugTree())
         }
 
+        val config = PostHogAndroidConfig(
+            apiKey = if (BuildConfig.DEBUG) { BuildConfig.POSTHOG_DEV_TOKEN } else { BuildConfig.POSTHOG_TOKEN } ,
+            host = "https://us.i.posthog.com"
+        )
+
+        PostHogAndroid.setup(this, config)
+
         updateWorkerUseCase.enqueue()
-        mixpanelTracker.trackAppLaunch()
+        posthogTracker.trackAppLaunch()
     }
 
     override val workManagerConfiguration: Configuration

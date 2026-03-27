@@ -23,7 +23,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.rememberNavController
-import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
+import com.yourssu.soomsil.usaint.data.analytics.PostHogTracker
 import com.yourssu.soomsil.usaint.navigation.TopLevelDestination
 import com.yourssu.soomsil.usaint.navigation.USaintNavHost
 import kotlin.reflect.KClass
@@ -32,7 +32,7 @@ import kotlin.reflect.KClass
 @Composable
 fun USaintApp(
     startDestination: Any,
-    mixpanelTracker: MixpanelTracker,
+    posthogTracker: PostHogTracker,
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
