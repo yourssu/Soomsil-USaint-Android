@@ -7,11 +7,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.model.ChapelData
+import com.yourssu.soomsil.usaint.data.analytics.PostHogTracker
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentCredentialDataSource
 import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.eatsteak.rusaint.ffi.RusaintException
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -36,6 +36,7 @@ class ChapelViewModel @Inject constructor(
     private val studentCredential: StudentCredentialDataSource,
     private val chapelRepository: ChapelRepository,
     private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
+    private val posthogTracker: PostHogTracker
 ) : ViewModel() {
     private var showPasswordIncorrectSnackbar = mutableStateOf(false)
 
@@ -68,25 +69,25 @@ class ChapelViewModel @Inject constructor(
         if (isRefreshing || (!hasInitialized && refresh)) return
         viewModelScope.launch {
             isRefreshing = refresh
-            try {
-                getCurrentSemesterUseCase()?.let {
-                    chapelRepository.fetchChapelCardData(it)
-                        .onFailure { e ->
-                            Timber.e(e)
-                            if(e is RusaintException) throw e
-                        }
-                }
-            } catch(e: RusaintException) {
-                if(e.message?.contains("비밀번호") == true) {
+            getCurrentSemesterUseCase()?.let {
+                chapelRepository.fetchChapelCardData(it)
+            }?.onFailure {
+                Timber.e(it)
+                if(it.message?.contains("비밀번호") ?: false) {
+                    // TODO 이 지점에서 비밀번호 틀려서 로그인에 실패한걸 전부 트래커에 보낼 필요가 있을까?
+                    //posthogTracker.trackLoginFailed(it)
                     showPasswordIncorrectSnackbar.value = true
                 }
-            } finally {
-                // RusaintException catch에서 무조건 비밀번호 관련이 아닐 수 있습니다
-                // 현재 학기가 존재하지 않는데 채플 정보를 불러오려고 하면 그때도 RusaintException이 발생하는거 같습니다
-                // finally 구문에서 비밀번호 관련 에러로 catch된게 아니면 불러오도록 하겠습니다
-                if(!showPasswordIncorrectSnackbar.value)
-                    chapelRepository.fetchSemesterWithChapels().onFailure { e -> Timber.e(e) }
             }
+
+            // RusaintException catch에서 무조건 비밀번호 관련이 아닙니다.
+            // 현재 학기가 존재하지 않는데 채플 정보를 불러오려고 하면 그때도 RusaintException이 발생합니다.
+            // 비밀번호 관련 에러로 catch된게 아니면
+            // 현재 학기에 대한 채플정보는 없더라도 과거 학기에 대한 채플정보를 불러와야 합니다.
+            if(!showPasswordIncorrectSnackbar.value)
+                chapelRepository.fetchSemesterWithChapels().onFailure { e -> Timber.e(e) }
+
+
             hasInitialized = true
             isRefreshing = false
         }

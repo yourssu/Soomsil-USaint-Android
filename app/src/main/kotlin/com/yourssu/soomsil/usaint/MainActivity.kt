@@ -7,9 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.posthog.android.PostHogAndroid
-import com.posthog.android.PostHogAndroidConfig
-import com.yourssu.soomsil.usaint.data.analytics.PosthogTracker
+import com.yourssu.soomsil.usaint.data.analytics.PostHogTracker
 import com.yourssu.soomsil.usaint.screen.home.navigation.Home
 import com.yourssu.soomsil.usaint.screen.login.navigation.Login
 import com.yourssu.soomsil.usaint.ui.USaintApp
@@ -22,18 +20,11 @@ class MainActivity : ComponentActivity() {
     private val viewModel by viewModels<MainViewModel>()
 
     @Inject
-    lateinit var posthogTracker: PosthogTracker
+    lateinit var posthogTracker: PostHogTracker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        val config = PostHogAndroidConfig(
-            apiKey = if (BuildConfig.DEBUG) { BuildConfig.POSTHOG_TOKEN } else { BuildConfig.POSTHOG_TOKEN } ,
-            host = "https://us.i.posthog.com"
-        )
-
-        PostHogAndroid.setup(this, config)
 
         setContent {
             val mainUiState by viewModel.mainUiState.collectAsStateWithLifecycle()

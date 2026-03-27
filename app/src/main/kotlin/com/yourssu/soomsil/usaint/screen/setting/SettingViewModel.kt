@@ -3,7 +3,7 @@ package com.yourssu.soomsil.usaint.screen.setting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.types.SemesterType
-import com.yourssu.soomsil.usaint.data.analytics.PosthogTracker
+import com.yourssu.soomsil.usaint.data.analytics.PostHogTracker
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
@@ -37,7 +37,7 @@ class SettingViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val chapelRepository: ChapelRepository,
     private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
-    private val posthogTracker: PosthogTracker,
+    private val posthogTracker: PostHogTracker,
 //    private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<SettingUiState> =
@@ -58,6 +58,10 @@ class SettingViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = SettingUiState.Loading,
             )
+
+    init {
+        posthogTracker.trackSettingView()
+    }
 
     fun updateNotificationSetting(enable: Boolean) {
         viewModelScope.launch {
@@ -94,6 +98,14 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             userDataRepository.setCurrentSemesterSpecified(year, semester)
         }
+    }
+
+    fun trackViewTermsOfUse() {
+        posthogTracker.trackViewTermsOfUse()
+    }
+
+    fun trackViewPrivacy() {
+        posthogTracker.trackViewPrivacy()
     }
 
     fun changePassword(password: String) {

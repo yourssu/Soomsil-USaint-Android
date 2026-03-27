@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.model.StudentCredential
-import com.yourssu.soomsil.usaint.data.analytics.PosthogTracker
+import com.yourssu.soomsil.usaint.data.analytics.PostHogTracker
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentCredentialRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
@@ -26,7 +26,7 @@ class LoginViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val chapelRepository: ChapelRepository,
     private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
-    private val posthogTracker: PosthogTracker
+    private val posthogTracker: PostHogTracker
 //    private val updateWorkerUseCase: UpdateWorkerUseCase,
 ) : ViewModel() {
     private val _uiEvent: MutableSharedFlow<LoginUiEvent> = MutableSharedFlow()
@@ -54,18 +54,24 @@ class LoginViewModel @Inject constructor(
             isLoading = true
             // id/pw 저장
             studentCredentialRepository.setStudentCredential(credential)
+
             // 저장된 id/pw로 학생 데이터 가져오기 시도
-            getCurrentSemesterUseCase()?.let {
-                chapelRepository.fetchChapelCardData(it)
-                    .onFailure { e -> Timber.e(e) }
-            }
             studentDataRepository.fetchStudentData()
                 .onSuccess {
+                    getCurrentSemesterUseCase()?.let { // 현재 학기 채플 정보 불러오기
+                        chapelRepository.fetchChapelCardData(it)
+                            .onFailure {
+                                // 로그인 실패 여부는 fetchStudentData()에서 한번에 판단
+                                    e -> Timber.e(e)
+                            }
+                    }
+
                     studentCredentialRepository.setLoggedIn(true)
                     _uiEvent.emit(LoginUiEvent.Success)
                     posthogTracker.trackLogin(credential.id)
                 }
                 .onFailure { e ->
+                    posthogTracker.trackLoginFailed(e)
                     _uiEvent.emit(LoginUiEvent.Failure(e.message))
                 }
 

@@ -93,9 +93,11 @@ fun SettingScreen(
         settingUiState = settingUiState,
         onBackClick = onBackClick,
         onClickTermsOfService = {
+            viewModel.trackViewTermsOfUse()
             navigateToWebView(context.resources.getString(R.string.terms_of_service_url))
         },
         onClickTermsOfPrivacy = {
+            viewModel.trackViewPrivacy()
             navigateToWebView(context.resources.getString(R.string.terms_of_privacy_info_url))
         },
         onNotificationToggleChange = a@{ isChecked ->

@@ -11,7 +11,7 @@ import com.yourssu.soomsil.usaint.core.model.LectureData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.SemesterData
 import com.yourssu.soomsil.usaint.core.model.StudentData
-import com.yourssu.soomsil.usaint.data.analytics.PosthogTracker
+import com.yourssu.soomsil.usaint.data.analytics.PostHogTracker
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
 import com.yourssu.soomsil.usaint.data.repository.ReportCardRepository
 import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
@@ -53,7 +53,7 @@ class HomeViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val chapelRepository: ChapelRepository,
     private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
-    private val posthogTracker: PosthogTracker,
+    private val posthogTracker: PostHogTracker,
 ) : ViewModel() {
     private var showPasswordIncorrectSnackbar = mutableStateOf(false)
     private var showFailedLoadToStudentDataSnackbar = mutableStateOf(false)
@@ -92,6 +92,7 @@ class HomeViewModel @Inject constructor(
         private set
 
     init {
+        posthogTracker.trackHomeViewed()
         viewModelScope.launch {
             val autoFetch = userDataRepository.userData.first().autoFetch
             if (autoFetch) {
@@ -117,6 +118,8 @@ class HomeViewModel @Inject constructor(
                 }
             } catch(e: RusaintException) { // RusaintException이 아니면 중지할 필요 없음
                 if(e.message?.contains("비밀번호") == true) {
+                    // TODO 이 지점에서 비밀번호 틀려서 로그인에 실패한걸 트래커에 보낼 필요가 있을까?
+                    //posthogTracker.trackLoginFailed(e)
                     showPasswordIncorrectSnackbar.value = true
 2                }
             }

@@ -30,6 +30,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "POSTHOG_TOKEN", "\"${properties.getProperty("posthog_token")}\"")
+        buildConfigField("String", "POSTHOG_DEV_TOKEN", "\"${properties.getProperty("posthog_dev_token")}\"")
+
         externalNativeBuild {
             cmake {
                 arguments += listOf("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
