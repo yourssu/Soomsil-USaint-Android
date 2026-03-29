@@ -5,7 +5,7 @@
     <string name="terms_title">약관</string>
     <string name="terms_of_service">이용약관</string>
     <string name="terms_of_privacy_info">개인정보 처리방침</string>
-    <string name="terms_of_privacy_info_url">https://auth.yourssu.com/terms/information.html</string>
-    <string name="terms_of_service_url">https://auth.yourssu.com/terms/service.html</string>
+    <string name="terms_of_privacy_info_url">https://ground-auth.yourssu.com/privacy</string>
+    <string name="terms_of_service_url">https://ground-auth.yourssu.com/terms</string>
     <string name="request_alarm_permission_in_setting">설정 화면에서 알림 권한을 허용해주세요</string>
 </resources>
