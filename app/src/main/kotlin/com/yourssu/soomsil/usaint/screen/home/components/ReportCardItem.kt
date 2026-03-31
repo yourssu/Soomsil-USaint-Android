@@ -44,6 +44,33 @@ fun ReportCardItem(
     }
 }
 
+@Composable
+fun ReportCardItemEmpty(
+    modifier: Modifier = Modifier,
+) {
+    ElevatedCard(
+        modifier = modifier,
+    ) {
+        Column(
+            modifier = Modifier.padding(vertical = 16.dp),
+        ) {
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "아직 등록된 성적이 없어요",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+    }
+}
+
 // TODO 따로 분리하기
 @Composable
 fun ReportOutline(
