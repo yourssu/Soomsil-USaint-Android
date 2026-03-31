@@ -29,9 +29,9 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,11 +52,13 @@ import com.yourssu.soomsil.usaint.core.model.StudentData
 import com.yourssu.soomsil.usaint.screen.home.components.ChapelCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.EmptyChapelCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItem
+import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItemEmpty
 import com.yourssu.soomsil.usaint.screen.home.components.StudentDataItem
 import com.yourssu.soomsil.usaint.screen.reportcard.components.LectureItem
 import com.yourssu.soomsil.usaint.screen.setting.PasswordChangeDialog
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
 import kotlinx.coroutines.launch
+
 @Composable
 fun HomeScreen(
     snackbarHostState: SnackbarHostState,
@@ -180,6 +182,14 @@ private fun HomeScreen(
             var showFailedLoadToStudentDataSnackbar by remember {
                 if (homeUiState is HomeUiState.Home)
                     homeUiState.showFailedLoadToStudentDataSnackbar
+                else
+                    mutableStateOf(false)
+            }
+
+            // TODO RUSAINT 고치면 삭제 바람
+            val isFailedFetch by remember {
+                if (homeUiState is HomeUiState.Home)
+                    homeUiState.isFailedFetch
                 else
                     mutableStateOf(false)
             }
@@ -333,7 +343,7 @@ private fun HomeScreen(
 //                },
 //            )
 
-//            나중에 성적시즌이 되면 주석 풀어주세요
+//            TODO 나중에 성적시즌이 되면 주석 풀어주세요
 //            if (studentData?.status == "재학") {
 //                Spacer(Modifier.height(8.dp))
 //                ActionTitleItem(
@@ -345,11 +355,17 @@ private fun HomeScreen(
 //                )
 //            }
 
-            Spacer(Modifier.height(8.dp))
-            ReportCardItem(
-                reportCardSummary = reportCardSummaryData,
-                onReportCardClick = onReportCardClick,
-            )
+            // TODO Rusaint 고치면 밑 조건문 삭제 바람
+            if(!isFailedFetch) {
+                Spacer(Modifier.height(8.dp))
+                ReportCardItem(
+                    reportCardSummary = reportCardSummaryData,
+                    onReportCardClick = onReportCardClick,
+                )
+            } else {
+                Spacer(Modifier.height(8.dp))
+                ReportCardItemEmpty()
+            }
             Spacer(Modifier.height(8.dp))
             if(chapelCardData != null) {
                 val totalAttendance = chapelCardData.chapelAttendances.size
@@ -397,7 +413,35 @@ private fun HomePreview_being() {
                 currentSemesterLectures = null,
                 currentSemesterData = null,
                 showPasswordIncorrectSnackbar = remember { mutableStateOf(false) },
-                showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) }
+                showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) },
+                isFailedFetch = remember { mutableStateOf(false) }
+            ),
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun HomePreview_RUSAINT_FAILED() {
+    // 재학 상태
+    SoomsilUSaintTheme {
+        HomeScreen(
+            hasInitialized = false,
+            isRefreshing = false,
+            onRefresh = {},
+            snackbarHostState = remember { SnackbarHostState() },
+            homeUiState = HomeUiState.Home(
+                studentData = StudentData.previewData,
+                reportCardSummaryData = ReportCardSummaryData.previewData,
+                chapelCardData = ChapelData(
+                    ChapelSimpleData.previewData,
+                    listOf(ChapelAttendanceData.previewData)
+                ),
+                currentSemesterLectures = null,
+                currentSemesterData = null,
+                showPasswordIncorrectSnackbar = remember { mutableStateOf(false) },
+                showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) },
+                isFailedFetch = remember { mutableStateOf(true) }
             ),
         )
     }
@@ -423,7 +467,8 @@ private fun HomePreview_leave() {
                 currentSemesterLectures = null,
                 currentSemesterData = null,
                 showPasswordIncorrectSnackbar = remember { mutableStateOf(false) },
-                showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) }
+                showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) },
+                isFailedFetch = remember { mutableStateOf(false) }
             ),
         )
     }
