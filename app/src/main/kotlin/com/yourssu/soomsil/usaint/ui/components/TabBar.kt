@@ -1,10 +1,11 @@
-package com.yourssu.soomsil.usaint.ui.tabbar
+package com.yourssu.soomsil.usaint.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,11 +16,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -41,7 +45,7 @@ fun TabBarContent(){
     val inactiveLabelColor = Color(0xFFB0B8C1)
     val activeTextColor = Color(0xFFFFFFFF)
 
-    val buttonColor = androidx.compose.material3.ButtonDefaults.buttonColors(
+    val buttonColor = ButtonDefaults.buttonColors(
         disabledContentColor = inactiveIconColor,
         disabledContainerColor = Color.Transparent,
         contentColor = activeTextColor,
@@ -54,7 +58,7 @@ fun TabBarContent(){
             .border(BorderStroke(1.dp, Color(0xFFF3F4F6)), shape = CircleShape)
             .clip(CircleShape),
         containerColor = Color(0xFFFFFFFF),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)
+        contentPadding = PaddingValues(0.dp)
     ){
         Row(
             modifier = Modifier.fillMaxHeight(),
@@ -105,7 +109,7 @@ private fun RowScope.TabItem(
     label: String,
     iconId: Int,
     isActive: Boolean,
-    buttonColor: androidx.compose.material3.ButtonColors,
+    buttonColor: ButtonColors,
     activeTextColor: Color,
     inactiveIconColor: Color,
     inactiveLabelColor: Color
@@ -117,12 +121,12 @@ private fun RowScope.TabItem(
             .fillMaxHeight()
             .clip(RoundedCornerShape(26.dp)),
         colors = if (isActive) {
-            androidx.compose.material3.ButtonDefaults.buttonColors(
+            ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF775EFF),
                 contentColor = activeTextColor
             )
         } else {
-            androidx.compose.material3.ButtonDefaults.buttonColors(
+            ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
                 contentColor = inactiveIconColor
             )
@@ -139,7 +143,7 @@ private fun RowScope.TabItem(
                 modifier = Modifier.size(18.dp),
                 colorFilter = ColorFilter.tint(
                     color = if (isActive) activeTextColor else inactiveIconColor,
-                    blendMode = androidx.compose.ui.graphics.BlendMode.SrcIn
+                    blendMode = BlendMode.SrcIn
                 )
             )
             Text(
