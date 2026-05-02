@@ -33,13 +33,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yourssu.soomsil.usaint.R
 
-fun TabBar(){
-
+@Composable
+fun TabBar() {
+    TabBarContent()
 }
 
 @Composable
 @Preview
-fun TabBarContent(){
+private fun TabBarContent(){
     val activeColor = Color(0xFF775EFF)
     val inactiveIconColor = Color(0xFFD1D5DB)
     val inactiveLabelColor = Color(0xFFB0B8C1)
@@ -156,4 +157,3 @@ private fun RowScope.TabItem(
 
     }
 }
-
