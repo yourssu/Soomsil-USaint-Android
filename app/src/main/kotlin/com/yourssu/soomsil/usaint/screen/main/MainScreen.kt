@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,11 +34,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.ui.components.TabBar
 
 @Composable
 @Preview
 fun MainScreen(){
-    MainPageScreen()
+    MainPageScreen(tabBar = { TabBar() })
 }
 // ─── Header ───
 
@@ -50,8 +52,8 @@ fun MainHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(60.dp)
-            .padding(horizontal = 20.dp, vertical = 8.dp),
+            .padding(horizontal = 20.dp, vertical = 10.dp)
+            .heightIn(min = 64.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -378,7 +380,7 @@ fun PillTabBar(
     selectedIndex: Int,
     tabs: List<TabItem>,
     onTabClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
@@ -459,7 +461,8 @@ fun MainPageScreen(
     onChartDetailClick: () -> Unit = {},
     onChapelClick: () -> Unit = {},
     onTabClick: (Int) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tabBar: @Composable () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -502,10 +505,6 @@ fun MainPageScreen(
             )
         }
 
-        PillTabBar(
-            selectedIndex = selectedTabIndex,
-            tabs = tabs,
-            onTabClick = onTabClick
-        )
+        tabBar()
     }
 }
