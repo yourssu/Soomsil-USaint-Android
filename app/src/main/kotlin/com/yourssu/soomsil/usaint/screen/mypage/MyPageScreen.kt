@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yourssu.soomsil.usaint.BuildConfig
 import com.yourssu.soomsil.usaint.ui.components.TabBar
 
 @Composable
@@ -196,7 +197,7 @@ private fun MyPageScreenContent(
 
                 // 버전정보
                 SettingSection("버전정보") {
-                    SettingRow("v 3.1.5")
+                    SettingRow("v ${BuildConfig.VERSION_NAME}")
                 }
             }
         }
