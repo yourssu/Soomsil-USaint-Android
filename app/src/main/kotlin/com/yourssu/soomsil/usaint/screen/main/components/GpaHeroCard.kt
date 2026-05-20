@@ -88,7 +88,7 @@ fun GpaHeroCard(
             )
             Spacer(modifier = Modifier.width(6.dp))
             Icon(
-                painter = painterResource(R.drawable.ic_tabbar_bell), // was ic_arrow_right
+                painter = painterResource(R.drawable.ic_arrow_right), // was ic_arrow_right
                 contentDescription = null,
                 modifier = Modifier.size(14.dp),
                 tint = Color(0xFF0A0A0A)

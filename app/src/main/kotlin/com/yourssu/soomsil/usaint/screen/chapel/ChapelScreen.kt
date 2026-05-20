@@ -82,7 +82,7 @@ fun ChapelScreen(
     )
 
 }
-
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChapelScreen(
@@ -313,7 +313,7 @@ private fun SemesterTabsAndDetail(
         }
     }
 }
-
+*/
 // --- New Chapel Screen ---
 
 @Composable
@@ -334,7 +334,7 @@ fun ChapelHeader(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_tabbar_bell),//ic_caret_left
+                painter = painterResource(R.drawable.ic_caret_left),
                 contentDescription = "뒤로가기",
                 modifier = Modifier
                     .size(24.dp)
@@ -350,7 +350,7 @@ fun ChapelHeader(
             )
         }
         Icon(
-            painter = painterResource(R.drawable.ic_tabbar_bell),//ic_info
+            painter = painterResource(R.drawable.ic_info),
             contentDescription = "정보",
             modifier = Modifier
                 .size(22.dp)
@@ -534,7 +534,7 @@ fun AttendanceCta(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_tabbar_bell),//ic_qr_code
+                    painter = painterResource(R.drawable.ic_qr_code),
                     contentDescription = null,
                     modifier = Modifier.size(18.dp),
                     tint = Color.White

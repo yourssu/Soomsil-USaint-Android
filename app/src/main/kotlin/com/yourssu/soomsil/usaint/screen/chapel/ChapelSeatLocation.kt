@@ -75,7 +75,7 @@ private fun SeatLocationHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            painter = painterResource(R.drawable.ic_tabbar_bell), //ic_chevron_left
+            painter = painterResource(R.drawable.ic_caret_left),
             contentDescription = "뒤로가기",
             modifier = Modifier
                 .size(24.dp)
@@ -89,7 +89,7 @@ private fun SeatLocationHeader(
             color = Color(0xFF0F172A)
         )
         Icon(
-            painter = painterResource(R.drawable.ic_tabbar_bell), //ic_info
+            painter = painterResource(R.drawable.ic_info),
             contentDescription = "정보",
             modifier = Modifier
                 .size(22.dp)
@@ -250,7 +250,7 @@ private fun SeatMapWrap(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_tabbar_bell),//ic_arrow_up
+                painter = painterResource(R.drawable.ic_arrow_up),//ic_arrow_up
                 contentDescription = null,
                 modifier = Modifier.size(14.dp),
                 tint = Color(0xFF0062FF)

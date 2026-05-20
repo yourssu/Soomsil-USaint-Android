@@ -33,7 +33,7 @@ fun GradeDetailHeader(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Icon(
-            painter = painterResource(R.drawable.ic_tabbar_bell), // ic_chevron_left
+            painter = painterResource(R.drawable.ic_caret_left),
             contentDescription = "뒤로가기",
             modifier = Modifier
                 .size(24.dp)

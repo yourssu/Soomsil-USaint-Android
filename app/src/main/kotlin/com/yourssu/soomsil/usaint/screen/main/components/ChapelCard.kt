@@ -66,7 +66,7 @@ fun ChapelCard(
                 )
             }
             Icon(
-                painter = painterResource(R.drawable.ic_tabbar_bell), // was ic_chevron_right
+                painter = painterResource(R.drawable.ic_caret_right),
                 contentDescription = null,
                 modifier = Modifier.size(18.dp),
                 tint = Color(0xFF9CA3AF)
