@@ -18,9 +18,17 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.rememberNavController
+import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
 import com.yourssu.soomsil.usaint.navigation.TopLevelDestination
 import com.yourssu.soomsil.usaint.navigation.USaintNavHost
+import com.yourssu.soomsil.usaint.screen.chapel.navigation.Chapel
+import com.yourssu.soomsil.usaint.screen.main.navigation.Main
+import com.yourssu.soomsil.usaint.screen.mypage.navigation.MyPage
+import com.yourssu.soomsil.usaint.screen.pushnotifications.navigation.PushNotifications
+import com.yourssu.soomsil.usaint.ui.components.TabBar
+import com.yourssu.soomsil.usaint.ui.components.navigation.TabBarDestination
+import com.yourssu.soomsil.usaint.ui.components.navigation.rememberTabBarNavigationState
 import kotlin.reflect.KClass
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,6 +49,33 @@ fun USaintApp(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
+    val tabBarDestinations = remember {
+        listOf(
+            TabBarDestination(
+                route = requireNotNull(Main::class.qualifiedName),
+                label = "홈",
+                iconId = R.drawable.ic_tabbar_house,
+            ),
+            TabBarDestination(
+                route = requireNotNull(Chapel::class.qualifiedName),
+                label = "소식",
+                iconId = R.drawable.ic_tabbar_megaphone,
+            ),
+            TabBarDestination(
+                route = requireNotNull(PushNotifications::class.qualifiedName),
+                label = "알림",
+                iconId = R.drawable.ic_tabbar_bell,
+            ),
+            TabBarDestination(
+                route = requireNotNull(MyPage::class.qualifiedName),
+                label = "마이",
+                iconId = R.drawable.ic_tabbar_user,
+            ),
+        )
+    }
+    val tabBarNavigationState = rememberTabBarNavigationState(navController, tabBarDestinations)
+    val showTabBar = tabBarNavigationState.selectedRoute != null
+
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -49,35 +84,15 @@ fun USaintApp(
                 TopAppBar(title = { Text(text = it.title) })
             }
         },
-//        bottomBar = {
-//            if (currentTopLevelDestination != null) {
-//                NavigationBar {
-//                    TopLevelDestination.entries.forEach { destination ->
-//                        val selected = currentDestination.isRouteInHierarchy(destination.route)
-//                        NavigationBarItem(
-//                            icon = {
-//                                Icon(
-//                                    if (selected) destination.selectedIcon else destination.unselectedIcon,
-//                                    contentDescription = destination.label,
-//                                )
-//                            },
-//                            label = { Text(destination.label) },
-//                            selected = selected,
-//                            onClick = {
-//                                coroutineScope.launch {
-//                                    if (destination == TopLevelDestination.REPORT_CARD) {
-//                                        mixpanelTracker.trackNavigate("BOTTOM_NAV", false)
-//                                    } else if (destination == TopLevelDestination.CHAPEL) {
-//                                        mixpanelTracker.trackNavigate("BOTTOM_NAV", true)
-//                                    }
-//                                }
-//                                navController.navigateToTopLevelDestination(destination)
-//                            },
-//                        )
-//                    }
-//                }
-//            }
-//        },
+        bottomBar = {
+            if (showTabBar) {
+                TabBar(
+                    items = tabBarDestinations,
+                    selectedRoute = tabBarNavigationState.selectedRoute,
+                    onItemSelected = tabBarNavigationState.onDestinationSelected,
+                )
+            }
+        },
     ) { padding ->
         USaintNavHost(
             navController = navController,

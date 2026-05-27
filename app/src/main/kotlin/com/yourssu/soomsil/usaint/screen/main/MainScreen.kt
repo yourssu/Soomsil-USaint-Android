@@ -24,8 +24,14 @@ import com.yourssu.soomsil.usaint.ui.components.TabBar
 
 @Composable
 @Preview
-fun MainScreen(){
-    MainPageScreen(tabBar = { TabBar() })
+fun MainScreen(
+    onGradeDetailClick: () -> Unit = {},
+    tabBar: @Composable () -> Unit = {}
+){
+    MainPageScreen(
+        onGradeDetailClick = onGradeDetailClick,
+        tabBar = tabBar
+    )
 }
 
 // ─── Screen ───
@@ -51,13 +57,6 @@ private fun MainPageScreen(
     chapelAttended: Int = 5,
     chapelTotal: Int = 8,
     chapelProgress: Float = 0.625f,
-    tabs: List<TabItem> = listOf(
-        TabItem("홈", R.drawable.ic_tabbar_bell), // was ic_house
-        TabItem("채플", R.drawable.ic_tabbar_bell), // was ic_armchair
-        TabItem("알림", R.drawable.ic_tabbar_bell), // was ic_bell
-        TabItem("마이", R.drawable.ic_tabbar_bell) // was ic_user
-    ),
-    selectedTabIndex: Int = 0,
     onGradeDetailClick: () -> Unit = {},
     onChartDetailClick: () -> Unit = {},
     onChapelClick: () -> Unit = {},

@@ -63,7 +63,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
-    navigateToHome: () -> Unit,
+    navigateToMain: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
@@ -76,7 +76,7 @@ fun LoginScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         viewModel.updateNotificationEnabled(isGranted)
-        navigateToHome()
+        navigateToMain()
     }
 
     LaunchedEffect(lifecycleOwner.lifecycle) {
@@ -90,7 +90,7 @@ fun LoginScreen(
                         ) {
                             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         } else {
-                            navigateToHome()
+                            navigateToMain()
                         }
                     }
 

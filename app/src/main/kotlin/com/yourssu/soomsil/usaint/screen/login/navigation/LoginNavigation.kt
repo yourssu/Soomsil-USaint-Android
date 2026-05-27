@@ -13,13 +13,12 @@ data object Login
 fun NavHostController.navigateToLogin(navOptions: NavOptions?) = navigate(Login, navOptions)
 
 fun NavGraphBuilder.loginScreen(
-    navigateToHome: () -> Unit,
+    navigateToMain: () -> Unit,
     navigateToBack: () -> Unit,
 ) {
     composable<Login> {
         LoginScreen(
-            navigateToHome = navigateToHome,
+            navigateToMain = navigateToMain,
         )
     }
 }
-

@@ -16,6 +16,12 @@ import com.yourssu.soomsil.usaint.screen.login.navigation.navigateToLogin
 import com.yourssu.soomsil.usaint.screen.reportcard.navigation.reportCardScreen
 import com.yourssu.soomsil.usaint.screen.setting.navigation.navigateToSetting
 import com.yourssu.soomsil.usaint.screen.setting.navigation.settingScreen
+import com.yourssu.soomsil.usaint.screen.pushnotifications.navigation.pushNotificationsScreen
+import com.yourssu.soomsil.usaint.screen.main.navigation.mainScreen
+import com.yourssu.soomsil.usaint.screen.main.navigation.navigateToMain
+import com.yourssu.soomsil.usaint.screen.mypage.navigation.myPageScreen
+import com.yourssu.soomsil.usaint.screen.grade.navigation.gradeDetailScreen
+import com.yourssu.soomsil.usaint.screen.grade.navigation.navigateToGradeDetail
 import androidx.core.net.toUri
 
 @Composable
@@ -33,8 +39,8 @@ fun USaintNavHost(
         startDestination = startDestination,
     ) {
         loginScreen(
-            navigateToHome = {
-                navController.navigateToHome(
+            navigateToMain = {
+                navController.navigateToMain(
                     navOptions = navOptions {
                         popUpTo(navController.graph.id) {
                             saveState = false
@@ -88,6 +94,16 @@ fun USaintNavHost(
         )
         chapelScreen(
             snackbarHostState = snackbarHostState
+        )
+        pushNotificationsScreen()
+        myPageScreen(
+            navigateToBack = { navController.navigateUp() }
+        )
+        gradeDetailScreen(
+            navigateToBack = { navController.navigateUp() }
+        )
+        mainScreen(
+            navigateToGradeDetail = { navController.navigateToGradeDetail() }
         )
     }
 }

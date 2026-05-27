@@ -1,193 +1,57 @@
 package com.yourssu.soomsil.usaint.screen.pushnotifications
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.yourssu.soomsil.usaint.ui.components.TabBar
 
+private val BackgroundColor = Color(0xFFFFFFFF)
+private val PrimaryText = Color(0xFF1A1A1A)
+private val EmphasisText = Color(0xFF0A0A0A)
+private val SecondaryText = Color(0xFF9CA3AF)
+private val SubText = Color(0xFF6B7280)
+private val BannerBackground = Color(0xFFF9FAFB)
+private val EmptyIconBackground = Color(0xFFF3F4F6)
+private val EmptyIconInner = Color(0xFFE6E6E6)
+private val HomeIndicator = Color(0x331A1A1A)
 
 @Composable
 @Preview
 fun PushNotificationsScreen() {
-    PushNotificationsScreen({ TabBar() })
-}
-
-// ─── Data Models ───
-
-enum class NotificationCategory(
-    val label: String,
-    val dotColor: Color,
-    val labelColor: Color = Color(0xFF6B7280)
-) {
-    ACADEMIC("학사", Color(0xFF775EFF)),
-    NEWS("소식", Color(0xFFF59E0B)),
-    GRADE("성적", Color(0xFF22C55E)),
-    CLASS("수업", Color(0xFF3B82F6)),
-    EMERGENCY("긴급", Color(0xFFF04452), labelColor = Color(0xFFF04452)),
-    NOTICE("공지", Color(0xFF8B95A1), labelColor = Color(0xFF8B95A1))
-}
-
-data class NotificationItem(
-    val category: NotificationCategory,
-    val time: String,
-    val message: String,
-    val isEmergency: Boolean = false,
-    val isRead: Boolean = false
-)
-
-// ─── Header ───
-
-@Composable
-fun NotificationHeader(modifier: Modifier = Modifier) {
-    
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .padding(horizontal = 20.dp),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        Text(
-            text = "알림",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF191F28)
-        )
-    }
-}
-
-// ─── Notification Card ───
-
-@Composable
-fun NotificationCard(
-    item: NotificationItem,
-    modifier: Modifier = Modifier
-) {
-    val backgroundColor = if (item.isEmergency) Color(0xFFFEF2F2) else Color.Transparent
-    val borderColor = if (item.isEmergency) Color(0xFFFEE2E2) else Color.Transparent
-    val cornerRadius = if (item.isEmergency) 14.dp else 0.dp
-    val horizontalPadding = if (item.isEmergency) 16.dp else 0.dp
-    val alpha = if (item.isRead) 0.6f else 1f
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .graphicsLayer { this.alpha = alpha }
-            .background(backgroundColor, RoundedCornerShape(cornerRadius))
-            .then(
-                if (item.isEmergency) Modifier.border(1.dp, borderColor, RoundedCornerShape(cornerRadius))
-                else Modifier
-            )
-            .padding(vertical = 12.dp, horizontal = horizontalPadding),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .background(item.category.dotColor, CircleShape)
-                )
-                Text(
-                    text = item.category.label,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = item.category.labelColor
-                )
-            }
-            Text(
-                text = item.time,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFFB0B8C1)
-            )
-        }
-
-        Text(
-            text = item.message,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color(0xFF191F28),
-            lineHeight = (14 * 1.4).sp
-        )
-    }
-}
-
-// ─── Helpers ───
-
-@Composable
-fun NotificationDivider() {
-    HorizontalDivider(thickness = 1.dp, color = Color(0xFFF2F4F6))
-}
-
-@Composable
-fun SectionLabel(text: String) {
-    Text(
-        text = text,
-        fontSize = 13.sp,
-        fontWeight = FontWeight.SemiBold,
-        color = Color(0xFF8B95A1)
-    )
+    PushNotificationsScreen(modifier = Modifier)
 }
 
 // ─── Screen ───
 
 @Composable
 fun PushNotificationsScreen(
-    tabBar: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val todayNotifications = listOf(
-        NotificationItem(NotificationCategory.ACADEMIC, "오전 8:00", "오늘의 시간표를 확인해요"),
-        NotificationItem(NotificationCategory.NEWS, "오전 10:30", "중간고사를 끝낸 당신! 행운 복권의 기회를 드려요."),
-        NotificationItem(NotificationCategory.GRADE, "오후 2:15", "새로운 성적이 등록되었어요. 확인해 주세요."),
-        NotificationItem(NotificationCategory.CLASS, "오후 1:45", "수업시간이 얼마 남지 않았어요. 수업을 준비해주세요."),
-        NotificationItem(NotificationCategory.EMERGENCY, "오후 5:00", "서버에 오류가 발생했어요. 점검 후 돌아올게요!", isEmergency = true)
-    )
-
-    val previousNotifications = listOf(
-        NotificationItem(NotificationCategory.NOTICE, "어제", "3월 학사일정 안내가 업데이트되었습니다.", isRead = true)
-    )
-
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(BackgroundColor)
     ) {
         NotificationHeader()
 
@@ -195,26 +59,248 @@ fun PushNotificationsScreen(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 20.dp)
         ) {
-            SectionLabel("오늘")
+            UnreadHeroSection()
+            NotificationTabs()
+            NotificationBanner()
+            EmptyNotificationState()
+        }
 
-            todayNotifications.forEachIndexed { index, item ->
-                NotificationCard(item = item)
-                if (index < todayNotifications.lastIndex) {
-                    NotificationDivider()
-                }
-            }
+        HomeIndicatorBar()
+    }
+}
 
-            Spacer(modifier = Modifier.height(8.dp))
+// ─── Header ───
 
-            SectionLabel("이전")
+@Composable
+private fun NotificationHeader(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "알림",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = PrimaryText,
+            letterSpacing = (-0.5).sp
+        )
+        Box(
+            modifier = Modifier
+                .size(22.dp)
+                .background(EmptyIconInner, RoundedCornerShape(4.dp))
+        )
+    }
+}
 
-            previousNotifications.forEach { item ->
-                NotificationCard(item = item)
+// ─── Hero ───
+
+@Composable
+private fun UnreadHeroSection(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = "읽지 않은 알림",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = SecondaryText,
+                letterSpacing = (-0.2).sp
+            )
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = "0",
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = EmphasisText,
+                    letterSpacing = (-1).sp
+                )
+                Text(
+                    text = "건",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = EmphasisText,
+                    letterSpacing = (-0.6).sp
+                )
             }
         }
 
-        tabBar()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(11.dp)
+                    .background(SecondaryText, CircleShape)
+            )
+            Text(
+                text = "현재 확인할 알림이 없어요",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Medium,
+                color = SecondaryText,
+                letterSpacing = (-0.2).sp
+            )
+        }
+    }
+}
+
+// ─── Tabs ───
+
+@Composable
+private fun NotificationTabs(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(28.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        NotificationTabItem(text = "전체", selected = true, underlineWidth = 32.dp)
+        NotificationTabItem(text = "학사", selected = false, underlineWidth = 24.dp)
+        NotificationTabItem(text = "수업", selected = false, underlineWidth = 24.dp)
+        NotificationTabItem(text = "시험", selected = false, underlineWidth = 24.dp)
+    }
+}
+
+@Composable
+private fun NotificationTabItem(
+    text: String,
+    selected: Boolean,
+    underlineWidth: Dp,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+            color = if (selected) EmphasisText else SecondaryText,
+            letterSpacing = (-0.3).sp
+        )
+        Box(
+            modifier = Modifier
+                .width(underlineWidth)
+                .height(2.dp)
+                .background(if (selected) EmphasisText else BackgroundColor)
+        )
+    }
+}
+
+// ─── Banner ───
+
+@Composable
+private fun NotificationBanner(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(BannerBackground)
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(13.dp)
+                .background(EmptyIconInner, CircleShape)
+        )
+        Text(
+            text = "중요 알림은 14일 동안 보관돼요",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            color = SubText,
+            letterSpacing = (-0.2).sp
+        )
+    }
+}
+
+// ─── Empty State ───
+
+@Composable
+private fun EmptyNotificationState(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(396.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 40.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(72.dp)
+                    .background(EmptyIconBackground, RoundedCornerShape(16.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(EmptyIconInner, RoundedCornerShape(8.dp))
+                )
+            }
+            Text(
+                text = "확인할 알림이 없어요",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = EmphasisText,
+                letterSpacing = (-0.3).sp
+            )
+            Text(
+                text = "새로운 소식이 오면 이곳으로 알려드릴게요",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = SubText,
+                letterSpacing = (-0.2).sp
+            )
+        }
+    }
+}
+
+// ─── Home Indicator ───
+
+@Composable
+private fun HomeIndicatorBar(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .width(140.dp)
+                .height(5.dp)
+                .background(HomeIndicator, RoundedCornerShape(100.dp))
+        )
     }
 }

@@ -10,7 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
-import com.yourssu.soomsil.usaint.screen.home.navigation.Home
+import com.yourssu.soomsil.usaint.screen.main.navigation.Main
 import com.yourssu.soomsil.usaint.screen.login.navigation.Login
 import com.yourssu.soomsil.usaint.ui.USaintApp
 import com.yourssu.soomsil.usaint.ui.theme.SoomsilUSaintTheme
@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
                 } else {
                     val credentialExist = mainUiState is MainUiState.Success
                     USaintApp(
-                        startDestination = if (credentialExist) Home else Login,
+                        startDestination = if (credentialExist) Main else Login,
                         mixpanelTracker = mixpanelTracker,
                     )
                 }

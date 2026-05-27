@@ -32,15 +32,60 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yourssu.soomsil.usaint.R
+import com.yourssu.soomsil.usaint.ui.components.navigation.TabBarDestination
+import com.yourssu.soomsil.usaint.screen.chapel.navigation.Chapel
+import com.yourssu.soomsil.usaint.screen.main.navigation.Main
+import com.yourssu.soomsil.usaint.screen.mypage.navigation.MyPage
+import com.yourssu.soomsil.usaint.screen.pushnotifications.navigation.PushNotifications
 
 @Composable
-fun TabBar() {
-    TabBarContent()
+fun TabBar(
+    items: List<TabBarDestination> = TabBarDefaults.items,
+    selectedRoute: String? = items.firstOrNull()?.route,
+    onItemSelected: (TabBarDestination) -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
+    TabBarContent(
+        items = items,
+        selectedRoute = selectedRoute,
+        onItemSelected = onItemSelected,
+        modifier = modifier,
+    )
+}
+
+object TabBarDefaults {
+    val items = listOf(
+        TabBarDestination(
+            route = requireNotNull(Main::class.qualifiedName),
+            label = "홈",
+            iconId = R.drawable.ic_tabbar_house
+        ),
+        TabBarDestination(
+            route = requireNotNull(Chapel::class.qualifiedName),
+            label = "소식",
+            iconId = R.drawable.ic_tabbar_megaphone
+        ),
+        TabBarDestination(
+            route = requireNotNull(PushNotifications::class.qualifiedName),
+            label = "알림",
+            iconId = R.drawable.ic_tabbar_bell
+        ),
+        TabBarDestination(
+            route = requireNotNull(MyPage::class.qualifiedName),
+            label = "마이",
+            iconId = R.drawable.ic_tabbar_user
+        ),
+    )
 }
 
 @Composable
 @Preview
-private fun TabBarContent(){
+private fun TabBarContent(
+    items: List<TabBarDestination> = TabBarDefaults.items,
+    selectedRoute: String? = items.firstOrNull()?.route,
+    onItemSelected: (TabBarDestination) -> Unit = {},
+    modifier: Modifier = Modifier,
+){
     val activeColor = Color(0xFF775EFF)
     val inactiveIconColor = Color(0xFFD1D5DB)
     val inactiveLabelColor = Color(0xFFB0B8C1)
@@ -53,7 +98,7 @@ private fun TabBarContent(){
         containerColor = activeColor
     )
     BottomAppBar(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 21.dp, vertical = 12.dp)
             .height(62.dp)
             .border(BorderStroke(1.dp, Color(0xFFF3F4F6)), shape = CircleShape)
@@ -65,42 +110,18 @@ private fun TabBarContent(){
             modifier = Modifier.fillMaxHeight(),
             horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            TabItem(
-                label = "홈",
-                iconId = R.drawable.ic_tabbar_house,
-                isActive = true,
-                buttonColor = buttonColor,
-                activeTextColor = activeTextColor,
-                inactiveIconColor = inactiveIconColor,
-                inactiveLabelColor = inactiveLabelColor
-            )
-            TabItem(
-                label = "소식",
-                iconId = R.drawable.ic_tabbar_megaphone,
-                isActive = false,
-                buttonColor = buttonColor,
-                activeTextColor = activeTextColor,
-                inactiveIconColor = inactiveIconColor,
-                inactiveLabelColor = inactiveLabelColor
-            )
-            TabItem(
-                label = "알림",
-                iconId = R.drawable.ic_tabbar_bell,
-                isActive = false,
-                buttonColor = buttonColor,
-                activeTextColor = activeTextColor,
-                inactiveIconColor = inactiveIconColor,
-                inactiveLabelColor = inactiveLabelColor
-            )
-            TabItem(
-                label = "마이",
-                iconId = R.drawable.ic_tabbar_user,
-                isActive = false,
-                buttonColor = buttonColor,
-                activeTextColor = activeTextColor,
-                inactiveIconColor = inactiveIconColor,
-                inactiveLabelColor = inactiveLabelColor
-            )
+            items.forEach { item ->
+                TabItem(
+                    label = item.label,
+                    iconId = item.iconId,
+                    isActive = item.route == selectedRoute,
+                    buttonColor = buttonColor,
+                    activeTextColor = activeTextColor,
+                    inactiveIconColor = inactiveIconColor,
+                    inactiveLabelColor = inactiveLabelColor,
+                    onClick = { onItemSelected(item) },
+                )
+            }
         }
     }
 }
@@ -113,19 +134,17 @@ private fun RowScope.TabItem(
     buttonColor: ButtonColors,
     activeTextColor: Color,
     inactiveIconColor: Color,
-    inactiveLabelColor: Color
+    inactiveLabelColor: Color,
+    onClick: () -> Unit,
 ) {
     Button(
-        onClick = { },
+        onClick = onClick,
         modifier = Modifier
             .weight(1f)
             .fillMaxHeight()
             .clip(RoundedCornerShape(26.dp)),
         colors = if (isActive) {
-            ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF775EFF),
-                contentColor = activeTextColor
-            )
+            buttonColor
         } else {
             ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
