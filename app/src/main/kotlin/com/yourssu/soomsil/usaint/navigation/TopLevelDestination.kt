@@ -17,6 +17,12 @@ import com.yourssu.soomsil.usaint.screen.home.navigation.Home
 import com.yourssu.soomsil.usaint.screen.home.navigation.navigateToHome
 import com.yourssu.soomsil.usaint.screen.reportcard.navigation.ReportCard
 import com.yourssu.soomsil.usaint.screen.reportcard.navigation.navigateToReportCard
+import com.yourssu.soomsil.usaint.screen.pushnotifications.navigation.PushNotifications
+import com.yourssu.soomsil.usaint.screen.pushnotifications.navigation.navigateToPushNotifications
+import com.yourssu.soomsil.usaint.screen.main.navigation.Main
+import com.yourssu.soomsil.usaint.screen.main.navigation.navigateToMain
+import com.yourssu.soomsil.usaint.screen.mypage.navigation.MyPage
+import com.yourssu.soomsil.usaint.screen.mypage.navigation.navigateToMyPage
 import kotlin.reflect.KClass
 
 enum class TopLevelDestination(
@@ -30,7 +36,7 @@ enum class TopLevelDestination(
         selectedIcon = Icons.Filled.Home,
         unselectedIcon = Icons.Outlined.Home,
         label = "홈",
-        route = Home::class,
+        route = Main::class,
         title = "유세인트",
     ),
     REPORT_CARD(
@@ -46,7 +52,21 @@ enum class TopLevelDestination(
         label = "채플",
         route = Chapel::class,
         title = "채플",
-    )
+    ),
+    PUSH_NOTIFICATION(
+        selectedIcon = Icons.Filled.Home,
+        unselectedIcon = Icons.Outlined.Home,
+        label = "푸시알림",
+        route = PushNotifications::class,
+        title = "푸시알림",
+    ),
+    MYPAGE(
+        selectedIcon = Icons.Filled.Home,
+        unselectedIcon = Icons.Outlined.Home,
+        label = "마이",
+        route = MyPage::class,
+        title = "마이",
+    ),
 }
 
 fun NavHostController.navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
@@ -64,8 +84,10 @@ fun NavHostController.navigateToTopLevelDestination(topLevelDestination: TopLeve
         restoreState = true
     }
     when (topLevelDestination) {
-        TopLevelDestination.HOME -> this.navigateToHome(topLevelNavOptions)
+        TopLevelDestination.HOME -> this.navigateToMain(topLevelNavOptions)
         TopLevelDestination.REPORT_CARD -> this.navigateToReportCard(topLevelNavOptions)
         TopLevelDestination.CHAPEL -> this.navigateToChapel(topLevelNavOptions)
+        TopLevelDestination.PUSH_NOTIFICATION -> this.navigateToPushNotifications(topLevelNavOptions)
+        TopLevelDestination.MYPAGE -> this.navigateToMyPage(topLevelNavOptions)
     }
 }
