@@ -12,15 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.screen.main.components.ChapelCard
 import com.yourssu.soomsil.usaint.screen.main.components.GpaChartCard
 import com.yourssu.soomsil.usaint.screen.main.components.GpaHeroCard
 import com.yourssu.soomsil.usaint.screen.main.components.MainHeader
 import com.yourssu.soomsil.usaint.screen.main.components.ProfileCard
 import com.yourssu.soomsil.usaint.screen.main.model.GpaBarData
-import com.yourssu.soomsil.usaint.screen.main.model.TabItem
-import com.yourssu.soomsil.usaint.ui.components.TabBar
 
 @Composable
 @Preview
