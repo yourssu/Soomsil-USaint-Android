@@ -39,10 +39,10 @@ import com.yourssu.soomsil.usaint.screen.pushnotifications.navigation.PushNotifi
 
 @Composable
 fun TabBar(
+    modifier: Modifier = Modifier,
     items: List<TabBarDestination> = TabBarDefaults.items,
     selectedRoute: String? = items.firstOrNull()?.route,
     onItemSelected: (TabBarDestination) -> Unit = {},
-    modifier: Modifier = Modifier,
 ) {
     TabBarContent(
         items = items,
@@ -80,10 +80,10 @@ object TabBarDefaults {
 @Composable
 @Preview
 private fun TabBarContent(
+    modifier: Modifier = Modifier,
     items: List<TabBarDestination> = TabBarDefaults.items,
     selectedRoute: String? = items.firstOrNull()?.route,
     onItemSelected: (TabBarDestination) -> Unit = {},
-    modifier: Modifier = Modifier,
 ){
     val activeColor = Color(0xFF0062FF)
     val inactiveColor = Color(0xFFA1A1A1)

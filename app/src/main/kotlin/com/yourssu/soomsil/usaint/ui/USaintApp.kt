@@ -39,7 +39,7 @@ import com.yourssu.soomsil.usaint.ui.components.navigation.rememberTabBarNavigat
 @Composable
 fun USaintApp(
     startDestination: Any,
-    mixpanelTracker: MixpanelTracker,
+//    mixpanelTracker: MixpanelTracker,
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
