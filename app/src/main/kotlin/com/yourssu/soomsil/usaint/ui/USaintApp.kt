@@ -1,7 +1,14 @@
 package com.yourssu.soomsil.usaint.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -12,11 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.rememberNavController
 import com.yourssu.soomsil.usaint.R
 import com.yourssu.soomsil.usaint.data.analytics.MixpanelTracker
@@ -29,7 +34,6 @@ import com.yourssu.soomsil.usaint.screen.pushnotifications.navigation.PushNotifi
 import com.yourssu.soomsil.usaint.ui.components.TabBar
 import com.yourssu.soomsil.usaint.ui.components.navigation.TabBarDestination
 import com.yourssu.soomsil.usaint.ui.components.navigation.rememberTabBarNavigationState
-import kotlin.reflect.KClass
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +51,6 @@ fun USaintApp(
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
 
     val tabBarDestinations = remember {
         listOf(
@@ -58,7 +61,7 @@ fun USaintApp(
             ),
             TabBarDestination(
                 route = requireNotNull(Chapel::class.qualifiedName),
-                label = "소식",
+                label = "채플",
                 iconId = R.drawable.ic_tabbar_megaphone,
             ),
             TabBarDestination(
@@ -84,28 +87,32 @@ fun USaintApp(
                 TopAppBar(title = { Text(text = it.title) })
             }
         },
-        bottomBar = {
-            if (showTabBar) {
-                TabBar(
-                    items = tabBarDestinations,
-                    selectedRoute = tabBarNavigationState.selectedRoute,
-                    onItemSelected = tabBarNavigationState.onDestinationSelected,
-                )
-            }
-        },
     ) { padding ->
-        USaintNavHost(
-            navController = navController,
-            startDestination = startDestination,
-            snackbarHostState = snackbarHostState,
+        Box(
             modifier = Modifier
                 .padding(padding)
-                .consumeWindowInsets(padding),
-        )
+                .consumeWindowInsets(padding)
+                .fillMaxSize()
+        ) {
+            USaintNavHost(
+                navController = navController,
+                startDestination = startDestination,
+                snackbarHostState = snackbarHostState,
+            )
+
+            if (showTabBar) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+                ) {
+                    TabBar(
+                        items = tabBarDestinations,
+                        selectedRoute = tabBarNavigationState.selectedRoute,
+                        onItemSelected = tabBarNavigationState.onDestinationSelected,
+                    )
+                }
+            }
+        }
     }
 }
-
-private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
-    this?.hierarchy?.any {
-        it.hasRoute(route)
-    } ?: false

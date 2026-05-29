@@ -1,23 +1,22 @@
 package com.yourssu.soomsil.usaint.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -62,7 +61,7 @@ object TabBarDefaults {
         ),
         TabBarDestination(
             route = requireNotNull(Chapel::class.qualifiedName),
-            label = "소식",
+            label = "채플",
             iconId = R.drawable.ic_tabbar_megaphone
         ),
         TabBarDestination(
@@ -86,39 +85,32 @@ private fun TabBarContent(
     onItemSelected: (TabBarDestination) -> Unit = {},
     modifier: Modifier = Modifier,
 ){
-    val activeColor = Color(0xFF775EFF)
-    val inactiveIconColor = Color(0xFFD1D5DB)
-    val inactiveLabelColor = Color(0xFFB0B8C1)
-    val activeTextColor = Color(0xFFFFFFFF)
+    val activeColor = Color(0xFF0062FF)
+    val inactiveColor = Color(0xFFA1A1A1)
+    val borderColor = Color(0xFFF1F5F9)
 
-    val buttonColor = ButtonDefaults.buttonColors(
-        disabledContentColor = inactiveIconColor,
-        disabledContainerColor = Color.Transparent,
-        contentColor = activeTextColor,
-        containerColor = activeColor
-    )
-    BottomAppBar(
+    Box(
         modifier = modifier
-            .padding(horizontal = 21.dp, vertical = 12.dp)
-            .height(62.dp)
-            .border(BorderStroke(1.dp, Color(0xFFF3F4F6)), shape = CircleShape)
-            .clip(CircleShape),
-        containerColor = Color(0xFFFFFFFF),
-        contentPadding = PaddingValues(0.dp)
-    ){
+            .padding(start = 20.dp, top = 10.dp, end = 20.dp, bottom = 10.dp)
+    ) {
         Row(
-            modifier = Modifier.fillMaxHeight(),
-            horizontalArrangement = Arrangement.spacedBy(0.dp)
+            modifier = Modifier
+                .height(62.dp)
+                .fillMaxWidth()
+                .border(1.dp, borderColor, CircleShape)
+                .clip(CircleShape)
+                .background(Color(0xFFFFFFFF))
+                .padding(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             items.forEach { item ->
                 TabItem(
                     label = item.label,
                     iconId = item.iconId,
                     isActive = item.route == selectedRoute,
-                    buttonColor = buttonColor,
-                    activeTextColor = activeTextColor,
-                    inactiveIconColor = inactiveIconColor,
-                    inactiveLabelColor = inactiveLabelColor,
+                    activeColor = activeColor,
+                    inactiveColor = inactiveColor,
                     onClick = { onItemSelected(item) },
                 )
             }
@@ -131,48 +123,43 @@ private fun RowScope.TabItem(
     label: String,
     iconId: Int,
     isActive: Boolean,
-    buttonColor: ButtonColors,
-    activeTextColor: Color,
-    inactiveIconColor: Color,
-    inactiveLabelColor: Color,
+    activeColor: Color,
+    inactiveColor: Color,
     onClick: () -> Unit,
 ) {
-    Button(
+    val contentColor = if (isActive) Color(0xFFFFFFFF) else inactiveColor
+    Surface(
         onClick = onClick,
         modifier = Modifier
             .weight(1f)
-            .fillMaxHeight()
-            .clip(RoundedCornerShape(26.dp)),
-        colors = if (isActive) {
-            buttonColor
-        } else {
-            ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = inactiveIconColor
-            )
-        }
-    ){
+            .fillMaxHeight(),
+        shape = RoundedCornerShape(9999.dp),
+        color = if (isActive) activeColor else Color.Transparent,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
+    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxHeight()
+            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             Image(
                 painter = painterResource(id = iconId),
                 contentDescription = label,
                 modifier = Modifier.size(18.dp),
                 colorFilter = ColorFilter.tint(
-                    color = if (isActive) activeTextColor else inactiveIconColor,
+                    color = contentColor,
                     blendMode = BlendMode.SrcIn
                 )
             )
             Text(
                 text = label,
-                fontSize = 11.sp,
-                fontWeight = FontWeight(600),
-                color = if (isActive) activeTextColor else inactiveLabelColor
+                fontSize = 10.sp,
+                fontWeight = FontWeight(500),
+                color = contentColor
             )
         }
-
     }
 }
