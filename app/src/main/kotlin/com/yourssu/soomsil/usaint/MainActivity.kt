@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                     val credentialExist = mainUiState is MainUiState.Success
                     USaintApp(
                         startDestination = if (credentialExist) Main else Login,
-                        mixpanelTracker = mixpanelTracker,
+                        //mixpanelTracker = mixpanelTracker,
                     )
                 }
             }
