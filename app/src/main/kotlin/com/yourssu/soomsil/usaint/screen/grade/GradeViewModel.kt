@@ -47,13 +47,14 @@ class GradeViewModel @Inject constructor(
     private val selectedIndex = MutableStateFlow(0)
 
     val uiState: StateFlow<GradeUiState> = combine(
+        reportCardRepository.semesters,
         reportCardRepository.semesterWithLectures,
         selectedIndex,
-    ) { semesterWithLectures, selected ->
-        if (semesterWithLectures.isEmpty()) {
+    ) { semesters, semesterWithLectures, selected ->
+        if (semesters.isEmpty()) {
             GradeUiState(isLoading = true)
         } else {
-            buildUiState(semesterWithLectures, selected)
+            buildUiState(semesters, semesterWithLectures, selected)
         }
     }.stateIn(
         scope = viewModelScope,
@@ -63,7 +64,7 @@ class GradeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            if (reportCardRepository.semesterWithLectures.first().isEmpty()) {
+            if (reportCardRepository.semesters.first().isEmpty()) {
                 fetchData()
             }
         }
@@ -84,11 +85,12 @@ class GradeViewModel @Inject constructor(
     }
 
     private fun buildUiState(
+        semesters: List<SemesterData>,
         semesterWithLectures: Map<SemesterData, List<LectureData>>,
         selected: Int,
     ): GradeUiState {
         // 오래된 학기 → 최신 학기 순 (GPA 추이 차트용)
-        val ascending = semesterWithLectures.keys.sortedWith(
+        val ascending = semesters.sortedWith(
             compareBy({ it.year }, { it.semester.ordinal })
         )
         // 최신 학기 → 오래된 학기 순 (탭 표시용)
@@ -108,7 +110,12 @@ class GradeViewModel @Inject constructor(
             )
         }
 
-        val lectures = selectedSemester?.let { semesterWithLectures[it] }.orEmpty()
+        // 강의 목록은 적재가 끝난 학기만 semesterWithLectures에 존재하므로 year/semester로 매칭
+        val lectures = selectedSemester?.let { sel ->
+            semesterWithLectures.entries
+                .firstOrNull { it.key.year == sel.year && it.key.semester == sel.semester }
+                ?.value
+        }.orEmpty()
         val courses = lectures.map { lecture ->
             val grade = lecture.lectureGrade.toString()
             val (dot, gradeColor, badgeBg) = gradeStyle(grade)
