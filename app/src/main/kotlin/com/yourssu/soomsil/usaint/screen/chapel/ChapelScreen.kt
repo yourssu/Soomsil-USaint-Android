@@ -555,6 +555,7 @@ fun ChapelSeatScreen(
             )
         }
 
-        AttendanceCta(onClick = onAttendClick)
+        // TODO: 출석 인증(QR) 기능 구현 전까지 임시 비활성화
+        // AttendanceCta(onClick = onAttendClick)
     }
 }
