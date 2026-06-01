@@ -9,6 +9,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,6 +24,7 @@ import com.yourssu.soomsil.usaint.screen.main.components.GpaHeroCard
 import com.yourssu.soomsil.usaint.screen.main.components.MainHeader
 import com.yourssu.soomsil.usaint.screen.main.components.ProfileCard
 import com.yourssu.soomsil.usaint.screen.main.model.GpaBarData
+import com.yourssu.soomsil.usaint.ui.components.GradeBottomSheet
 
 @Composable
 fun MainScreen(
@@ -31,6 +35,8 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
 ){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showGradeSheet by remember { mutableStateOf(false) }
+
     MainPageScreen(
         greetingName = uiState.greetingName,
         notificationCount = uiState.notificationCount,
@@ -45,11 +51,25 @@ fun MainScreen(
         chapelAttended = uiState.chapelAttended,
         chapelTotal = uiState.chapelTotal,
         chapelProgress = uiState.chapelProgress,
-        onGradeDetailClick = onGradeDetailClick,
+        // 이번 학기 성적보기 → 이번 학기 성적 바텀시트
+        onGradeDetailClick = { showGradeSheet = true },
+        // 전체 학기 추이 자세히 → 성적 상세 페이지
         onChartDetailClick = onChartDetailClick,
         onChapelClick = onChapelClick,
         tabBar = tabBar,
     )
+
+    if (showGradeSheet) {
+        GradeBottomSheet(
+            term = uiState.currentSemesterTerm,
+            registered = uiState.currentSemesterRegistered,
+            averageGrade = uiState.currentSemesterGpa,
+            earnedCredits = uiState.currentSemesterCredits,
+            courseCount = uiState.currentSemesterCourseCount,
+            courses = uiState.currentSemesterCourses,
+            onDismissRequest = { showGradeSheet = false },
+        )
+    }
 }
 
 @Composable
