@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yourssu.soomsil.usaint.screen.main.components.ChapelCard
 import com.yourssu.soomsil.usaint.screen.main.components.GpaChartCard
 import com.yourssu.soomsil.usaint.screen.main.components.GpaHeroCard
@@ -20,15 +23,39 @@ import com.yourssu.soomsil.usaint.screen.main.components.ProfileCard
 import com.yourssu.soomsil.usaint.screen.main.model.GpaBarData
 
 @Composable
-@Preview
 fun MainScreen(
     onGradeDetailClick: () -> Unit = {},
-    tabBar: @Composable () -> Unit = {}
+    onChartDetailClick: () -> Unit = {},
+    onChapelClick: () -> Unit = {},
+    tabBar: @Composable () -> Unit = {},
+    viewModel: MainViewModel = hiltViewModel(),
 ){
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     MainPageScreen(
+        greetingName = uiState.greetingName,
+        notificationCount = uiState.notificationCount,
+        profileName = uiState.profileName,
+        department = uiState.department,
+        year = uiState.year,
+        status = uiState.status,
+        studentId = uiState.studentId,
+        gpa = uiState.gpa,
+        maxGpa = uiState.maxGpa,
+        barData = uiState.barData,
+        chapelAttended = uiState.chapelAttended,
+        chapelTotal = uiState.chapelTotal,
+        chapelProgress = uiState.chapelProgress,
         onGradeDetailClick = onGradeDetailClick,
-        tabBar = tabBar
+        onChartDetailClick = onChartDetailClick,
+        onChapelClick = onChapelClick,
+        tabBar = tabBar,
     )
+}
+
+@Composable
+@Preview
+private fun MainScreenPreview() {
+    MainPageScreen(tabBar = {})
 }
 
 // ─── Screen ───
