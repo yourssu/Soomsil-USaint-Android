@@ -22,6 +22,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,12 +55,42 @@ fun ChapelScreen(
 //        onPasswordChange = viewModel::changePassword
 //    )
     val isOnLeave by viewModel.isOnLeave.collectAsStateWithLifecycle()
+    val chapelUiState by viewModel.chapelUiState.collectAsStateWithLifecycle()
+    var showSeatLocation by remember { mutableStateOf(false) }
 
-    ChapelSeatScreen(
-        isOnLeave = isOnLeave,
-        modifier = modifier
-    )
+    val chapelCard = (chapelUiState as? ChapelUiState.Chapel)?.chapelCard
+    val simple = chapelCard?.chapelSimpleData
+    val attendances = chapelCard?.chapelAttendances.orEmpty()
+    // 실제 내 출석/지각 일수 집계
+    val attended = attendances.count { it.attendance == "출석" }
+    val late = attendances.count { it.attendance == "지각" }
 
+    val seatNumber = simple?.seatNumber?.takeIf { it.isNotBlank() } ?: "-"
+    val seatFloor = simple?.let { "${it.floorLevel}층" } ?: ""
+    val seatZone = simple?.chapelRoom ?: ""
+
+    if (showSeatLocation) {
+        MySeatLocationScreen(
+            seatCode = seatNumber,
+            seatFloor = seatFloor,
+            seatBuilding = seatZone,
+            onBackClick = { showSeatLocation = false },
+            modifier = modifier,
+        )
+    } else {
+        ChapelSeatScreen(
+            seatNumber = seatNumber,
+            seatFloor = seatFloor,
+            seatZone = seatZone,
+            attended = attended,
+            total = MAX_REQUIRED_CHAPEL,
+            late = late,
+            progress = (attended.toFloat() / MAX_REQUIRED_CHAPEL).coerceIn(0f, 1f),
+            isOnLeave = isOnLeave,
+            onViewSeatClick = { showSeatLocation = true },
+            modifier = modifier,
+        )
+    }
 }
 /*
 @OptIn(ExperimentalMaterial3Api::class)
