@@ -17,7 +17,7 @@ fun NavGraphBuilder.mainScreen(
 ) {
     composable<Main> {
         MainScreen(
-            onGradeDetailClick = navigateToGradeDetail,
+            onChartDetailClick = navigateToGradeDetail,
         )
     }
 }
