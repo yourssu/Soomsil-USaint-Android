@@ -57,10 +57,10 @@ class MainViewModel @Inject constructor(
     val uiState: StateFlow<MainUiState> = combine(
         studentDataRepository.studentData,
         reportCardRepository.reportCardSummaryData,
-        reportCardRepository.semesterWithLectures,
+        reportCardRepository.semesters,
         chapelRepository.chapelCard,
-    ) { student, summary, semesterWithLectures, chapelCard ->
-        buildUiState(student, summary, semesterWithLectures.keys, chapelCard)
+    ) { student, summary, semesters, chapelCard ->
+        buildUiState(student, summary, semesters, chapelCard)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -69,7 +69,7 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            if (reportCardRepository.semesterWithLectures.first().isEmpty()) {
+            if (reportCardRepository.semesters.first().isEmpty()) {
                 fetchData()
             }
         }
@@ -98,7 +98,7 @@ class MainViewModel @Inject constructor(
     private fun buildUiState(
         student: StudentData,
         summary: ReportCardSummaryData,
-        semesters: Set<SemesterData>,
+        semesters: List<SemesterData>,
         chapelCard: ChapelData?,
     ): MainUiState {
         val ascending = semesters.sortedWith(compareBy({ it.year }, { it.semester.ordinal }))
@@ -136,16 +136,18 @@ class MainViewModel @Inject constructor(
         )
     }
 
+    // GPA에 0 기준으로 비례하는 높이(막대 바닥을 공유하므로 높이만으로 비교 가능).
+    // GPA가 0이어도 최소한의 막대는 보이도록 floor를 둔다.
     private fun barHeight(gpa: Float): Dp {
         val ratio = (gpa / MAX_GPA_VALUE).coerceIn(0f, 1f)
-        return MIN_BAR_HEIGHT + (MAX_BAR_HEIGHT - MIN_BAR_HEIGHT) * ratio
+        return (MAX_BAR_HEIGHT * ratio).coerceAtLeast(MIN_BAR_HEIGHT)
     }
 
     private fun formatGpa(gpa: Float): String = "%.2f".format(Locale.US, gpa)
 
     companion object {
         private const val MAX_GPA_VALUE = 4.5f
-        private val MIN_BAR_HEIGHT = 24.dp
-        private val MAX_BAR_HEIGHT = 80.dp
+        private val MIN_BAR_HEIGHT = 6.dp
+        private val MAX_BAR_HEIGHT = 90.dp
     }
 }
