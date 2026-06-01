@@ -307,10 +307,10 @@ fun ChapelHeader(
     ) {
         Text(
             text = "채플",
-            fontSize = 18.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF0A0A0A),
-            letterSpacing = (-0.3).sp
+            letterSpacing = (-0.5).sp
         )
     }
 }
