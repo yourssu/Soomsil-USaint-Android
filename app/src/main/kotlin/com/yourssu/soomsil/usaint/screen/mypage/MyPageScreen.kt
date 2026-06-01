@@ -78,8 +78,8 @@ private fun SettingsHeader(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.CenterStart ) {
         Text(
             text = "설정",
-            fontSize =24.sp,
-            lineHeight =30.sp,
+            fontSize = 22.sp,
+            lineHeight = 28.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF191F28)
         )
