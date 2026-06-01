@@ -69,6 +69,7 @@ fun MainScreen(
             earnedCredits = uiState.currentSemesterCredits,
             courseCount = uiState.currentSemesterCourseCount,
             courses = uiState.currentSemesterCourses,
+            onLeave = uiState.currentSemesterOnLeave,
             onDismissRequest = { showGradeSheet = false },
         )
     }
