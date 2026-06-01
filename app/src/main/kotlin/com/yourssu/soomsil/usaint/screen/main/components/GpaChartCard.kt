@@ -61,38 +61,53 @@ fun GpaChartCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(118.dp)
+                .height(140.dp)
                 .padding(horizontal = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.Bottom
         ) {
             bars.forEach { bar ->
                 Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(5.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier.weight(1f))
+                    // 값 라벨 영역: 모든 막대에 동일한 높이를 예약해 막대 바닥선이 어긋나지 않도록 함
+                    Box(
+                        modifier = Modifier.height(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (bar.gpaText != null) {
+                            Text(
+                                text = bar.gpaText,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF0A0A0A),
+                                letterSpacing = (-0.3).sp
+                            )
+                        }
+                    }
 
-                    if (bar.gpaText != null) {
-                        Text(
-                            text = bar.gpaText,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0A0A0A),
-                            letterSpacing = (-0.3).sp
+                    // 플롯 영역: 막대를 하단에 고정해 모든 막대가 같은 바닥선을 공유
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(bar.height)
+                                .background(
+                                    if (bar.isCurrent) Color(0xFF0A0A0A) else Color(0xFFDCE9FF),
+                                    RoundedCornerShape(6.dp)
+                                )
                         )
                     }
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(bar.height)
-                            .background(
-                                if (bar.isCurrent) Color(0xFF0A0A0A) else Color(0xFFDCE9FF),
-                                RoundedCornerShape(6.dp)
-                            )
-                    )
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
                         text = bar.label,
