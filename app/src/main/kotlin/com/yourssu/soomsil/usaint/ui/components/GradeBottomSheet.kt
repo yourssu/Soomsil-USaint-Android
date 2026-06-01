@@ -34,6 +34,7 @@ fun GradeBottomSheet(
     courses: List<SemesterCourseItem>,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    onLeave: Boolean = false,
     sheetState: SheetState = rememberModalBottomSheetState(),
 ) {
     ModalBottomSheet(
@@ -133,7 +134,7 @@ fun GradeBottomSheet(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "아직 등록된 성적이 없어요",
+                    text = if (onLeave) "이번 학기는 휴학이에요" else "아직 등록된 성적이 없어요",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF8B95A1)
