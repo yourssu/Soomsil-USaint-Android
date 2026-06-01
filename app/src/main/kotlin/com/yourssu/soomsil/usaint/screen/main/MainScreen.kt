@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +27,7 @@ import com.yourssu.soomsil.usaint.screen.main.components.ProfileCard
 import com.yourssu.soomsil.usaint.screen.main.model.GpaBarData
 import com.yourssu.soomsil.usaint.ui.components.GradeBottomSheet
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     onGradeDetailClick: () -> Unit = {},
