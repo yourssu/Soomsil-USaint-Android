@@ -14,3 +14,11 @@ data class TabItem(
     val label: String,
     @DrawableRes val iconRes: Int
 )
+
+// 이번 학기 성적 바텀시트의 강의 항목
+data class SemesterCourseItem(
+    val name: String,
+    val professor: String,
+    val credit: String,
+    val grade: String,
+)
