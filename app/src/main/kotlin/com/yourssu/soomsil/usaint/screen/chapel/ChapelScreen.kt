@@ -298,36 +298,14 @@ fun ChapelHeader(
         modifier = modifier
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_caret_left),
-                contentDescription = "뒤로가기",
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable { onBackClick() },
-                tint = Color(0xFF0A0A0A)
-            )
-            Text(
-                text = "채플",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF0A0A0A),
-                letterSpacing = (-0.3).sp
-            )
-        }
-        Icon(
-            painter = painterResource(R.drawable.ic_info),
-            contentDescription = "정보",
-            modifier = Modifier
-                .size(22.dp)
-                .clickable { onInfoClick() },
-            tint = Color(0xFF9CA3AF)
+        Text(
+            text = "채플",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF0A0A0A),
+            letterSpacing = (-0.3).sp
         )
     }
 }
