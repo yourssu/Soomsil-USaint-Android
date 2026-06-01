@@ -50,6 +50,7 @@ data class MainUiState(
     val currentSemesterCredits: String = UNKNOWN,
     val currentSemesterCourseCount: String = UNKNOWN,
     val currentSemesterCourses: List<SemesterCourseItem> = emptyList(),
+    val currentSemesterOnLeave: Boolean = false,
 ) {
     companion object {
         const val MAX_GPA = "4.5"
@@ -115,14 +116,25 @@ class MainViewModel @Inject constructor(
         chapelCard: ChapelData?,
     ): MainUiState {
         val ascending = semesters.sortedWith(compareBy({ it.year }, { it.semester.ordinal }))
-        val lastIndex = ascending.lastIndex
-        val barData = ascending.mapIndexed { index, semester ->
-            val isCurrent = index == lastIndex
+
+        // 성적 추이는 전 학기를 종합한 추이이므로 휴학(미수강) 학기는 제외하고,
+        // P/F 전용 학기(평점 0이지만 이수 학점 존재)는 직전 성적을 유지한다.
+        val enrolled = ascending.filter { it.isEnrolled() }
+        val barLastIndex = enrolled.lastIndex
+        var carriedGpa = 0f
+        val barData = enrolled.mapIndexed { index, semester ->
+            val gpaValue = if (semester.gradePointsAverage > 0f) {
+                carriedGpa = semester.gradePointsAverage
+                semester.gradePointsAverage
+            } else {
+                carriedGpa
+            }
+            val isCurrent = index == barLastIndex
             GpaBarData(
                 label = "${semester.year % 100}-${semester.semester.kor}",
-                height = barHeight(semester.gradePointsAverage),
+                height = barHeight(gpaValue),
                 isCurrent = isCurrent,
-                gpaText = if (isCurrent) formatGpa(semester.gradePointsAverage) else null,
+                gpaText = if (isCurrent) formatGpa(gpaValue) else null,
             )
         }
 
@@ -139,6 +151,7 @@ class MainViewModel @Inject constructor(
                 ?.value
         }.orEmpty()
         val registered = currentLectures.isNotEmpty()
+        val isOnLeave = student.status.contains("휴학")
 
         return MainUiState(
             isLoading = student.name.isBlank(),
@@ -168,8 +181,13 @@ class MainViewModel @Inject constructor(
                     grade = lecture.lectureGrade.toString(),
                 )
             },
+            currentSemesterOnLeave = isOnLeave && !registered,
         )
     }
+
+    // 휴학/미수강 학기: 시도·취득 학점이 모두 0
+    private fun SemesterData.isEnrolled(): Boolean =
+        attemptedCredit > 0f || earnedCredit > 0f
 
     private fun SemesterData.termLabel(): String {
         val suffix = when (semester) {
