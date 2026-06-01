@@ -369,6 +369,9 @@ fun SeatHeroCard(
 
 // ─── Attendance Gauge ───
 
+// 한 학기 채플 이수 횟수는 최대 7회
+private const val MAX_REQUIRED_CHAPEL = 7
+
 @Composable
 fun AttendanceGauge(
     attended: Int,
@@ -377,6 +380,8 @@ fun AttendanceGauge(
     progress: Float,
     modifier: Modifier = Modifier
 ) {
+    val cappedTotal = total.coerceAtMost(MAX_REQUIRED_CHAPEL)
+    val remaining = (cappedTotal - attended).coerceAtLeast(0)
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -403,14 +408,14 @@ fun AttendanceGauge(
                 horizontalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 Text(
-                    text = "${total - attended}",
+                    text = "$remaining",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = Color(0xFF0062FF),
                     letterSpacing = (-0.4).sp
                 )
                 Text(
-                    text = "/ ${total}회",
+                    text = "/ ${cappedTotal}회",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF9CA3AF)
@@ -516,9 +521,9 @@ fun ChapelSeatScreen(
     seatFloor: String = "1층 앞자리",
     seatZone: String = "A구역",
     attended: Int = 5,
-    total: Int = 8,
+    total: Int = 7,
     late: Int = 1,
-    progress: Float = 0.6f,
+    progress: Float = 0.71f,
     onBackClick: () -> Unit = {},
     onInfoClick: () -> Unit = {},
     onViewSeatClick: () -> Unit = {},
