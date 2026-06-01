@@ -143,7 +143,7 @@ private fun RowScope.TabItem(
             verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 12.dp, vertical = 6.dp)
+                .padding(horizontal = 12.dp, vertical = 4.dp)
         ) {
             Image(
                 painter = painterResource(id = iconId),
