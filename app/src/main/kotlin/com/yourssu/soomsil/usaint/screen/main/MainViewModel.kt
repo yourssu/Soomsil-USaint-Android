@@ -73,7 +73,10 @@ class MainViewModel @Inject constructor(
         reportCardRepository.semesterWithLectures,
         chapelRepository.chapelCard,
     ) { student, summary, semesters, semesterWithLectures, chapelCard ->
-        buildUiState(student, summary, semesters, semesterWithLectures, chapelCard)
+        // 현재 학기는 DB의 최신 행이 아니라 날짜 기준 유스케이스로 판별
+        // (현재 학기가 아직 성적 미등록이라 DB에 없을 수 있음)
+        val currentKey = getCurrentSemesterUseCase()
+        buildUiState(student, summary, semesters, semesterWithLectures, chapelCard, currentKey)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -114,6 +117,7 @@ class MainViewModel @Inject constructor(
         semesters: List<SemesterData>,
         semesterWithLectures: Map<SemesterData, List<LectureData>>,
         chapelCard: ChapelData?,
+        currentKey: Pair<Int, SemesterType>?,
     ): MainUiState {
         val ascending = semesters.sortedWith(compareBy({ it.year }, { it.semester.ordinal }))
 
@@ -143,15 +147,24 @@ class MainViewModel @Inject constructor(
         val chapelAttended = attendances.count { it.attendance == "출석" }
         val chapelProgress = if (chapelTotal > 0) chapelAttended.toFloat() / chapelTotal else 0f
 
-        // 이번 학기(가장 최근 학기) 성적. 강의가 적재되지 않았으면 '미등록'으로 보고 ?를 표시한다.
-        val currentSemester = ascending.lastOrNull()
-        val currentLectures = currentSemester?.let { sel ->
+        // 이번 학기는 날짜 기준 현재 학기(currentKey). DB에 해당 학기가 없거나 currentKey가
+        // null이면(방학 등) 최신 학기로 폴백한다. 성적이 아직 없으면 성적 부분만 ?로 표시한다.
+        val fallback = ascending.lastOrNull()
+        val currentYear = currentKey?.first ?: fallback?.year
+        val currentType = currentKey?.second ?: fallback?.semester
+        val currentSemesterData = semesters.firstOrNull {
+            it.year == currentYear && it.semester == currentType
+        }
+        val currentLectures = if (currentYear != null && currentType != null) {
             semesterWithLectures.entries
-                .firstOrNull { it.key.year == sel.year && it.key.semester == sel.semester }
-                ?.value
-        }.orEmpty()
-        val registered = currentLectures.isNotEmpty()
+                .firstOrNull { it.key.year == currentYear && it.key.semester == currentType }
+                ?.value.orEmpty()
+        } else emptyList()
+        val registered = currentSemesterData != null && currentLectures.isNotEmpty()
         val isOnLeave = student.status.contains("휴학")
+        val currentTerm = if (currentYear != null && currentType != null) {
+            termLabel(currentYear, currentType)
+        } else ""
 
         return MainUiState(
             isLoading = student.name.isBlank(),
@@ -168,10 +181,10 @@ class MainViewModel @Inject constructor(
             chapelAttended = chapelAttended,
             chapelTotal = chapelTotal,
             chapelProgress = chapelProgress,
-            currentSemesterTerm = currentSemester?.termLabel() ?: "",
+            currentSemesterTerm = currentTerm,
             currentSemesterRegistered = registered,
-            currentSemesterGpa = if (registered) formatGpa(currentSemester!!.gradePointsAverage) else MainUiState.UNKNOWN,
-            currentSemesterCredits = if (registered) formatCredit(currentSemester!!.earnedCredit) else MainUiState.UNKNOWN,
+            currentSemesterGpa = if (registered) formatGpa(currentSemesterData!!.gradePointsAverage) else MainUiState.UNKNOWN,
+            currentSemesterCredits = if (registered) formatCredit(currentSemesterData!!.earnedCredit) else MainUiState.UNKNOWN,
             currentSemesterCourseCount = if (registered) currentLectures.size.toString() else MainUiState.UNKNOWN,
             currentSemesterCourses = currentLectures.map { lecture ->
                 SemesterCourseItem(
@@ -189,8 +202,8 @@ class MainViewModel @Inject constructor(
     private fun SemesterData.isEnrolled(): Boolean =
         attemptedCredit > 0f || earnedCredit > 0f
 
-    private fun SemesterData.termLabel(): String {
-        val suffix = when (semester) {
+    private fun termLabel(year: Int, type: SemesterType): String {
+        val suffix = when (type) {
             SemesterType.One -> "1학기"
             SemesterType.Two -> "2학기"
             SemesterType.Summer -> "여름학기"
