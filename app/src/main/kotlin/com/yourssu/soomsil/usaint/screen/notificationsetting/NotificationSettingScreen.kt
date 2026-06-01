@@ -34,6 +34,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yourssu.soomsil.usaint.screen.mypage.NotificationSettingViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,6 +53,35 @@ private val SecondaryTextColor = Color(0xFF9CA3AF)
 private val DividerColor = Color(0xFFF1F5F9)
 private val ToggleOnColor = Color(0xFF0062FF)
 private val ToggleOffColor = Color(0xFFE5E7EB)
+
+@Composable
+fun NotificationSettingScreen(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {},
+    viewModel: NotificationSettingViewModel = hiltViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    NotificationSettingScreen(
+        pushNotificationEnabled = uiState.pushNotificationEnabled,
+        onPushNotificationToggle = viewModel::setPushNotificationEnabled,
+        soundEnabled = uiState.soundEnabled,
+        onSoundToggle = viewModel::setSoundEnabled,
+        vibrationEnabled = uiState.vibrationEnabled,
+        onVibrationToggle = viewModel::setVibrationEnabled,
+        courseRegistrationEnabled = uiState.courseRegistrationEnabled,
+        onCourseRegistrationToggle = viewModel::setCourseRegistrationEnabled,
+        assignmentDeadlineEnabled = uiState.assignmentDeadlineEnabled,
+        onAssignmentDeadlineToggle = viewModel::setAssignmentDeadlineEnabled,
+        gradeReleaseEnabled = uiState.gradeReleaseEnabled,
+        onGradeReleaseToggle = viewModel::setGradeReleaseEnabled,
+        chapelEnabled = uiState.chapelEnabled,
+        onChapelToggle = viewModel::setChapelEnabled,
+        marketingEnabled = uiState.marketingEnabled,
+        onMarketingToggle = viewModel::setMarketingEnabled,
+        modifier = modifier,
+        onBackClick = onBackClick,
+    )
+}
 
 @Composable
 fun NotificationSettingScreen(
