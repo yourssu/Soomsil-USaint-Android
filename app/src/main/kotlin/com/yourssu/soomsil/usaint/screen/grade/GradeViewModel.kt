@@ -33,6 +33,8 @@ data class GradeUiState(
     val credits: String = "-",
     val courseCount: String = "0",
     val rank: String = "-",
+    // 선택한 학기의 성적이 공개(적재)되었는지 여부
+    val registered: Boolean = false,
 ) {
     companion object {
         const val MAX_GPA = "4.5"
@@ -149,6 +151,7 @@ class GradeViewModel @Inject constructor(
             credits = selectedSemester?.let { formatCredit(it.earnedCredit) } ?: "-",
             courseCount = courses.size.toString(),
             rank = selectedSemester?.let { "${it.semesterRank.first}위" } ?: "-",
+            registered = lectures.isNotEmpty(),
         )
     }
 
