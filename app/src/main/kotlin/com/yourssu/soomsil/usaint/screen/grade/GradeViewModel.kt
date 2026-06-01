@@ -102,10 +102,19 @@ class GradeViewModel @Inject constructor(
             SemesterTab(label = semester.tabLabel(), isActive = index == safeIndex)
         }
 
-        val gpaPoints = ascending.map { semester ->
+        // 성적 추이: 전 학기를 종합한 추이이므로 휴학(미수강) 학기는 제외하고,
+        // P/F 전용 학기(평점 0, 이수학점>0)는 직전 성적을 유지한다.
+        var carriedGpa = 0f
+        val gpaPoints = ascending.filter { it.isEnrolled() }.map { semester ->
+            val gpaValue = if (semester.gradePointsAverage > 0f) {
+                carriedGpa = semester.gradePointsAverage
+                semester.gradePointsAverage
+            } else {
+                carriedGpa
+            }
             GpaPoint(
                 semester = semester.chartLabel(),
-                gpa = semester.gradePointsAverage,
+                gpa = gpaValue,
                 isCurrent = semester == selectedSemester,
             )
         }
@@ -145,6 +154,10 @@ class GradeViewModel @Inject constructor(
 
     private fun formatCredit(credit: Float): String =
         if (credit % 1f == 0f) credit.toInt().toString() else "%.1f".format(Locale.US, credit)
+
+    // 휴학/미수강 학기: 시도·취득 학점이 모두 0
+    private fun SemesterData.isEnrolled(): Boolean =
+        attemptedCredit > 0f || earnedCredit > 0f
 
     private fun SemesterData.tabLabel(): String = "${year}년 ${semester.semesterLabel()}"
 
