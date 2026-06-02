@@ -291,7 +291,7 @@ private fun HelperText(
 // ─── Screen ───
 
 @Composable
-private fun MySeatLocationScreen(
+fun MySeatLocationScreen(
     seatCode: String = "B-12",
     seatFloor: String = "1층 앞자리",
     seatBuilding: String = "한경직기념관",

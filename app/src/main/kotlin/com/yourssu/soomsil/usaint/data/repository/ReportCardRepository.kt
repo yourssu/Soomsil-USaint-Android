@@ -8,6 +8,7 @@ import com.yourssu.soomsil.usaint.data.source.local.dao.SemesterDao
 import com.yourssu.soomsil.usaint.data.source.local.datastore.ReportCardSummaryDataSource
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentCredentialDataSource
 import com.yourssu.soomsil.usaint.data.source.local.entity.LectureEntity
+import com.yourssu.soomsil.usaint.data.source.local.entity.SemesterEntity
 import com.yourssu.soomsil.usaint.data.source.local.entity.asEntity
 import com.yourssu.soomsil.usaint.data.source.local.entity.asExternalModel
 import com.yourssu.soomsil.usaint.data.source.remote.USaintRemoteSource
@@ -33,6 +34,13 @@ class ReportCardRepository @Inject constructor(
             semesterEntityListMap
                 .mapKeys { (semesterEntity, _) -> semesterEntity.asExternalModel() }
                 .mapValues { (_, lectureEntity) -> lectureEntity.map(LectureEntity::asExternalModel) }
+        }
+
+    // 전체 학기 목록(학기별 GPA 포함). Semester 테이블은 한 번에 채워지므로
+    // 강의 적재를 기다리는 semesterWithLectures와 달리 즉시 전체가 로드된다.
+    val semesters: Flow<List<SemesterData>> =
+        semesterDao.getSemesterEntities().map { entities ->
+            entities.map(SemesterEntity::asExternalModel)
         }
 
     suspend fun fetchReportCardSummary(): Result<Unit> = runCatching {

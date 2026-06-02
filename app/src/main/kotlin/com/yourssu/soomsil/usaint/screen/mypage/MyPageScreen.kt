@@ -28,15 +28,42 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yourssu.soomsil.usaint.BuildConfig
 
 @Composable
-@Preview()
 fun MyPageScreen(
     onBackClick: () -> Unit = {},
-    tabBar: @Composable () -> Unit = {}
+    onLogoutClick: () -> Unit = {},
+    tabBar: @Composable () -> Unit = {},
+    viewModel: MyPageViewModel = hiltViewModel(),
 ) {
-    MyPageScreenContent(tabBar = tabBar)
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    MyPageScreenContent(
+        gradeNotification = uiState.gradeNotificationEnabled,
+        onGradeNotificationChange = viewModel::setGradeNotificationEnabled,
+        campusNotification = uiState.campusNotificationEnabled,
+        onCampusNotificationChange = viewModel::setCampusNotificationEnabled,
+        onLogoutClick = {
+            viewModel.logout()
+            onLogoutClick()
+        },
+        tabBar = tabBar,
+    )
+}
+
+@Composable
+@Preview
+private fun MyPageScreenPreview() {
+    MyPageScreenContent(
+        gradeNotification = true,
+        onGradeNotificationChange = {},
+        campusNotification = true,
+        onCampusNotificationChange = {},
+        onLogoutClick = {},
+        tabBar = {},
+    )
 }
 
 
@@ -51,8 +78,8 @@ private fun SettingsHeader(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.CenterStart ) {
         Text(
             text = "설정",
-            fontSize =24.sp,
-            lineHeight =30.sp,
+            fontSize = 22.sp,
+            lineHeight = 28.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF191F28)
         )
@@ -147,12 +174,14 @@ private fun SettingSection(
 
 @Composable
 private fun MyPageScreenContent(
+    gradeNotification: Boolean,
+    onGradeNotificationChange: (Boolean) -> Unit,
+    campusNotification: Boolean,
+    onCampusNotificationChange: (Boolean) -> Unit,
+    onLogoutClick: () -> Unit,
     tabBar: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var gradeNotification by remember { mutableStateOf(true) }
-    var campusNotification by remember { mutableStateOf(true) }
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -173,7 +202,7 @@ private fun MyPageScreenContent(
             ) {
                 // 계정관리
                 SettingSection("계정관리") {
-                    SettingRow("로그아웃")
+                    SettingRow("로그아웃", onClick = onLogoutClick)
                 }
 
                 // 알림
@@ -181,12 +210,12 @@ private fun MyPageScreenContent(
                     ToggleRow(
                         label = "성적 알림 받기",
                         checked = gradeNotification,
-                        onCheckedChange = { gradeNotification = it }
+                        onCheckedChange = onGradeNotificationChange
                     )
                     ToggleRow(
                         label = "캠퍼스 알림 받기",
                         checked = campusNotification,
-                        onCheckedChange = { campusNotification = it }
+                        onCheckedChange = onCampusNotificationChange
                     )
                 }
 

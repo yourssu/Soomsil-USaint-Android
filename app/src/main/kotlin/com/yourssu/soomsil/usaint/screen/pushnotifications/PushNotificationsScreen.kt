@@ -15,8 +15,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,14 +45,36 @@ private val HomeIndicator = Color(0x331A1A1A)
 @Composable
 @Preview
 fun PushNotificationsScreen() {
-    PushNotificationsScreen(modifier = Modifier)
+    PushNotificationsScreen(
+        unreadCount = 0,
+        selectedTab = NotificationTab.ALL,
+        onTabSelected = {},
+        modifier = Modifier,
+    )
 }
 
 // ─── Screen ───
 
 @Composable
 fun PushNotificationsScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: PushNotificationsViewModel = hiltViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    PushNotificationsScreen(
+        unreadCount = uiState.unreadCount,
+        selectedTab = uiState.selectedTab,
+        onTabSelected = viewModel::selectTab,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun PushNotificationsScreen(
+    unreadCount: Int,
+    selectedTab: NotificationTab,
+    onTabSelected: (NotificationTab) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
@@ -60,8 +88,8 @@ fun PushNotificationsScreen(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
-            UnreadHeroSection()
-            NotificationTabs()
+            UnreadHeroSection(unreadCount = unreadCount)
+            NotificationTabs(selectedTab = selectedTab, onTabSelected = onTabSelected)
             NotificationBanner()
             EmptyNotificationState()
         }
@@ -102,6 +130,7 @@ private fun NotificationHeader(
 
 @Composable
 private fun UnreadHeroSection(
+    unreadCount: Int,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -123,7 +152,7 @@ private fun UnreadHeroSection(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "0",
+                    text = unreadCount.toString(),
                     fontSize = 36.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = EmphasisText,
@@ -163,6 +192,8 @@ private fun UnreadHeroSection(
 
 @Composable
 private fun NotificationTabs(
+    selectedTab: NotificationTab,
+    onTabSelected: (NotificationTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -172,10 +203,14 @@ private fun NotificationTabs(
         horizontalArrangement = Arrangement.spacedBy(28.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        NotificationTabItem(text = "전체", selected = true, underlineWidth = 32.dp)
-        NotificationTabItem(text = "학사", selected = false, underlineWidth = 24.dp)
-        NotificationTabItem(text = "수업", selected = false, underlineWidth = 24.dp)
-        NotificationTabItem(text = "시험", selected = false, underlineWidth = 24.dp)
+        NotificationTab.entries.forEach { tab ->
+            NotificationTabItem(
+                text = tab.label,
+                selected = tab == selectedTab,
+                underlineWidth = if (tab == NotificationTab.ALL) 32.dp else 24.dp,
+                onClick = { onTabSelected(tab) },
+            )
+        }
     }
 }
 
@@ -184,10 +219,16 @@ private fun NotificationTabItem(
     text: String,
     selected: Boolean,
     underlineWidth: Dp,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.padding(vertical = 12.dp),
+        modifier = modifier
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onClick() }
+            .padding(vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

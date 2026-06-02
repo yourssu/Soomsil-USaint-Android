@@ -5,9 +5,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -16,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yourssu.soomsil.usaint.screen.grade.model.CourseItem
@@ -35,6 +38,7 @@ fun CourseDetailCard(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
+            modifier = Modifier.weight(1f),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -48,21 +52,28 @@ fun CourseDetailCard(
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF191F28),
-                letterSpacing = (-0.3).sp
+                letterSpacing = (-0.3).sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false)
             )
             Text(
                 text = course.professor,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,
-                color = Color(0xFF8B95A1)
+                color = Color(0xFF8B95A1),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = course.credit,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,
-                color = Color(0xFFB0B8C1)
+                color = Color(0xFFB0B8C1),
+                maxLines = 1
             )
         }
+        Spacer(modifier = Modifier.width(8.dp))
         Box(
             modifier = Modifier
                 .background(course.badgeBgColor, RoundedCornerShape(8.dp))

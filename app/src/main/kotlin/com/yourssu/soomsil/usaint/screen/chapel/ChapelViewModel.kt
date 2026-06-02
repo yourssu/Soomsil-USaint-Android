@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourssu.soomsil.usaint.core.model.ChapelData
 import com.yourssu.soomsil.usaint.data.repository.ChapelRepository
+import com.yourssu.soomsil.usaint.data.repository.StudentDataRepository
 import com.yourssu.soomsil.usaint.data.source.local.datastore.StudentCredentialDataSource
 import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -36,8 +38,18 @@ class ChapelViewModel @Inject constructor(
     private val studentCredential: StudentCredentialDataSource,
     private val chapelRepository: ChapelRepository,
     private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
+    studentDataRepository: StudentDataRepository,
 ) : ViewModel() {
     private var showPasswordIncorrectSnackbar = mutableStateOf(false)
+
+    // 휴학 중인 학생은 수강할 채플이 없음 (학적 상태로 판별)
+    val isOnLeave: StateFlow<Boolean> = studentDataRepository.studentData
+        .map { it.status.contains("휴학") }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false,
+        )
 
     val chapelUiState: StateFlow<ChapelUiState> = combine(
         chapelRepository.chapelCard,

@@ -21,6 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,10 +54,43 @@ fun ChapelScreen(
 //        onRefresh = { viewModel.fetchData(refresh = true) },
 //        onPasswordChange = viewModel::changePassword
 //    )
-    ChapelSeatScreen(
-        modifier = modifier
-    )
+    val isOnLeave by viewModel.isOnLeave.collectAsStateWithLifecycle()
+    val chapelUiState by viewModel.chapelUiState.collectAsStateWithLifecycle()
+    var showSeatLocation by remember { mutableStateOf(false) }
 
+    val chapelCard = (chapelUiState as? ChapelUiState.Chapel)?.chapelCard
+    val simple = chapelCard?.chapelSimpleData
+    val attendances = chapelCard?.chapelAttendances.orEmpty()
+    // 실제 내 출석/지각 일수 집계
+    val attended = attendances.count { it.attendance == "출석" }
+    val late = attendances.count { it.attendance == "지각" }
+
+    val seatNumber = simple?.seatNumber?.takeIf { it.isNotBlank() } ?: "-"
+    val seatFloor = simple?.let { "${it.floorLevel}층" } ?: ""
+    val seatZone = simple?.chapelRoom ?: ""
+
+    if (showSeatLocation) {
+        MySeatLocationScreen(
+            seatCode = seatNumber,
+            seatFloor = seatFloor,
+            seatBuilding = seatZone,
+            onBackClick = { showSeatLocation = false },
+            modifier = modifier,
+        )
+    } else {
+        ChapelSeatScreen(
+            seatNumber = seatNumber,
+            seatFloor = seatFloor,
+            seatZone = seatZone,
+            attended = attended,
+            total = MAX_REQUIRED_CHAPEL,
+            late = late,
+            progress = (attended.toFloat() / MAX_REQUIRED_CHAPEL).coerceIn(0f, 1f),
+            isOnLeave = isOnLeave,
+            onViewSeatClick = { showSeatLocation = true },
+            modifier = modifier,
+        )
+    }
 }
 /*
 @OptIn(ExperimentalMaterial3Api::class)
@@ -298,36 +336,14 @@ fun ChapelHeader(
         modifier = modifier
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_caret_left),
-                contentDescription = "뒤로가기",
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable { onBackClick() },
-                tint = Color(0xFF0A0A0A)
-            )
-            Text(
-                text = "채플",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF0A0A0A),
-                letterSpacing = (-0.3).sp
-            )
-        }
-        Icon(
-            painter = painterResource(R.drawable.ic_info),
-            contentDescription = "정보",
-            modifier = Modifier
-                .size(22.dp)
-                .clickable { onInfoClick() },
-            tint = Color(0xFF9CA3AF)
+        Text(
+            text = "채플",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF0A0A0A),
+            letterSpacing = (-0.5).sp
         )
     }
 }
@@ -391,6 +407,9 @@ fun SeatHeroCard(
 
 // ─── Attendance Gauge ───
 
+// 한 학기 채플 이수 횟수는 최대 7회
+private const val MAX_REQUIRED_CHAPEL = 7
+
 @Composable
 fun AttendanceGauge(
     attended: Int,
@@ -399,6 +418,8 @@ fun AttendanceGauge(
     progress: Float,
     modifier: Modifier = Modifier
 ) {
+    val cappedTotal = total.coerceAtMost(MAX_REQUIRED_CHAPEL)
+    val remaining = (cappedTotal - attended).coerceAtLeast(0)
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -425,14 +446,14 @@ fun AttendanceGauge(
                 horizontalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 Text(
-                    text = "${total - attended}",
+                    text = "$remaining",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = Color(0xFF0062FF),
                     letterSpacing = (-0.4).sp
                 )
                 Text(
-                    text = "/ ${total}회",
+                    text = "/ ${cappedTotal}회",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF9CA3AF)
@@ -538,13 +559,14 @@ fun ChapelSeatScreen(
     seatFloor: String = "1층 앞자리",
     seatZone: String = "A구역",
     attended: Int = 5,
-    total: Int = 8,
+    total: Int = 7,
     late: Int = 1,
-    progress: Float = 0.6f,
+    progress: Float = 0.71f,
     onBackClick: () -> Unit = {},
     onInfoClick: () -> Unit = {},
     onViewSeatClick: () -> Unit = {},
     onAttendClick: () -> Unit = {},
+    isOnLeave: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -557,26 +579,63 @@ fun ChapelSeatScreen(
             onInfoClick = onInfoClick
         )
 
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            SeatHeroCard(
-                seatNumber = seatNumber,
-                floor = seatFloor,
-                zone = seatZone,
-                onViewSeatClick = onViewSeatClick
+        if (isOnLeave) {
+            ChapelOnLeaveMessage(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
             )
-            AttendanceGauge(
-                attended = attended,
-                total = total,
-                late = late,
-                progress = progress
-            )
-        }
+        } else {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                SeatHeroCard(
+                    seatNumber = seatNumber,
+                    floor = seatFloor,
+                    zone = seatZone,
+                    onViewSeatClick = onViewSeatClick
+                )
+                AttendanceGauge(
+                    attended = attended,
+                    total = total,
+                    late = late,
+                    progress = progress
+                )
+            }
 
-        AttendanceCta(onClick = onAttendClick)
+            // TODO: 출석 인증(QR) 기능 구현 전까지 임시 비활성화
+            // AttendanceCta(onClick = onAttendClick)
+        }
+    }
+}
+
+// ─── 휴학 안내 ───
+
+@Composable
+private fun ChapelOnLeaveMessage(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(horizontal = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
+    ) {
+        Text(
+            text = "휴학 중이에요",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF0A0A0A),
+            letterSpacing = (-0.3).sp
+        )
+        Text(
+            text = "휴학 중이라 수강할 채플이 없어요",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color(0xFF9CA3AF),
+            letterSpacing = (-0.2).sp
+        )
     }
 }
