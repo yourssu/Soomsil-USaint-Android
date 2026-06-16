@@ -55,12 +55,22 @@ fun ChapelSummary(
                     append(
                         if (chapelSimpleData.result == "P")
                             "Pass!"
-                        else
-                            // 유세인트에 성적 결과은 없이 출결 상태만 있는 경우가 22년 2학기에 존재
-                            if( currentAttendance >= ceil(totalAttendance * (2/3F)) )
-                                "Pass!"
-                            else
-                                "Fail"
+                        else {
+                            if(chapelSimpleData.year >= 2026) {
+                                //2026년부터 채플은 단 1회의 결석만 인정
+                                if(totalAttendance - currentAttendance <= 1) {
+                                    "Pass!"
+                                } else {
+                                    "Fail"
+                                }
+                            } else {
+                                // 유세인트에 성적 결과은 없이 출결 상태만 있는 경우가 22년 2학기에 존재
+                                if (currentAttendance >= ceil(totalAttendance * (2 / 3F)))
+                                    "Pass!"
+                                else
+                                    "Fail"
+                            }
+                        }
                     )
                 }
             },

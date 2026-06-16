@@ -75,7 +75,9 @@ fun ChapelCardItem(
             Text(
                 text =
                     buildAnnotatedString {
-                        if(chapelData.chapelSimpleData.result == "P" || currentAttendance >= ceil(totalAttendance * (2 / 3F))) {
+                        if(chapelData.chapelSimpleData.result == "P" ||
+                            (chapelData.chapelSimpleData.year < 2026 && currentAttendance >= ceil(totalAttendance * (2 / 3F)))
+                            || (chapelData.chapelSimpleData.year >= 2026 && totalAttendance - currentAttendance <= 1)) {
                             append("${chapelData.chapelSimpleData.year % 100}년도 ${chapelData.chapelSimpleData.semester.kor}학기 채플을 ")
                             withStyle(
                                 SpanStyle(color = MaterialTheme.colorScheme.primary)
@@ -91,7 +93,10 @@ fun ChapelCardItem(
                                 SpanStyle(color = MaterialTheme.colorScheme.primary)
                             ) {
                                 append(
-                                    "${ceil(totalAttendance * (2 / 3.0)).toInt() - currentAttendance}회 "
+                                    if(chapelData.chapelSimpleData.year >= 2026)
+                                        "${(totalAttendance-1) - currentAttendance}회 "
+                                    else
+                                        "${ceil(totalAttendance * (2 / 3.0)).toInt() - currentAttendance}회 "
                                 )
                             }
                             append("남았어요.")

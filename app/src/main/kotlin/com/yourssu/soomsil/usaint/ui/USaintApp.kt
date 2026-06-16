@@ -61,7 +61,7 @@ fun USaintApp(
         floatingActionButton = {
             FloatingActionButton(
                 contentColor = Color.White,
-                containerColor = Color.Blue,
+                containerColor = Color(0x9A3333AA),
                 onClick = {
                     val intent = Intent(
                         Intent.ACTION_VIEW,
