@@ -49,6 +49,7 @@ import com.yourssu.soomsil.usaint.core.model.ChapelData
 import com.yourssu.soomsil.usaint.core.model.ChapelSimpleData
 import com.yourssu.soomsil.usaint.core.model.ReportCardSummaryData
 import com.yourssu.soomsil.usaint.core.model.StudentData
+import com.yourssu.soomsil.usaint.screen.home.components.ActionTitleItem
 import com.yourssu.soomsil.usaint.screen.home.components.ChapelCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.EmptyChapelCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItem
@@ -344,16 +345,16 @@ private fun HomeScreen(
 //            )
 
 //            TODO 나중에 성적시즌이 되면 주석 풀어주세요
-//            if (studentData?.status == "재학") {
-//                Spacer(Modifier.height(8.dp))
-//                ActionTitleItem(
-//                    title = "이번 학기 성적 확인",
-//                    onClick = {
-//                        isVisibleGradeBottomSheet = true
-//                        onCheckCurrentSemesterClicked()
-//                    },
-//                )
-//            }
+            if (studentData?.status == "재학") {
+                Spacer(Modifier.height(8.dp))
+                ActionTitleItem(
+                    title = "이번 학기 성적 확인",
+                    onClick = {
+                        isVisibleGradeBottomSheet = true
+                        onCheckCurrentSemesterClicked()
+                    },
+                )
+            }
 
             // TODO Rusaint 고치면 밑 조건문 삭제 바람
             if(!isFailedFetch) {

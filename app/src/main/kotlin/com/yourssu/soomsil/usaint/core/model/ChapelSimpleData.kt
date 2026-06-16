@@ -15,7 +15,7 @@ data class ChapelSimpleData(
 ) {
     companion object {
         val previewData = ChapelSimpleData(
-            2025,
+            2026,
             SemesterType.One,
             division = 100000001,
             chapelTime = "(수) 13:30~14:20",
@@ -23,7 +23,7 @@ data class ChapelSimpleData(
             floorLevel = 1,
             seatNumber = "H-5-9",
             absenceTime = 3,
-            result = "P",
+            result = "",
         )
     }
 }

@@ -8,6 +8,7 @@ import com.posthog.android.PostHogAndroidConfig
 import com.yourssu.soomsil.usaint.data.analytics.PostHogTracker
 import com.yourssu.soomsil.usaint.domain.usecase.UpdateWorkerUseCase
 import dagger.hilt.android.HiltAndroidApp
+import dev.eatsteak.rusaint.core.RusaintAndroid
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -25,6 +26,8 @@ class SoomsilUSaintApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        RusaintAndroid.initialize(this)
+
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
