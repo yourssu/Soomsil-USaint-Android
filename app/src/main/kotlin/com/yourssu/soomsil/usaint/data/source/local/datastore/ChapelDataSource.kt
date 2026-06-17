@@ -13,11 +13,15 @@ import javax.inject.Inject
 class ChapelDataSource @Inject constructor (
     private val chapelDataSource: DataStore<ChapelDataProto>
 )  {
-    val chapelCardData: Flow<ChapelSimpleData> = chapelDataSource.data
+    val chapelCardData: Flow<ChapelSimpleData?> = chapelDataSource.data
         .map {
+            val semester = runCatching { SemesterType.valueOf(it.semester) }
+                .getOrNull()
+                ?: return@map null
+
             ChapelSimpleData(
                 year = it.year,
-                semester = SemesterType.valueOf(it.semester),
+                semester = semester,
                 division = it.division,
                 chapelRoom = it.chapelRoom,
                 chapelTime = it.chapelTime,

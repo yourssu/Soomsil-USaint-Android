@@ -42,7 +42,6 @@ sealed interface HomeUiState {
         val currentSemesterData: SemesterData?,
         val showPasswordIncorrectSnackbar: MutableState<Boolean>,
         val showFailedLoadToStudentDataSnackbar: MutableState<Boolean>,
-        val isFailedFetch: MutableState<Boolean>,
     ) : HomeUiState
 }
 
@@ -58,8 +57,6 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
     private var showPasswordIncorrectSnackbar = mutableStateOf(false)
     private var showFailedLoadToStudentDataSnackbar = mutableStateOf(false)
-    //TODO Rusaint 수정될 시 삭제 바람
-    private var isFailedFetch = mutableStateOf(false)
     val homeUiState: StateFlow<HomeUiState> =
         combine(
             studentDataRepository.studentData,
@@ -79,7 +76,6 @@ class HomeViewModel @Inject constructor(
             },
             flowOf(showPasswordIncorrectSnackbar),
             flowOf(showFailedLoadToStudentDataSnackbar),
-            flowOf(isFailedFetch),
             transform = HomeUiState::Home,
         )
             .stateIn(
@@ -125,12 +121,6 @@ class HomeViewModel @Inject constructor(
                     // TODO 이 지점에서 비밀번호 틀려서 로그인에 실패한걸 트래커에 보낼 필요가 있을까?
                     //posthogTracker.trackLoginFailed(e)
                     showPasswordIncorrectSnackbar.value = true
-2                }
-                isFailedFetch.value = true
-                // TODO 비밀번호가 문제가 아니라면 채플 정보만 재시도. Rusaint API 수정될 시 삭제바람
-                getCurrentSemesterUseCase()?.let {
-                    chapelRepository.fetchChapelCardData(it)
-                        .onFailure { e -> Timber.e(e) }
                 }
             }
             isRefreshing = false
@@ -170,7 +160,7 @@ class HomeViewModel @Inject constructor(
     }
 
     // 나중에 다른 위치로 옮겨도 좋을거같습니다
-    private inline fun <T1, T2, T3, T4, T5, T6, T7, T8, R> combine(
+    private inline fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
         flow: Flow<T1>,
         flow2: Flow<T2>,
         flow3: Flow<T3>,
@@ -178,10 +168,9 @@ class HomeViewModel @Inject constructor(
         flow5: Flow<T5>,
         flow6: Flow<T6>,
         flow7: Flow<T7>,
-        flow8: Flow<T8>,
-        crossinline transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8) -> R
+        crossinline transform: suspend (T1, T2, T3, T4, T5, T6, T7) -> R
     ): Flow<R> {
-        return kotlinx.coroutines.flow.combine(flow, flow2, flow3, flow4, flow5, flow6, flow7, flow8) { args: Array<*> ->
+        return kotlinx.coroutines.flow.combine(flow, flow2, flow3, flow4, flow5, flow6, flow7) { args: Array<*> ->
             @Suppress("UNCHECKED_CAST")
             transform(
                 args[0] as T1,
@@ -191,7 +180,6 @@ class HomeViewModel @Inject constructor(
                 args[4] as T5,
                 args[5] as T6,
                 args[6] as T7,
-                args[7] as T8,
             )
         }
     }

@@ -12,6 +12,7 @@ import com.yourssu.soomsil.usaint.data.source.local.entity.asEntity
 import com.yourssu.soomsil.usaint.data.source.local.entity.asExternalModel
 import com.yourssu.soomsil.usaint.data.source.remote.USaintRemoteSource
 import com.yourssu.soomsil.usaint.domain.usecase.GetCurrentSemesterUseCase
+import com.yourssu.soomsil.usaint.domain.usecase.MakeSemesterUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
@@ -24,6 +25,7 @@ class ReportCardRepository @Inject constructor(
     private val lectureDao: LectureDao,
     private val uSaintRemoteSource: USaintRemoteSource,
     private val getCurrentSemesterUseCase: GetCurrentSemesterUseCase,
+    private val makeSemesterUseCase: MakeSemesterUseCase,
 ) {
     val reportCardSummaryData: Flow<ReportCardSummaryData> =
         reportCardSummary.reportCardSummaryData
@@ -51,6 +53,8 @@ class ReportCardRepository @Inject constructor(
             currentSemester.second
         )
 
+        val semesterData = makeSemesterUseCase(currentSemester, lectureDataList)
+        semesterDao.upsertSemesters(listOf(semesterData.asEntity()))
         lectureDao.upsertLectures(lectureDataList.map(LectureData::asEntity))
 
     }
