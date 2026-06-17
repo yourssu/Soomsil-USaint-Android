@@ -84,7 +84,7 @@ class UserPreferencesDataSource @Inject constructor(
 
     suspend fun clear() {
         try {
-            userPreferences.updateData { UserPreferences.getDefaultInstance() }
+            userPreferences.updateData { UserPreferencesSerializer.defaultValue }
         } catch (e: IOException) {
             Timber.e("Failed to clear user preferences", e)
         }

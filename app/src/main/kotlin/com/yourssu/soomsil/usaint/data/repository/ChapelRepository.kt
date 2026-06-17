@@ -49,9 +49,13 @@ class ChapelRepository @Inject constructor(
     // 전체 채플 데이터에서 DataStore에 저장한 분반 정보를 비교하여 뽑아냅니다.
     val chapelCard: Flow<ChapelData?> =
         combine(chapels, chapelDataSource.chapelCardData) { chapelList, cardData ->
-            chapelList.find {
-                it.chapelSimpleData.year == cardData.year &&
-                        it.chapelSimpleData.semester == cardData.semester
+            if (cardData == null) {
+                null
+            } else {
+                chapelList.find {
+                    it.chapelSimpleData.year == cardData.year &&
+                            it.chapelSimpleData.semester == cardData.semester
+                }
             }
         }
 

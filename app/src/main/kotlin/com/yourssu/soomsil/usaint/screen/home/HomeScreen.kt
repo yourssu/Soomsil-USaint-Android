@@ -53,7 +53,6 @@ import com.yourssu.soomsil.usaint.screen.home.components.ActionTitleItem
 import com.yourssu.soomsil.usaint.screen.home.components.ChapelCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.EmptyChapelCardItem
 import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItem
-import com.yourssu.soomsil.usaint.screen.home.components.ReportCardItemEmpty
 import com.yourssu.soomsil.usaint.screen.home.components.StudentDataItem
 import com.yourssu.soomsil.usaint.screen.reportcard.components.LectureItem
 import com.yourssu.soomsil.usaint.screen.setting.PasswordChangeDialog
@@ -186,15 +185,6 @@ private fun HomeScreen(
                 else
                     mutableStateOf(false)
             }
-
-            // TODO RUSAINT 고치면 삭제 바람
-            val isFailedFetch by remember {
-                if (homeUiState is HomeUiState.Home)
-                    homeUiState.isFailedFetch
-                else
-                    mutableStateOf(false)
-            }
-
 
             if (showFailedLoadToStudentDataSnackbar) {
                 LaunchedEffect(Unit) {
@@ -356,17 +346,11 @@ private fun HomeScreen(
                 )
             }
 
-            // TODO Rusaint 고치면 밑 조건문 삭제 바람
-            if(!isFailedFetch) {
-                Spacer(Modifier.height(8.dp))
-                ReportCardItem(
+            Spacer(Modifier.height(8.dp))
+            ReportCardItem(
                     reportCardSummary = reportCardSummaryData,
                     onReportCardClick = onReportCardClick,
-                )
-            } else {
-                Spacer(Modifier.height(8.dp))
-                ReportCardItemEmpty()
-            }
+            )
             Spacer(Modifier.height(8.dp))
             if(chapelCardData != null) {
                 val totalAttendance = chapelCardData.chapelAttendances.size
@@ -415,7 +399,6 @@ private fun HomePreview_being() {
                 currentSemesterData = null,
                 showPasswordIncorrectSnackbar = remember { mutableStateOf(false) },
                 showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) },
-                isFailedFetch = remember { mutableStateOf(false) }
             ),
         )
     }
@@ -442,7 +425,6 @@ private fun HomePreview_RUSAINT_FAILED() {
                 currentSemesterData = null,
                 showPasswordIncorrectSnackbar = remember { mutableStateOf(false) },
                 showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) },
-                isFailedFetch = remember { mutableStateOf(true) }
             ),
         )
     }
@@ -469,7 +451,6 @@ private fun HomePreview_leave() {
                 currentSemesterData = null,
                 showPasswordIncorrectSnackbar = remember { mutableStateOf(false) },
                 showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) },
-                isFailedFetch = remember { mutableStateOf(false) }
             ),
         )
     }
