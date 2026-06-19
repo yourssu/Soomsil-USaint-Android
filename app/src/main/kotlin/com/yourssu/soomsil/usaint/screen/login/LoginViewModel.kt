@@ -73,6 +73,23 @@ class LoginViewModel @Inject constructor(
                 .onFailure { e ->
 //                    posthogTracker.trackLoginFailed(e)
 //                    _uiEvent.emit(LoginUiEvent.Failure(e.message))
+
+                    // TODO RUSAINT API 수정 이후 밑 구문을 삭제해주세요. 성적 정보를 못불러오는 경우가 있습니다.
+                    // 성적 정보 가져오기에 실패한 경우 채플 정보만 불러옴
+                    getCurrentSemesterUseCase()?.let { // 현재 학기 채플 정보 불러오기
+                        chapelRepository.fetchChapelCardData(it)
+                            .onSuccess {
+                                studentCredentialRepository.setLoggedIn(true)
+                                _uiEvent.emit(LoginUiEvent.Success)
+                                posthogTracker.trackLogin(credential.id)
+                            }
+                            .onFailure { e ->
+                                // 로그인 실패 여부는 fetchStudentData()에서 한번에 판단
+                                posthogTracker.trackLoginFailed(e)
+                                _uiEvent.emit(LoginUiEvent.Failure(e.message))
+                                Timber.e(e)
+                            }
+                    }
                 }
 
             isLoading = false

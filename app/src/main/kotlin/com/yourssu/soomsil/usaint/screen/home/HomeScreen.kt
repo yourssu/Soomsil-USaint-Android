@@ -186,6 +186,14 @@ private fun HomeScreen(
                     mutableStateOf(false)
             }
 
+            // TODO RUSAINT 고치면 삭제 바람
+            val isFailedFetch by remember {
+                if (homeUiState is HomeUiState.Home)
+                    homeUiState.isFailedFetch
+                else
+                    mutableStateOf(false)
+            }
+
             if (showFailedLoadToStudentDataSnackbar) {
                 LaunchedEffect(Unit) {
                     snackbarHostState.currentSnackbarData?.dismiss()
@@ -348,8 +356,8 @@ private fun HomeScreen(
 
             Spacer(Modifier.height(8.dp))
             ReportCardItem(
-                    reportCardSummary = reportCardSummaryData,
-                    onReportCardClick = onReportCardClick,
+                reportCardSummary = reportCardSummaryData,
+                onReportCardClick = onReportCardClick
             )
             Spacer(Modifier.height(8.dp))
             if(chapelCardData != null) {
@@ -399,6 +407,7 @@ private fun HomePreview_being() {
                 currentSemesterData = null,
                 showPasswordIncorrectSnackbar = remember { mutableStateOf(false) },
                 showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) },
+                isFailedFetch = remember { mutableStateOf(false) }
             ),
         )
     }
@@ -425,6 +434,7 @@ private fun HomePreview_RUSAINT_FAILED() {
                 currentSemesterData = null,
                 showPasswordIncorrectSnackbar = remember { mutableStateOf(false) },
                 showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) },
+                isFailedFetch = remember { mutableStateOf(true) }
             ),
         )
     }
@@ -451,6 +461,7 @@ private fun HomePreview_leave() {
                 currentSemesterData = null,
                 showPasswordIncorrectSnackbar = remember { mutableStateOf(false) },
                 showFailedLoadToStudentDataSnackbar = remember { mutableStateOf(false) },
+                isFailedFetch = remember { mutableStateOf(false) }
             ),
         )
     }
